@@ -4,7 +4,7 @@ import setuptools
 from setuptools.command.install import install
 
 # The version of this package
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 
 class VerifyVersionCommand(install):
@@ -13,13 +13,15 @@ class VerifyVersionCommand(install):
     Source: https://circleci.com/blog/continuously-deploying-python-packages-to-pypi-with-circleci/
     """
 
-    description = 'verify that the git tag matches the package version'
+    description = "verify that the git tag matches the package version"
 
     def run(self):
-        tag = os.getenv('CIRCLE_TAG')
+        tag = os.getenv("CIRCLE_TAG")
 
         if tag != VERSION:
-            info = f"Git tag: {tag} does not match the version of this package: {VERSION}"
+            info = (
+                f"Git tag: {tag} does not match the version of this package: {VERSION}"
+            )
             sys.exit(info)
 
 
@@ -41,12 +43,13 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=[
         "fastapi==0.61.1",
-        "pydantic==1.7.2"
+        "pydantic==1.7.2",
+        "joblib==0.17.0",
+        "scikit-learn==0.23.2",
+        "tensorflow==2.2.0",
     ],
-    cmdclass={
-        "verify": VerifyVersionCommand
-    }
+    cmdclass={"verify": VerifyVersionCommand},
 )

@@ -73,6 +73,11 @@ class TestWebService(TestCase):
 
     def test_web_service(self) -> None:
         client = self._get_client(Clf)
+
+        # Has a home page
+        res = client.get("/")
+        self.assertEqual(res.status_code, 200)
+
         # Can handle basic predict request.
         res = client.post("/predict", json={"X": [[1], [1], [1]]})
         self.assertEqual(res.status_code, 200)

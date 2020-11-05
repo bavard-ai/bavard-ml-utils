@@ -57,6 +57,21 @@ class WebService(ABC):
     look like: `{ "num": <int> }`.
     """
 
+    def _base_route(self) -> dict:
+        """
+        Landing page for the API.
+        """
+        cls_name = self.__class__.__name__
+        return {
+            "description": f"This web service was generated automatically for the {cls_name} class",
+            "class": cls_name,
+            "documentation_routes": {
+                "swagger": "/docs",
+                "redoc": "/redoc",
+                "open_api_schema": "/openapi.json",
+            },
+        }
+
     def to_app(self) -> FastAPI:
         """
         Converts the implementing class into an HTTP web service.
@@ -70,6 +85,7 @@ class WebService(ABC):
                 allowed_verb = "POST"
                 endpoint = self._wrap_with_data_model(endpoint, data_model_class)
             app.add_api_route("/" + endpoint_name, endpoint, methods=[allowed_verb])
+        app.add_api_route("/", self._base_route)
         return app
 
     def _data_model_for_method_sig(self, method: t.Callable) -> t.Optional[BaseModel]:

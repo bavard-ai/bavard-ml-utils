@@ -4,15 +4,38 @@ from abc import ABC, abstractmethod
 import pickle
 import shutil
 from uuid import uuid4
+import tarfile
 
 from sklearn.base import BaseEstimator
 import joblib
 import tensorflow as tf
 
 
-def make_dir_if_needed(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
+class TempDir:
+    """
+    Context Manager class for working with a temporary directory. Example:
+
+    ```python
+    with TempDir() as tmp_dir:
+        # `tmp_dir` is a newly created directory.
+        # ... do work ...
+
+    # `tmp_dir` is automatically deleted when the `with` statement is exited.
+    ```
+    """
+
+    def __init__(self, name: str = None) -> None:
+        if name:
+            self.name = name
+        else:
+            self.name = str(uuid4())
+
+    def __enter__(self) -> str:
+        os.mkdir(self.name)
+        return self.name
+
+    def __exit__(self, type, value, traceback) -> None:
+        shutil.rmtree(self.name)
 
 
 class TypeSerializer(ABC):
@@ -97,19 +120,21 @@ class _CustomPickler(pickle.Pickler):
                 # methods. Our serializer's type name and the path it was serialized
                 # to is returned and pickled, so the pickler will know how to find
                 # the object again and deserialize it.
-                ser_path = ser.resolve_path(
-                    os.path.join(self._assets_path, str(uuid4()))
-                )
-                ser.serialize(obj, ser_path)
-                return (ser.type_name, ser_path)
+                obj_id = str(uuid4())
+                obj_path = ser.resolve_path(obj_id)
+                ser.serialize(obj, os.path.join(self._assets_path, obj_path))
+                return (ser.type_name, obj_path)
 
         # No custom serializer for `obj`; pickle it using the normal way.
         return None
 
 
 class _CustomUnpickler(pickle.Unpickler):
-    def __init__(self, pkl_file, type_serializers: t.List[TypeSerializer]) -> None:
+    def __init__(
+        self, pkl_file, assets_path: str, type_serializers: t.List[TypeSerializer]
+    ) -> None:
         super().__init__(pkl_file)
+        self._assets_path = assets_path
         self._ser_map = {ser.type_name: ser for ser in type_serializers}
 
     def persistent_load(self, pid: tuple) -> object:
@@ -117,14 +142,14 @@ class _CustomUnpickler(pickle.Unpickler):
         This method is invoked whenever a persistent ID is encountered.
         Here, pid is the tuple returned by `ModelPickler`.
         """
-        ser_type_name, ser_path = pid
+        ser_type_name, obj_path = pid
         if ser_type_name not in self._ser_map:
             raise pickle.UnpicklingError(
                 "cannot deserialize: an object was found which was serialized using the "
                 f"{ser_type_name} serializer, and this unpickler does not have that serializer registered."
             )
         ser = self._ser_map[ser_type_name]
-        return ser.deserialize(ser_path)
+        return ser.deserialize(os.path.join(self._assets_path, obj_path))
 
 
 class Serializer:
@@ -136,6 +161,8 @@ class Serializer:
     and pass those in too. Just implement the `TypeSerializer` class and pass an instance
     of your class to the constructor.
     """
+
+    serialize_dir_name = "serialized-data"
 
     def __init__(self, *custom_type_serializers: t.Tuple[TypeSerializer]) -> None:
         self._type_serializers = [
@@ -151,29 +178,37 @@ class Serializer:
                 f" Currently registered names: {[ser.type_name for ser in self._type_serializers]}"
             )
 
-    def serialize(self, obj: object, path: str, delete_existing: bool = True) -> None:
+    def serialize(self, obj: object, path: str) -> None:
         """
-        Serialize `obj` to `path`, a directory.
+        Serialize `obj` to `path`, which should be a file path ending in ".tar".
         """
-        if os.path.exists(path) and delete_existing:
-            shutil.rmtree(path)
+        with TempDir() as temp_dir:
+            # Serialize to a temporary directory.
+            with open(self._get_pkl_path(temp_dir), "wb") as f:
+                _CustomPickler(f, temp_dir, self._type_serializers).dump(obj)
 
-        make_dir_if_needed(path)
-        with open(self._get_pkl_path(path), "wb") as f:
-            _CustomPickler(f, path, self._type_serializers).dump(obj)
+            # Tar the directory to the final user-expected path.
+            with tarfile.open(path, "w") as tar:
+                tar.add(temp_dir, arcname=self.serialize_dir_name)
 
     def deserialize(self, path: str, delete: bool = False) -> object:
         """
-        Load the data that was serialized to the directory at
-        `path`. It should have been serialized using this class's
-        `serialize` method. If `delete==True`, `path` will be
-        deleted once the deserialization is finished.
+        Load the data that was serialized to `path`. It should have
+        been serialized using this class's `serialize` method. If `delete==True`,
+        `path` will be deleted once the deserialization is finished.
         """
-        with open(self._get_pkl_path(path), "rb") as f:
-            obj = _CustomUnpickler(f, self._type_serializers).load()
+        with TempDir() as temp_dir:
+            # Untar the data to a temporary directory.
+            with tarfile.open(path) as tar:
+                tar.extractall(temp_dir)
+
+            # Deserialize the data
+            data_dir = os.path.join(temp_dir, self.serialize_dir_name)
+            with open(self._get_pkl_path(data_dir), "rb") as f:
+                obj = _CustomUnpickler(f, data_dir, self._type_serializers).load()
 
         if delete:
-            shutil.rmtree(path)
+            os.remove(path)
 
         return obj
 

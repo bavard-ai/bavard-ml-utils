@@ -1,12 +1,11 @@
 from unittest import TestCase
 import inspect
-import os
 
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 import tensorflow as tf
 
-from bavard_ml_common.mlops.serialization import Serializer, TempDir
+from bavard_ml_common.mlops.serialization import Serializer
 
 
 class TestClass:
@@ -97,7 +96,7 @@ class TestKerasModel:
 
 class TestSerialization(TestCase):
     def setUp(self) -> None:
-        self.serialize_path = "temp-data.tar"
+        self.temp_dir = "temp-data"
         iris = load_iris()
         self.X = iris.data
         self.y = iris.target
@@ -108,8 +107,8 @@ class TestSerialization(TestCase):
         data = {"foo": 1, "bar": None, "baz": [1, 2, 3], 0: "Hello"}
         serializer = Serializer()
 
-        serializer.serialize(data, self.serialize_path)
-        loaded_data = serializer.deserialize(self.serialize_path, True)
+        serializer.serialize(data, self.temp_dir)
+        loaded_data = serializer.deserialize(self.temp_dir, True)
 
         self.assertDictEqual(data, loaded_data)
 
@@ -117,8 +116,8 @@ class TestSerialization(TestCase):
         obj = TestClass(public_attr=1)
         serializer = Serializer()
 
-        serializer.serialize(obj, self.serialize_path)
-        loaded_obj = serializer.deserialize(self.serialize_path, True)
+        serializer.serialize(obj, self.temp_dir)
+        loaded_obj = serializer.deserialize(self.temp_dir, True)
 
         self.assertEqual(obj, loaded_obj)
 
@@ -127,14 +126,14 @@ class TestSerialization(TestCase):
         serializer = Serializer()
 
         # Unfit models should be equal.
-        serializer.serialize(model, self.serialize_path)
-        loaded_model = serializer.deserialize(self.serialize_path, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_model)
 
         # Fit models should be equal.
         model.fit(self.X, self.y)
-        serializer.serialize(model, self.serialize_path)
-        loaded_fit_model = serializer.deserialize(self.serialize_path, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_fit_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_fit_model)
 
         # Predictions should be identical.
@@ -144,29 +143,18 @@ class TestSerialization(TestCase):
         )
 
     def test_keras_serializer(self) -> None:
-        self._test_keras_serializer(self.serialize_path)
-
-    def test_can_serialize_to_subdir(self) -> None:
-        with TempDir("temp") as temp_dir:
-            serialize_path = os.path.join(temp_dir, self.serialize_path)
-            self._test_keras_serializer(serialize_path)
-
-    def _get_member_types(self, obj: object) -> dict:
-        return {key: type(member) for key, member in inspect.getmembers(obj)}
-
-    def _test_keras_serializer(self, path: str) -> None:
-        model = TestSklearnModel(C=0.5)
+        model = TestKerasModel(n_units=10)
         serializer = Serializer()
 
         # Unfit models should be equal.
-        serializer.serialize(model, path)
-        loaded_model = serializer.deserialize(path, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_model)
 
         # Fit models should be equal.
-        model.fit(self.X, self.y)
-        serializer.serialize(model, path)
-        loaded_fit_model = serializer.deserialize(path, True)
+        model.fit(self.X, tf.keras.utils.to_categorical(self.y))
+        serializer.serialize(model, self.temp_dir)
+        loaded_fit_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_fit_model)
 
         # Predictions should be identical.
@@ -174,3 +162,6 @@ class TestSerialization(TestCase):
         self.assertTrue(
             (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
         )
+
+    def _get_member_types(self, obj: object) -> dict:
+        return {key: type(member) for key, member in inspect.getmembers(obj)}

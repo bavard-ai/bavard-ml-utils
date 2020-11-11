@@ -8,6 +8,7 @@ from uuid import uuid4
 from sklearn.base import BaseEstimator
 import joblib
 import tensorflow as tf
+from tensorflow.io.gfile import GFile
 
 
 def make_dir_if_needed(path: str) -> None:
@@ -159,7 +160,7 @@ class Serializer:
             shutil.rmtree(path)
 
         make_dir_if_needed(path)
-        with open(self._get_pkl_path(path), "wb") as f:
+        with GFile(self._get_pkl_path(path), "wb") as f:
             _CustomPickler(f, path, self._type_serializers).dump(obj)
 
     def deserialize(self, path: str, delete: bool = False) -> object:
@@ -169,7 +170,7 @@ class Serializer:
         `serialize` method. If `delete==True`, `path` will be
         deleted once the deserialization is finished.
         """
-        with open(self._get_pkl_path(path), "rb") as f:
+        with GFile(self._get_pkl_path(path), "rb") as f:
             obj = _CustomUnpickler(f, self._type_serializers).load()
 
         if delete:

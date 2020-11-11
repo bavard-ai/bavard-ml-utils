@@ -4,7 +4,7 @@ import setuptools
 from setuptools.command.install import install
 
 # The version of this package
-VERSION = "0.0.5"
+VERSION = "0.0.6"
 
 
 class VerifyVersionCommand(install):
@@ -47,8 +47,6 @@ setuptools.setup(
     install_requires=[
         "fastapi==0.61.1",
         "pydantic==1.7.2",
-        "joblib==0.17.0",
-        "scikit-learn==0.23.2",
         "tensorflow==2.2.0",
     ],
     cmdclass={"verify": VerifyVersionCommand},

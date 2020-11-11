@@ -2,24 +2,25 @@ import typing as t
 import os
 from abc import ABC, abstractmethod
 import pickle
-import shutil
 from uuid import uuid4
 
-from sklearn.base import BaseEstimator
-import joblib
 import tensorflow as tf
-from tensorflow.io.gfile import GFile
+from tensorflow.io import gfile
 
 
 def make_dir_if_needed(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not gfile.exists(path):
+        gfile.makedirs(path)
 
 
 class TypeSerializer(ABC):
     """
     When implemented, provides functionality for serializing instance
     of some type or group of types, for use with the `Serializer` class.
+    If you want your type to be able to be serialized to and from a
+    cloud storage platform, use this class's `open` method to open your
+    files, and pass the resulting file object to any serializer or
+    deserializer.
     """
 
     @property
@@ -48,6 +49,13 @@ class TypeSerializer(ABC):
     def is_serializable(self, obj: object) -> bool:
         pass
 
+    @staticmethod
+    def open(name: str, mode: str = "r") -> gfile.GFile:
+        # Replacement for builtin `open` method which supports
+        # cloud platform storage.
+        # Source: https://www.tensorflow.org/api_docs/python/tf/io/gfile/GFile
+        return gfile.GFile(name, mode)
+
     def resolve_path(self, path: str) -> str:
         """
         Adds this serializer's extension to `path` if it has one.
@@ -55,25 +63,12 @@ class TypeSerializer(ABC):
         return f"{path}.{self.ext}" if self.ext else path
 
 
-class SklearnSerializer(TypeSerializer):
-    type_name = "sklearn"
-    ext = "joblib"
-
-    def serialize(self, obj: object, path: str) -> None:
-        joblib.dump(obj, path)
-
-    def deserialize(self, path: str) -> object:
-        return joblib.load(path)
-
-    def is_serializable(self, obj: object) -> bool:
-        return isinstance(obj, BaseEstimator)
-
-
 class KerasSerializer(TypeSerializer):
     type_name = "keras"
     ext = None
 
     def serialize(self, obj: tf.keras.Model, path: str) -> None:
+        # Keras models support cloud storage out of the box.
         obj.save(path, save_format="tf")
 
     def deserialize(self, path: str) -> object:
@@ -132,17 +127,13 @@ class Serializer:
     """
     A replacement for the `pickle.dump` and `pickle.load` functions that allows
     custom serialization behavior for different data types (e.g. `keras` models,
-    `numpy` arrays, etc.). Includes support for serializing `sklearn` estimators
-    and `keras` models using their native protocols. You can use your own type serializers
-    and pass those in too. Just implement the `TypeSerializer` class and pass an instance
-    of your class to the constructor.
+    `numpy` arrays, etc.). Includes support for serializing `keras` models using their
+    native protocols. You can use your own type serializers and pass those in too. Just
+    implement the `TypeSerializer` class and pass an instance of it to the constructor.
     """
 
     def __init__(self, *custom_type_serializers: t.Tuple[TypeSerializer]) -> None:
-        self._type_serializers = [
-            SklearnSerializer(),
-            KerasSerializer(),
-        ] + list(custom_type_serializers)
+        self._type_serializers = [KerasSerializer()] + list(custom_type_serializers)
 
         if len(self._type_serializers) != len(
             {ser.type_name for ser in self._type_serializers}
@@ -152,15 +143,12 @@ class Serializer:
                 f" Currently registered names: {[ser.type_name for ser in self._type_serializers]}"
             )
 
-    def serialize(self, obj: object, path: str, delete_existing: bool = True) -> None:
+    def serialize(self, obj: object, path: str) -> None:
         """
         Serialize `obj` to `path`, a directory.
         """
-        if os.path.exists(path) and delete_existing:
-            shutil.rmtree(path)
-
         make_dir_if_needed(path)
-        with GFile(self._get_pkl_path(path), "wb") as f:
+        with gfile.GFile(self._get_pkl_path(path), "wb") as f:
             _CustomPickler(f, path, self._type_serializers).dump(obj)
 
     def deserialize(self, path: str, delete: bool = False) -> object:
@@ -170,11 +158,11 @@ class Serializer:
         `serialize` method. If `delete==True`, `path` will be
         deleted once the deserialization is finished.
         """
-        with GFile(self._get_pkl_path(path), "rb") as f:
+        with gfile.GFile(self._get_pkl_path(path), "rb") as f:
             obj = _CustomUnpickler(f, self._type_serializers).load()
 
         if delete:
-            shutil.rmtree(path)
+            gfile.rmtree(path)
 
         return obj
 

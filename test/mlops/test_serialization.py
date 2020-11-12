@@ -1,5 +1,6 @@
 from unittest import TestCase
 import inspect
+import shutil
 
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
@@ -155,6 +156,30 @@ class TestSerialization(TestCase):
         model.fit(self.X, tf.keras.utils.to_categorical(self.y))
         serializer.serialize(model, self.temp_dir)
         loaded_fit_model = serializer.deserialize(self.temp_dir, True)
+        self.assertEqual(model, loaded_fit_model)
+
+        # Predictions should be identical.
+        first_two = self.X[:2, :]
+        self.assertTrue(
+            (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
+        )
+
+    def test_can_load_moved_object(self) -> None:
+        move_location = "moved-dir"
+        model = TestKerasModel(n_units=10)
+        serializer = Serializer()
+        serializer.serialize(model, self.temp_dir)
+        shutil.move(self.temp_dir, move_location)
+
+        # Unfit models should be equal.
+        loaded_model = serializer.deserialize(move_location, True)
+        self.assertEqual(model, loaded_model)
+
+        # Fit models should be equal.
+        model.fit(self.X, tf.keras.utils.to_categorical(self.y))
+        serializer.serialize(model, self.temp_dir)
+        shutil.move(self.temp_dir, move_location)
+        loaded_fit_model = serializer.deserialize(move_location, True)
         self.assertEqual(model, loaded_fit_model)
 
         # Predictions should be identical.

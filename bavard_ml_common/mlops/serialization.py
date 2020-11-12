@@ -26,6 +26,11 @@ class TypeSerializer(ABC):
     @property
     @abstractmethod
     def type_name(self) -> str:
+        """
+        A name identifying the type this serializer serializers. Should be
+        unique among all the other `TypeSerializer`s used. Should also
+        contain only letters, numbers, and dashes.
+        """
         pass
 
     @property
@@ -85,27 +90,38 @@ class _CustomPickler(pickle.Pickler):
         super().__init__(pkl_file)
         self._assets_path = assets_path
         self._ser_map = {ser.type_name: ser for ser in type_serializers}
+        self._unique_id = 0
 
     def persistent_id(self, obj: object) -> t.Optional[tuple]:
         for ser in self._ser_map.values():
             if ser.is_serializable(obj):
                 # Treat `obj` as an external object and serialize it using our own
-                # methods. Our serializer's type name and the path it was serialized
+                # methods. Our serializer's type name and the relative path it was serialized
                 # to is returned and pickled, so the pickler will know how to find
                 # the object again and deserialize it.
-                ser_path = ser.resolve_path(
-                    os.path.join(self._assets_path, str(uuid4()))
-                )
-                ser.serialize(obj, ser_path)
-                return (ser.type_name, ser_path)
+                obj_id = f"{ser.type_name}-{self.get_unique_id()}"
+                obj_path = ser.resolve_path(obj_id)
+                ser.serialize(obj, os.path.join(self._assets_path, obj_path))
+                return (ser.type_name, obj_path)
 
         # No custom serializer for `obj`; pickle it using the normal way.
         return None
 
+    def get_unique_id(self) -> int:
+        """
+        A primary key generator.
+        """
+        id_ = self._unique_id
+        self._unique_id += 1
+        return id_
+
 
 class _CustomUnpickler(pickle.Unpickler):
-    def __init__(self, pkl_file, type_serializers: t.List[TypeSerializer]) -> None:
+    def __init__(
+        self, pkl_file, assets_path: str, type_serializers: t.List[TypeSerializer]
+    ) -> None:
         super().__init__(pkl_file)
+        self._assets_path = assets_path
         self._ser_map = {ser.type_name: ser for ser in type_serializers}
 
     def persistent_load(self, pid: tuple) -> object:
@@ -113,14 +129,14 @@ class _CustomUnpickler(pickle.Unpickler):
         This method is invoked whenever a persistent ID is encountered.
         Here, pid is the tuple returned by `ModelPickler`.
         """
-        ser_type_name, ser_path = pid
+        ser_type_name, obj_path = pid
         if ser_type_name not in self._ser_map:
             raise pickle.UnpicklingError(
                 "cannot deserialize: an object was found which was serialized using the "
                 f"{ser_type_name} serializer, and this unpickler does not have that serializer registered."
             )
         ser = self._ser_map[ser_type_name]
-        return ser.deserialize(ser_path)
+        return ser.deserialize(os.path.join(self._assets_path, obj_path))
 
 
 class Serializer:
@@ -159,7 +175,7 @@ class Serializer:
         deleted once the deserialization is finished.
         """
         with gfile.GFile(self._get_pkl_path(path), "rb") as f:
-            obj = _CustomUnpickler(f, self._type_serializers).load()
+            obj = _CustomUnpickler(f, path, self._type_serializers).load()
 
         if delete:
             gfile.rmtree(path)

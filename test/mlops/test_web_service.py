@@ -3,12 +3,14 @@ import typing as t
 import statistics
 
 from fastapi.testclient import TestClient
+from pydantic import BaseModel
 
-from bavard_ml_common.mlops.web_service import (
-    WebService,
-    endpoint,
-    MissingAnnotationError,
-)
+from bavard_ml_common.mlops.web_service import WebService, endpoint
+
+
+class FitInput(BaseModel):
+    X: t.List[t.List[float]]
+    y: t.List[float]
 
 
 class Clf(WebService):
@@ -19,7 +21,7 @@ class Clf(WebService):
     def fit(self, X, y) -> None:
         self._mode = statistics.mode(y)
 
-    @endpoint
+    @endpoint(methods=["POST"])
     def predict(self, X: t.List[t.List[float]]) -> dict:
         return {"predictions": [self._mode] * len(X)}
 
@@ -28,25 +30,16 @@ class ClfNoTypes(WebService):
     def fit(self, X, y) -> None:
         self._mode = statistics.mode(y)
 
-    @endpoint
+    @endpoint(methods=["POST"])
     def predict(self, X) -> dict:
         return {"predictions": [self._mode] * len(X)}
-
-
-class ClfMultipleArgs(WebService):
-    def fit(self, X, y) -> None:
-        self._mode = statistics.mode(y)
-
-    @endpoint
-    def predict(self, X: t.List[t.List[float]], pred: float) -> dict:
-        return {"predictions": [pred] * len(X)}
 
 
 class ClfMultipleEndpoints(WebService):
     def fit(self, X, y) -> None:
         self._mode = statistics.mode(y)
 
-    @endpoint
+    @endpoint(path="/my-custom-predict-path", methods=["POST"])
     def predict(self, X: t.List[t.List[float]]) -> dict:
         return {"predictions": [self._mode] * len(X)}
 
@@ -56,11 +49,11 @@ class ClfMultipleEndpoints(WebService):
 
 
 class ClfWithFitEndpoint(WebService):
-    @endpoint
-    def fit(self, X: t.List[t.List[float]], y: t.List[float]) -> None:
-        self._mode = statistics.mode(y)
+    @endpoint(methods=["POST"])
+    def fit(self, dataset: FitInput) -> None:
+        self._mode = statistics.mode(dataset.y)
 
-    @endpoint
+    @endpoint(methods=["POST"])
     def predict(self, X: t.List[t.List[float]]) -> dict:
         return {"predictions": [self._mode] * len(X)}
 
@@ -79,46 +72,29 @@ class TestWebService(TestCase):
         self.assertEqual(res.status_code, 200)
 
         # Can handle basic predict request.
-        res = client.post("/predict", json={"X": [[1], [1], [1]]})
+        res = client.post("/predict", json=[[1], [1], [1]])
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()["predictions"], [3, 3, 3])
 
         # Performs request body data validation
         res = client.post("/predict", json={"foo": [[1], [1], [1]]})
         self.assertEqual(res.status_code, 422)
-        self.assertEqual(res.json()["detail"][0]["msg"], "field required")
+        self.assertEqual(res.json()["detail"][0]["msg"], "value is not a valid list")
 
-        res = client.post("/predict", json={"X": [["a"], ["b"], ["c"]]})
+        res = client.post("/predict", json=[["a"], ["b"], ["c"]])
         self.assertEqual(res.status_code, 422)
         self.assertEqual(res.json()["detail"][0]["msg"], "value is not a valid float")
 
         # Knows how to handle unknown routes properly.
         self.assertEqual(client.get("/foo").status_code, 404)
 
-    def test_no_types(self) -> None:
-        model = ClfNoTypes()
-        model.fit(self.X, self.y)
-
-        # A `WebService` subclass needs to provide type annotations
-        # for all arguments of its `@endpoint` methods.
-        with self.assertRaises(MissingAnnotationError):
-            model.to_app()
-
-    def test_multiple_args(self) -> None:
-        # `WebService` should be able to handle `@endpoint`s with multiple
-        # arguments.
-        client = self._get_client(ClfMultipleArgs)
-        res = client.post("/predict", json={"X": [[1], [2]], "pred": 8})
-
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.json()["predictions"], [8.0, 8.0])
-
     def test_multiple_endpoints(self) -> None:
         # `WebService` should be able to create multiple endpoints
         # for a single class.
 
         client = self._get_client(ClfMultipleEndpoints)
-        res = client.post("/predict", json={"X": [[1], [1], [1]]})
+        # Can handle custom predict path.
+        res = client.post("/my-custom-predict-path", json=[[1], [1], [1]])
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()["predictions"], [3, 3, 3])
 
@@ -130,12 +106,12 @@ class TestWebService(TestCase):
         # The state of the model should be able to be altered even while
         # its a web service, if methods to do so are exposed in an endpoint.
         model = ClfWithFitEndpoint()
-        model.fit(self.X, self.y)
+        model.fit(FitInput(X=self.X, y=self.y))
         app = model.to_app()
         client = TestClient(app)
 
         # Can predict as normal
-        res = client.post("/predict", json={"X": [[1], [1], [1]]})
+        res = client.post("/predict", json=[[1], [1], [1]])
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()["predictions"], [3, 3, 3])
 
@@ -146,7 +122,7 @@ class TestWebService(TestCase):
         self.assertEqual(res.status_code, 200)
 
         # `/predict` now matches the new state of the model.
-        res = client.post("/predict", json={"X": [[1], [1], [1]]})
+        res = client.post("/predict", json=[[1], [1], [1]])
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()["predictions"], [2, 2, 2])
 

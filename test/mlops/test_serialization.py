@@ -5,8 +5,23 @@ import shutil
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 import tensorflow as tf
+from transformers import ReformerModelWithLMHead, ReformerTokenizer
 
-from bavard_ml_common.mlops.serialization import Serializer
+from bavard_ml_common.mlops.serialization import Serializer, TypeSerializer
+
+
+class ReformerModelSerializer(TypeSerializer):
+    type_name = "hf"
+    ext = None
+
+    def serialize(self, obj: ReformerModelWithLMHead, path: str) -> None:
+        obj.save_pretrained(path)
+
+    def deserialize(self, path: str) -> object:
+        return ReformerModelWithLMHead.from_pretrained(path)
+
+    def is_serializable(self, obj: object) -> bool:
+        return isinstance(obj, ReformerModelWithLMHead)
 
 
 class TestClass:
@@ -95,9 +110,22 @@ class TestKerasModel:
         return True
 
 
+class TestHfModel:
+    def __init__(self, max_length: int = 20):
+        # A very small model we can use for tests.
+        self.max_length = max_length
+        self._model = ReformerModelWithLMHead.from_pretrained("google/reformer-crime-and-punishment")
+        self._tokenizer = ReformerTokenizer.from_pretrained("google/reformer-crime-and-punishment")
+
+    def predict(self, x: str) -> str:
+        encoded_x = self._tokenizer.encode(x, return_tensors="pt")
+        generated = self._model.generate(encoded_x, max_length=self.max_length)[0]
+        return self._tokenizer.decode(generated)
+
+
 class TestSerialization(TestCase):
     def setUp(self) -> None:
-        self.temp_dir = "temp-data"
+        self.temp_file = "temp-data"
         iris = load_iris()
         self.X = iris.data
         self.y = iris.target
@@ -108,8 +136,8 @@ class TestSerialization(TestCase):
         data = {"foo": 1, "bar": None, "baz": [1, 2, 3], 0: "Hello"}
         serializer = Serializer()
 
-        serializer.serialize(data, self.temp_dir)
-        loaded_data = serializer.deserialize(self.temp_dir, True)
+        serializer.serialize(data, self.temp_file)
+        loaded_data = serializer.deserialize(self.temp_file, True)
 
         self.assertDictEqual(data, loaded_data)
 
@@ -117,8 +145,8 @@ class TestSerialization(TestCase):
         obj = TestClass(public_attr=1)
         serializer = Serializer()
 
-        serializer.serialize(obj, self.temp_dir)
-        loaded_obj = serializer.deserialize(self.temp_dir, True)
+        serializer.serialize(obj, self.temp_file)
+        loaded_obj = serializer.deserialize(self.temp_file, True)
 
         self.assertEqual(obj, loaded_obj)
 
@@ -127,14 +155,14 @@ class TestSerialization(TestCase):
         serializer = Serializer()
 
         # Unfit models should be equal.
-        serializer.serialize(model, self.temp_dir)
-        loaded_model = serializer.deserialize(self.temp_dir, True)
+        serializer.serialize(model, self.temp_file)
+        loaded_model = serializer.deserialize(self.temp_file, True)
         self.assertEqual(model, loaded_model)
 
         # Fit models should be equal.
         model.fit(self.X, self.y)
-        serializer.serialize(model, self.temp_dir)
-        loaded_fit_model = serializer.deserialize(self.temp_dir, True)
+        serializer.serialize(model, self.temp_file)
+        loaded_fit_model = serializer.deserialize(self.temp_file, True)
         self.assertEqual(model, loaded_fit_model)
 
         # Predictions should be identical.
@@ -148,14 +176,14 @@ class TestSerialization(TestCase):
         serializer = Serializer()
 
         # Unfit models should be equal.
-        serializer.serialize(model, self.temp_dir)
-        loaded_model = serializer.deserialize(self.temp_dir, True)
+        serializer.serialize(model, self.temp_file)
+        loaded_model = serializer.deserialize(self.temp_file, True)
         self.assertEqual(model, loaded_model)
 
         # Fit models should be equal.
         model.fit(self.X, tf.keras.utils.to_categorical(self.y))
-        serializer.serialize(model, self.temp_dir)
-        loaded_fit_model = serializer.deserialize(self.temp_dir, True)
+        serializer.serialize(model, self.temp_file)
+        loaded_fit_model = serializer.deserialize(self.temp_file, True)
         self.assertEqual(model, loaded_fit_model)
 
         # Predictions should be identical.
@@ -164,12 +192,23 @@ class TestSerialization(TestCase):
             (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
         )
 
+    def test_hf_serializer(self) -> None:
+        model = TestHfModel(max_length=25)
+        serializer = Serializer(ReformerModelSerializer())
+
+        # Should serialize and deserialize successfully.
+        serializer.serialize(model, self.temp_file)
+        loaded_model = serializer.deserialize(self.temp_file, True)
+
+        # Predictions should be identical.
+        self.assertEqual(model.predict("A few months later"), loaded_model.predict("A few months later"))
+
     def test_can_load_moved_object(self) -> None:
         move_location = "moved-dir"
         model = TestKerasModel(n_units=10)
         serializer = Serializer()
-        serializer.serialize(model, self.temp_dir)
-        shutil.move(self.temp_dir, move_location)
+        serializer.serialize(model, self.temp_file)
+        shutil.move(self.temp_file, move_location)
 
         # Unfit models should be equal.
         loaded_model = serializer.deserialize(move_location, True)
@@ -177,8 +216,8 @@ class TestSerialization(TestCase):
 
         # Fit models should be equal.
         model.fit(self.X, tf.keras.utils.to_categorical(self.y))
-        serializer.serialize(model, self.temp_dir)
-        shutil.move(self.temp_dir, move_location)
+        serializer.serialize(model, self.temp_file)
+        shutil.move(self.temp_file, move_location)
         loaded_fit_model = serializer.deserialize(move_location, True)
         self.assertEqual(model, loaded_fit_model)
 
@@ -188,5 +227,6 @@ class TestSerialization(TestCase):
             (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
         )
 
-    def _get_member_types(self, obj: object) -> dict:
+    @staticmethod
+    def _get_member_types(obj: object) -> dict:
         return {key: type(member) for key, member in inspect.getmembers(obj)}

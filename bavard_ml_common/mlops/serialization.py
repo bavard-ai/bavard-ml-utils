@@ -2,24 +2,19 @@ import typing as t
 import os
 from abc import ABC, abstractmethod
 import pickle
+import tarfile
+from tempfile import TemporaryDirectory, TemporaryFile
 
 import tensorflow as tf
-from tensorflow.io import gfile
 
-
-def make_dir_if_needed(path: str) -> None:
-    if not gfile.exists(path):
-        gfile.makedirs(path)
+from bavard_ml_common.mlops.gcs import GCSClient
 
 
 class TypeSerializer(ABC):
     """
     When implemented, provides functionality for serializing instance
-    of some type or group of types, for use with the `Serializer` class.
-    If you want your type to be able to be serialized to and from a
-    cloud storage platform, use this class's `open` method to open your
-    files, and pass the resulting file object to any serializer or
-    deserializer.
+    of some type or group of types, for use with the `Serializer` class. Provides
+    support for saving and loading from Google Cloud Storage.
     """
 
     @property
@@ -53,16 +48,8 @@ class TypeSerializer(ABC):
     def is_serializable(self, obj: object) -> bool:
         pass
 
-    @staticmethod
-    def open(name: str, mode: str = "r") -> gfile.GFile:
-        # Replacement for builtin `open` method which supports
-        # cloud platform storage.
-        # Source: https://www.tensorflow.org/api_docs/python/tf/io/gfile/GFile
-        return gfile.GFile(name, mode)
-
     def resolve_path(self, path: str) -> str:
-        """
-        Adds this serializer's extension to `path` if it has one.
+        """Adds this serializer's extension to `path` if it has one.
         """
         return f"{path}.{self.ext}" if self.ext else path
 
@@ -98,17 +85,16 @@ class _CustomPickler(pickle.Pickler):
                 # methods. Our serializer's type name and the relative path it was serialized
                 # to is returned and pickled, so the pickler will know how to find
                 # the object again and deserialize it.
-                obj_id = f"{ser.type_name}-{self.get_unique_id()}"
+                obj_id = f"{ser.type_name}-{self._get_unique_id()}"
                 obj_path = ser.resolve_path(obj_id)
                 ser.serialize(obj, os.path.join(self._assets_path, obj_path))
-                return (ser.type_name, obj_path)
+                return ser.type_name, obj_path
 
         # No custom serializer for `obj`; pickle it using the normal way.
         return None
 
-    def get_unique_id(self) -> int:
-        """
-        A primary key generator.
+    def _get_unique_id(self) -> int:
+        """A primary key generator.
         """
         id_ = self._unique_id
         self._unique_id += 1
@@ -126,7 +112,7 @@ class _CustomUnpickler(pickle.Unpickler):
     def persistent_load(self, pid: tuple) -> object:
         """
         This method is invoked whenever a persistent ID is encountered.
-        Here, pid is the tuple returned by `ModelPickler`.
+        Here, pid is the tuple returned by `_CustomPickler.persistent_id`.
         """
         ser_type_name, obj_path = pid
         if ser_type_name not in self._ser_map:
@@ -147,7 +133,9 @@ class Serializer:
     implement the `TypeSerializer` class and pass an instance of it to the constructor.
     """
 
-    def __init__(self, *custom_type_serializers: t.Tuple[TypeSerializer]) -> None:
+    _serialize_dir_name = "serialized-data"
+
+    def __init__(self, *custom_type_serializers: TypeSerializer) -> None:
         self._type_serializers = [KerasSerializer()] + list(custom_type_serializers)
 
         if len(self._type_serializers) != len(
@@ -159,12 +147,22 @@ class Serializer:
             )
 
     def serialize(self, obj: object, path: str) -> None:
+        """Serialize `obj` to `path`, a directory.
         """
-        Serialize `obj` to `path`, a directory.
-        """
-        make_dir_if_needed(path)
-        with gfile.GFile(self._get_pkl_path(path), "wb") as f:
-            _CustomPickler(f, path, self._type_serializers).dump(obj)
+        is_gcs_file = GCSClient.is_gcs_uri(path)
+        with TemporaryDirectory() as temp_dir:
+            # Serialize to a temporary directory.
+            with open(self._get_pkl_path(temp_dir), "wb") as f:
+                _CustomPickler(f, temp_dir, self._type_serializers).dump(obj)
+
+            # Tar the directory to the final destination.
+            if is_gcs_file:
+                # Tar to GCS.
+                GCSClient().to_gcs_tar(temp_dir, path)
+            else:
+                # Tar to local.
+                with tarfile.open(path, "w") as tar:
+                    tar.add(temp_dir, arcname=self._serialize_dir_name)
 
     def deserialize(self, path: str, delete: bool = False) -> object:
         """
@@ -173,13 +171,55 @@ class Serializer:
         `serialize` method. If `delete==True`, `path` will be
         deleted once the deserialization is finished.
         """
-        with gfile.GFile(self._get_pkl_path(path), "rb") as f:
-            obj = _CustomUnpickler(f, path, self._type_serializers).load()
+        is_gcs_file = GCSClient.is_gcs_uri(path)
+        with TemporaryFile() as temp_file:
+            if is_gcs_file:
+                GCSClient().download_blob_to_file(path, temp_file)
+                temp_file.seek(0)
+                local_file = temp_file
+            else:
+                local_file = path
 
+            with TemporaryDirectory() as temp_dir:
+                # Untar the data to a temporary directory.
+                with tarfile.open(local_file) as tar:
+                    tar.extractall(temp_dir)
+
+                # Deserialize the data
+                data_dir = os.path.join(temp_dir, self._serialize_dir_name)
+                with open(self._get_pkl_path(data_dir), "rb") as f:
+                    obj = _CustomUnpickler(f, data_dir, self._type_serializers).load()
+                # Delete the temporary directory.
+            # Delete the temporary file.
         if delete:
-            gfile.rmtree(path)
+            if is_gcs_file:
+                GCSClient().delete_blob(path)
+            else:
+                os.remove(path)
 
         return obj
 
-    def _get_pkl_path(self, path: str) -> str:
+    @staticmethod
+    def _get_pkl_path(path: str) -> str:
         return os.path.join(path, "data.pkl")
+
+
+class Persistent:
+    """Mixin class giving persistence behavior.
+    """
+    serializer = Serializer()
+
+    def to_dir(self, path: str) -> None:
+        """Serializes the full state of `self` to directory `path`.
+        """
+        self.serializer.serialize(self, path)
+
+    @classmethod
+    def from_dir(cls, path: str, delete: bool = False) -> "Persistent":
+        """
+        Deserializes a full instance of this class from directory `path`. If `delete==True`,
+        the persisted instance will be deleted once loaded into memory.
+        """
+        obj = cls.serializer.deserialize(path, delete)
+        assert isinstance(obj, cls)
+        return obj

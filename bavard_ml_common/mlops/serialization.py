@@ -1,13 +1,10 @@
+import shutil
 import typing as t
 import os
 from abc import ABC, abstractmethod
 import pickle
-import tarfile
-from tempfile import TemporaryDirectory, TemporaryFile
 
 import tensorflow as tf
-
-from bavard_ml_common.mlops.gcs import GCSClient
 
 
 class TypeSerializer(ABC):
@@ -133,8 +130,6 @@ class Serializer:
     implement the `TypeSerializer` class and pass an instance of it to the constructor.
     """
 
-    _serialize_dir_name = "serialized-data"
-
     def __init__(self, *custom_type_serializers: TypeSerializer) -> None:
         self._type_serializers = [KerasSerializer()] + list(custom_type_serializers)
 
@@ -146,23 +141,12 @@ class Serializer:
                 f" Currently registered names: {[ser.type_name for ser in self._type_serializers]}"
             )
 
-    def serialize(self, obj: object, path: str) -> None:
+    def serialize(self, obj: object, path: str, overwrite: bool = False) -> None:
         """Serialize `obj` to `path`, a directory.
         """
-        is_gcs_file = GCSClient.is_gcs_uri(path)
-        with TemporaryDirectory() as temp_dir:
-            # Serialize to a temporary directory.
-            with open(self._get_pkl_path(temp_dir), "wb") as f:
-                _CustomPickler(f, temp_dir, self._type_serializers).dump(obj)
-
-            # Tar the directory to the final destination.
-            if is_gcs_file:
-                # Tar to GCS.
-                GCSClient().to_gcs_tar(temp_dir, path)
-            else:
-                # Tar to local.
-                with tarfile.open(path, "w") as tar:
-                    tar.add(temp_dir, arcname=self._serialize_dir_name)
+        os.makedirs(path, exist_ok=overwrite)
+        with open(self._get_pkl_path(path), "wb") as f:
+            _CustomPickler(f, path, self._type_serializers).dump(obj)
 
     def deserialize(self, path: str, delete: bool = False) -> object:
         """
@@ -171,31 +155,12 @@ class Serializer:
         `serialize` method. If `delete==True`, `path` will be
         deleted once the deserialization is finished.
         """
-        is_gcs_file = GCSClient.is_gcs_uri(path)
-        with TemporaryFile() as temp_file:
-            if is_gcs_file:
-                GCSClient().download_blob_to_file(path, temp_file)
-                temp_file.seek(0)
-                local_file = temp_file
-            else:
-                local_file = path
+        # Deserialize the data
+        with open(self._get_pkl_path(path), "rb") as f:
+            obj = _CustomUnpickler(f, path, self._type_serializers).load()
 
-            with TemporaryDirectory() as temp_dir:
-                # Untar the data to a temporary directory.
-                with tarfile.open(local_file) as tar:
-                    tar.extractall(temp_dir)
-
-                # Deserialize the data
-                data_dir = os.path.join(temp_dir, self._serialize_dir_name)
-                with open(self._get_pkl_path(data_dir), "rb") as f:
-                    obj = _CustomUnpickler(f, data_dir, self._type_serializers).load()
-                # Delete the temporary directory.
-            # Delete the temporary file.
         if delete:
-            if is_gcs_file:
-                GCSClient().delete_blob(path)
-            else:
-                os.remove(path)
+            shutil.rmtree(path)
 
         return obj
 

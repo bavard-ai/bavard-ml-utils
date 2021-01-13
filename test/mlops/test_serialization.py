@@ -125,7 +125,7 @@ class TestHfModel:
 
 class TestSerialization(TestCase):
     def setUp(self) -> None:
-        self.temp_file = "temp-data"
+        self.temp_dir = "temp-data"
         iris = load_iris()
         self.X = iris.data
         self.y = iris.target
@@ -136,8 +136,8 @@ class TestSerialization(TestCase):
         data = {"foo": 1, "bar": None, "baz": [1, 2, 3], 0: "Hello"}
         serializer = Serializer()
 
-        serializer.serialize(data, self.temp_file)
-        loaded_data = serializer.deserialize(self.temp_file, True)
+        serializer.serialize(data, self.temp_dir)
+        loaded_data = serializer.deserialize(self.temp_dir, True)
 
         self.assertDictEqual(data, loaded_data)
 
@@ -145,8 +145,8 @@ class TestSerialization(TestCase):
         obj = TestClass(public_attr=1)
         serializer = Serializer()
 
-        serializer.serialize(obj, self.temp_file)
-        loaded_obj = serializer.deserialize(self.temp_file, True)
+        serializer.serialize(obj, self.temp_dir)
+        loaded_obj = serializer.deserialize(self.temp_dir, True)
 
         self.assertEqual(obj, loaded_obj)
 
@@ -155,14 +155,14 @@ class TestSerialization(TestCase):
         serializer = Serializer()
 
         # Unfit models should be equal.
-        serializer.serialize(model, self.temp_file)
-        loaded_model = serializer.deserialize(self.temp_file, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_model)
 
         # Fit models should be equal.
         model.fit(self.X, self.y)
-        serializer.serialize(model, self.temp_file)
-        loaded_fit_model = serializer.deserialize(self.temp_file, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_fit_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_fit_model)
 
         # Predictions should be identical.
@@ -176,14 +176,14 @@ class TestSerialization(TestCase):
         serializer = Serializer()
 
         # Unfit models should be equal.
-        serializer.serialize(model, self.temp_file)
-        loaded_model = serializer.deserialize(self.temp_file, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_model)
 
         # Fit models should be equal.
         model.fit(self.X, tf.keras.utils.to_categorical(self.y))
-        serializer.serialize(model, self.temp_file)
-        loaded_fit_model = serializer.deserialize(self.temp_file, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_fit_model = serializer.deserialize(self.temp_dir, True)
         self.assertEqual(model, loaded_fit_model)
 
         # Predictions should be identical.
@@ -197,8 +197,8 @@ class TestSerialization(TestCase):
         serializer = Serializer(ReformerModelSerializer())
 
         # Should serialize and deserialize successfully.
-        serializer.serialize(model, self.temp_file)
-        loaded_model = serializer.deserialize(self.temp_file, True)
+        serializer.serialize(model, self.temp_dir)
+        loaded_model = serializer.deserialize(self.temp_dir, True)
 
         # Predictions should be identical.
         self.assertEqual(model.predict("A few months later"), loaded_model.predict("A few months later"))
@@ -207,8 +207,8 @@ class TestSerialization(TestCase):
         move_location = "moved-dir"
         model = TestKerasModel(n_units=10)
         serializer = Serializer()
-        serializer.serialize(model, self.temp_file)
-        shutil.move(self.temp_file, move_location)
+        serializer.serialize(model, self.temp_dir)
+        shutil.move(self.temp_dir, move_location)
 
         # Unfit models should be equal.
         loaded_model = serializer.deserialize(move_location, True)
@@ -216,8 +216,8 @@ class TestSerialization(TestCase):
 
         # Fit models should be equal.
         model.fit(self.X, tf.keras.utils.to_categorical(self.y))
-        serializer.serialize(model, self.temp_file)
-        shutil.move(self.temp_file, move_location)
+        serializer.serialize(model, self.temp_dir)
+        shutil.move(self.temp_dir, move_location)
         loaded_fit_model = serializer.deserialize(move_location, True)
         self.assertEqual(model, loaded_fit_model)
 

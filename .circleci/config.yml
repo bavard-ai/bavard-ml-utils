@@ -13,7 +13,7 @@ references:
       - checkout
       - run:
           name: test
-          command: scripts/lint-and-test-service.sh
+          command: scripts/lint-and-test-package.sh
   publish: &publish
     <<: *default_config
     steps:

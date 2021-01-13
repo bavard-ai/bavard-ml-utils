@@ -13,13 +13,7 @@ references:
       - checkout
       - run:
           name: test
-          command: |
-            set -eo pipefail
-            pip3 install -r requirements-test.txt
-            flake8 . --count
-            pip3 install .
-            rm -r bavard_ml_common
-            python3 -m unittest --verbose
+          command: scripts/lint-and-test-service.sh
   publish: &publish
     <<: *default_config
     steps:

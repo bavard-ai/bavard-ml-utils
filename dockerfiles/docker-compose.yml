@@ -1,0 +1,18 @@
+version: '3.0'
+
+services:
+  gcs-emulator:
+    image: fsouza/fake-gcs-server
+    ports:
+      - 4443:4443
+    command: -scheme http
+
+  test:
+    build:
+      context: ..
+      dockerfile: dockerfiles/test.Dockerfile
+    image: bavard-ml-common:test
+    depends_on:
+      - gcs-emulator
+    environment:
+      STORAGE_EMULATOR_HOST: http://gcs-emulator:4443

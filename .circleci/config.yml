@@ -10,6 +10,8 @@ references:
   test: &test
     <<: *default_config
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - checkout
       - run:
           name: test

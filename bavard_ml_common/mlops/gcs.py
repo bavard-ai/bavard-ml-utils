@@ -14,7 +14,7 @@ class GCSClient(Client):
     """
 
     def __init__(self, **kwargs):
-        if kwargs["credentials"] is None and config.IS_TEST:
+        if kwargs.get("credentials") is None and config.IS_TEST:
             # Use anonymous credentials as the default in a test environment.
             # This allows emulators to be used.
             kwargs["credentials"] = AnonymousCredentials()

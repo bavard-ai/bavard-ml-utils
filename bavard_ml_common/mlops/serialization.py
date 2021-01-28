@@ -174,10 +174,10 @@ class Persistent:
     """
     serializer = Serializer()
 
-    def to_dir(self, path: str) -> None:
+    def to_dir(self, path: str, overwrite: bool = False) -> None:
         """Serializes the full state of `self` to directory `path`.
         """
-        self.serializer.serialize(self, path)
+        self.serializer.serialize(self, path, overwrite)
 
     @classmethod
     def from_dir(cls, path: str, delete: bool = False) -> "Persistent":

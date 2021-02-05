@@ -1,73 +1,19 @@
 # bavard-ml-common
 
-## Web Service Example
+A package of common code and utilities for machine learning and MLOps. Includes classes and methods for:
 
-```python
-import typing as t
+1. ML model serialization/deserialization
+2. Google Cloud Storage IO operations
+3. Converting an ML model into a runnable web service
+4. Common ML model evaluation utilities
+5. And more
 
-from sklearn.datasets import load_iris
-from sklearn.tree import DecisionTreeClassifier
-import uvicorn
+## Testing Locally
 
-from bavard_ml_common.mlops.web_service import endpoint, WebService 
-
-
-class DTModel(WebService):
-    """
-    A machine learning model that can turn into a web service.
-    """
-
-    def __init__(self) -> None:
-        self._dt = DecisionTreeClassifier()
-        self._fitted = False
-
-    def fit(self, X, y) -> None:
-        self._dt.fit(X, y)
-        self._fitted = True
-
-    # Type annotations are required for all `@endpoint` method arguments.
-    @endpoint
-    def predict(self, X: t.List[t.List[float]]):
-        assert self._fitted
-        return self._dt.predict(X).tolist()
-
-    @endpoint
-    def feature_importances(self) -> list:
-        assert self._fitted
-        return self._dt.feature_importances_.tolist()
-
-
-# Fit a ML model on a dataset.
-iris = load_iris()
-X = iris.data
-y = iris.target
-model = DTModel()
-model.fit(X, y)
-
-# Convert the model into a `fastapi` web service.
-api = model.to_app()
-
-# Run the web service.
-uvicorn.run(api, host="0.0.0.0", use_colors=True, log_level="debug")
-
-# The fitted model is now available at 0.0.0.0:8000/,
-# with a `/predict` endpoint and a `/feature_importances` endpoint.
-# API documentation for the fitted model is at a `/docs` endpoint.
-```
-
-## Developing Locally
-
-Install dependencies:
+With Docker and docker-compose installed, run:
 
 ```
-pip3 install -e .
-pip3 install -r requirements-test.txt
-```
-
-Then, run the tests using pytest:
-
-```
-python3 -m unittest
+./scripts/lint-and-test-package.sh
 ```
 
 ## Releasing The Package

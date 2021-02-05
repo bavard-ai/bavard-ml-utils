@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:2.2.0
+FROM tensorflow/tensorflow:2.2.2
 
 WORKDIR /app
 
@@ -12,4 +12,4 @@ RUN pip install . && rm -r bavard_ml_common
 
 COPY ./test ./test
 
-ENTRYPOINT ["python", "-m", "unittest"]
+ENTRYPOINT ["python", "-m", "unittest", "--verbose"]

@@ -24,6 +24,20 @@ class ReformerModelSerializer(TypeSerializer):
         return isinstance(obj, ReformerModelWithLMHead)
 
 
+class KerasSerializer(TypeSerializer):
+    type_name = "keras"
+    ext = None
+
+    def serialize(self, obj: tf.keras.Model, path: str) -> None:
+        obj.save(path, save_format="tf")
+
+    def deserialize(self, path: str) -> object:
+        return tf.keras.models.load_model(path)
+
+    def is_serializable(self, obj: object) -> bool:
+        return isinstance(obj, tf.keras.Model)
+
+
 class TestClass:
     class_attr = "class_attr"
 
@@ -173,7 +187,7 @@ class TestSerialization(TestCase):
 
     def test_keras_serializer(self) -> None:
         model = TestKerasModel(n_units=10)
-        serializer = Serializer()
+        serializer = Serializer(KerasSerializer())
 
         # Unfit models should be equal.
         serializer.serialize(model, self.temp_dir)
@@ -206,7 +220,7 @@ class TestSerialization(TestCase):
     def test_can_load_moved_object(self) -> None:
         move_location = "moved-dir"
         model = TestKerasModel(n_units=10)
-        serializer = Serializer()
+        serializer = Serializer(KerasSerializer())
         serializer.serialize(model, self.temp_dir)
         shutil.move(self.temp_dir, move_location)
 

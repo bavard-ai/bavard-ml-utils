@@ -4,14 +4,11 @@ import os
 from abc import ABC, abstractmethod
 import pickle
 
-import tensorflow as tf
-
 
 class TypeSerializer(ABC):
     """
     When implemented, provides functionality for serializing instance
-    of some type or group of types, for use with the `Serializer` class. Provides
-    support for saving and loading from Google Cloud Storage.
+    of some type or group of types, for use with the `Serializer` class.
     """
 
     @property
@@ -51,24 +48,9 @@ class TypeSerializer(ABC):
         return f"{path}.{self.ext}" if self.ext else path
 
 
-class KerasSerializer(TypeSerializer):
-    type_name = "keras"
-    ext = None
-
-    def serialize(self, obj: tf.keras.Model, path: str) -> None:
-        # Keras models support cloud storage out of the box.
-        obj.save(path, save_format="tf")
-
-    def deserialize(self, path: str) -> object:
-        return tf.keras.models.load_model(path)
-
-    def is_serializable(self, obj: object) -> bool:
-        return isinstance(obj, tf.keras.Model)
-
-
 class _CustomPickler(pickle.Pickler):
     def __init__(
-        self, pkl_file, assets_path: str, type_serializers: t.List[TypeSerializer]
+        self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]
     ) -> None:
         super().__init__(pkl_file)
         self._assets_path = assets_path
@@ -100,7 +82,7 @@ class _CustomPickler(pickle.Pickler):
 
 class _CustomUnpickler(pickle.Unpickler):
     def __init__(
-        self, pkl_file, assets_path: str, type_serializers: t.List[TypeSerializer]
+        self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]
     ) -> None:
         super().__init__(pkl_file)
         self._assets_path = assets_path
@@ -131,7 +113,7 @@ class Serializer:
     """
 
     def __init__(self, *custom_type_serializers: TypeSerializer) -> None:
-        self._type_serializers = [KerasSerializer()] + list(custom_type_serializers)
+        self._type_serializers = custom_type_serializers
 
         if len(self._type_serializers) != len(
             {ser.type_name for ser in self._type_serializers}

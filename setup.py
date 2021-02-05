@@ -47,7 +47,6 @@ setuptools.setup(
     install_requires=[
         "fastapi==0.61.1",
         "pydantic==1.7.2",
-        "tensorflow==2.2.0",
         "google-cloud-storage==1.35.0",
         "google-cloud-pubsub==2.1.0",
         "protobuf==3.12.0",  # needed b/c of: https://github.com/googleapis/python-bigquery/issues/305

@@ -11,7 +11,7 @@ flake8 bavard_ml_common test --count
 
 # Run the unit tests
 
-# Needed for GCS emulator to work, see:
+# Needed for emulators to work, see:
 # https://github.com/openssl/openssl/issues/5845#issuecomment-378601109
 export LD_LIBRARY_PATH=/usr/local/lib
 

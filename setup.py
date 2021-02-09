@@ -31,7 +31,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="bavard-ml-common",
     version=VERSION,
-    author="Bavard AI, LLC",
+    author="Bavard AI, Inc.",
     author_email="dev@bavard.ai",
     description="Machine learning model utilities",
     long_description=long_description,
@@ -49,7 +49,6 @@ setuptools.setup(
         "pydantic==1.7.3",
         "google-cloud-storage==1.35.1",
         "google-cloud-pubsub==2.2.0",
-        "protobuf==3.12.0",  # needed b/c of: https://github.com/googleapis/python-bigquery/issues/305
         "numpy>=1.15.4",
         "scikit-learn>=0.20.3"
     ],

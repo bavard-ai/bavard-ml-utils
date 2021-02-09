@@ -56,3 +56,17 @@ def aggregate_dicts(dicts: t.Sequence, agg: str) -> dict:
         else:
             result[key] = aggs[agg](values, axis=0)
     return result
+
+
+def onehot(a: np.ndarray, axis=-1, dtype=np.float32) -> np.ndarray:
+    """A pure numpy implementation of the one-hot encoding function for arrays of arbitrary dimensionality.
+    Source: https://stackoverflow.com/a/63840293
+    """
+    pos = axis if axis >= 0 else a.ndim + axis + 1
+    shape = list(a.shape)
+    shape.insert(pos, a.max() + 1)
+    out = np.zeros(shape, dtype)
+    ind = list(np.indices(a.shape, sparse=True))
+    ind.insert(pos, a)
+    out[tuple(ind)] = True
+    return out

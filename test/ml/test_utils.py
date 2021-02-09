@@ -1,7 +1,10 @@
 from unittest import TestCase
 from collections import defaultdict
 
-from bavard_ml_common.ml.utils import make_stratified_folds
+import numpy as np
+import tensorflow as tf
+
+from bavard_ml_common.ml.utils import make_stratified_folds, onehot
 
 
 class TestUtils(TestCase):
@@ -17,3 +20,14 @@ class TestUtils(TestCase):
         # Check each instance occurs once and only once in a fold.
         for item in data:
             self.assertEqual(data_counts[item], 1)
+
+    def test_onehot(self):
+        labels = np.arange(6)
+        depth = labels.max() + 1
+        np.random.shuffle(labels)
+
+        self.assertTrue(np.all(onehot(labels) == tf.one_hot(labels, depth).numpy()))
+        labels = labels.reshape((1, 6))
+        self.assertTrue(np.all(onehot(labels) == tf.one_hot(labels, depth).numpy()))
+        labels = labels.reshape((2, 3))
+        self.assertTrue(np.all(onehot(labels) == tf.one_hot(labels, depth).numpy()))

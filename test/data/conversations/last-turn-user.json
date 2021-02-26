@@ -1,0 +1,444 @@
+{
+  "turns": [
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Yes, I am looking for a nice place to stay while in town. The hotel doesn't need to include internet but I'd like it to include free parking if it's available.",
+        "intent": "Hotel-Inform",
+        "tags": []
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-internet",
+            "value": "dontcare"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "There are 29 places matching that, do you have any other preferences?",
+        "name": "Hotel-Inform"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Yes, I would prefer the moderate price range please.",
+        "intent": "Hotel-Inform",
+        "tags": [
+          {
+            "tagType": "pricerange",
+            "value": "moderate"
+          }
+        ]
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-internet",
+            "value": "dontcare"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "That narrows your choice to 14. Is there a type of hotel or location you prefer?",
+        "name": "Hotel-Inform"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "I am looking for one with a moderate price range possibly with free Wifi",
+        "intent": "Hotel-Inform",
+        "tags": [
+          {
+            "tagType": "pricerange",
+            "value": "moderate"
+          }
+        ]
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-internet",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "The Ashley Hotel is in the north end and has a 2 star rating. Would you be interested in staying there?",
+        "name": "Hotel-Inform"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Yes,can you book me a reservation ?",
+        "intent": "Hotel-Inform",
+        "tags": []
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-internet",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-name",
+            "value": "ashley hotel"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Of course! When would you like to stay?",
+        "name": "Booking-Request"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "We will be there wednesday, for 4 nights. I need a reservation for 7 people.",
+        "intent": "Hotel-Inform",
+        "tags": [
+          {
+            "tagType": "bookstay",
+            "value": "4"
+          },
+          {
+            "tagType": "bookday",
+            "value": "wednesday"
+          },
+          {
+            "tagType": "bookpeople",
+            "value": "7"
+          }
+        ]
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-bookday",
+            "value": "wednesday"
+          },
+          {
+            "name": "hotel-bookpeople",
+            "value": "7"
+          },
+          {
+            "name": "hotel-bookstay",
+            "value": "4"
+          },
+          {
+            "name": "hotel-internet",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-name",
+            "value": "ashley hotel"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          },
+          {
+            "name": "hotel-type",
+            "value": "hotel"
+          },
+          {
+            "name": "nomatches",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "The Ashley is unavailable. I can book you at Lovell lodge though.",
+        "name": "Booking-NoBook"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Okay let's try that and please get me a reference number.",
+        "intent": "Hotel-Request",
+        "tags": []
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-bookday",
+            "value": "wednesday"
+          },
+          {
+            "name": "hotel-bookpeople",
+            "value": "7"
+          },
+          {
+            "name": "hotel-bookstay",
+            "value": "4"
+          },
+          {
+            "name": "hotel-internet",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-name",
+            "value": "lovell lodge"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          },
+          {
+            "name": "hotel-type",
+            "value": "hotel"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Your booking was successful and your Reference number is 6Y6KP7A2 . Is there anything else I can help you with today?",
+        "name": "general-reqmore"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "I need the address of the hotel, please.",
+        "intent": "Hotel-Inform",
+        "tags": []
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-bookday",
+            "value": "wednesday"
+          },
+          {
+            "name": "hotel-bookpeople",
+            "value": "7"
+          },
+          {
+            "name": "hotel-bookstay",
+            "value": "4"
+          },
+          {
+            "name": "hotel-internet",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-name",
+            "value": "lovell lodge"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          },
+          {
+            "name": "hotel-type",
+            "value": "hotel"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Their address is 365 milton road. Would you like their phone number as well?",
+        "name": "Hotel-Inform"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "Yes, please. That would be great in case I get lost.",
+        "intent": "Hotel-Request",
+        "tags": []
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-bookday",
+            "value": "wednesday"
+          },
+          {
+            "name": "hotel-bookpeople",
+            "value": "7"
+          },
+          {
+            "name": "hotel-bookstay",
+            "value": "4"
+          },
+          {
+            "name": "hotel-internet",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-name",
+            "value": "lovell lodge"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          },
+          {
+            "name": "hotel-type",
+            "value": "hotel"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "AGENT",
+      "agentAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "The phone number is 01223425478.",
+        "name": "Hotel-Inform"
+      },
+      "state": {
+        "slotValues": []
+      }
+    },
+    {
+      "actor": "USER",
+      "userAction": {
+        "type": "UTTERANCE_ACTION",
+        "utterance": "That's all I need. Thank you very much for your help!",
+        "intent": "general-thank",
+        "tags": []
+      },
+      "state": {
+        "slotValues": [
+          {
+            "name": "hotel-bookday",
+            "value": "wednesday"
+          },
+          {
+            "name": "hotel-bookpeople",
+            "value": "7"
+          },
+          {
+            "name": "hotel-bookstay",
+            "value": "4"
+          },
+          {
+            "name": "hotel-internet",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-name",
+            "value": "lovell lodge"
+          },
+          {
+            "name": "hotel-parking",
+            "value": "yes"
+          },
+          {
+            "name": "hotel-pricerange",
+            "value": "moderate"
+          },
+          {
+            "name": "hotel-type",
+            "value": "hotel"
+          }
+        ]
+      }
+    }
+  ]
+}

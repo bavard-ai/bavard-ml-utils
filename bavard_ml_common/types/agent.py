@@ -25,6 +25,7 @@ class AgentActionDefinition(BaseModel):
 
 
 class AgentConfig(BaseModel):
+    uname: str
     actions: t.List[AgentActionDefinition]
     intents: t.List[Intent]
     tagTypes: t.List[str]
@@ -62,8 +63,8 @@ class Agent(BaseModel):
             shuffle=shuffle,
         )
         return (
-            self.build_from_convs(convs_a),
-            self.build_from_convs(convs_b),
+            self.build_from_convs(convs_a, f"{self.config.uname}-a"),
+            self.build_from_convs(convs_b, f"{self.config.uname}-b"),
         )
 
     def make_validation_pairs(self) -> t.Tuple[t.List[Conversation], t.List[str]]:
@@ -114,10 +115,10 @@ class Agent(BaseModel):
                 )
             )
 
-        return self.build_from_convs(all_convs)
+        return self.build_from_convs(all_convs, self.config.uname)
 
     @classmethod
-    def build_from_convs(cls, conversations: t.List[Conversation]) -> "Agent":
+    def build_from_convs(cls, conversations: t.List[Conversation], uname: str) -> "Agent":
         """Builds an agent from conversations only.
         """
 
@@ -140,6 +141,7 @@ class Agent(BaseModel):
 
         return cls(
             config=AgentConfig(
+                uname=uname,
                 actions=[AgentActionDefinition(name=action) for action in actions],
                 intents=[Intent(name=intent) for intent in intents],
                 tagTypes=list(tag_types),
@@ -169,7 +171,8 @@ class Agent(BaseModel):
         """
         convs = list(chain.from_iterable(agent.trainingConversations for agent in agents))
         convs = [c.conversation for c in convs]
-        return cls.build_from_convs(convs)
+        unames = [a.config.uname for a in agents]
+        return cls.build_from_convs(convs, "+".join(unames))
 
     def to_folds(self, nfolds: int, *, shuffle: bool = True, seed: int = 0) -> t.Tuple["Agent"]:
         """
@@ -181,4 +184,4 @@ class Agent(BaseModel):
         convs = [c.conversation for c in convs]
         action_labels = [c.turns[-1].agentAction.name for c in convs]
         folds = make_stratified_folds(convs, action_labels, nfolds, shuffle, seed)
-        return tuple(self.build_from_convs(convs) for convs in folds)
+        return tuple(self.build_from_convs(convs, f"{self.config.uname}-{i}") for i, convs in enumerate(folds))

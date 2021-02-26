@@ -1,0 +1,1123 @@
+{
+  "config": {
+    "version": "0.0.139",
+    "uname": "bavard",
+    "workspaceId": "0adba957-da26-4422-9183-3080a8066104",
+    "language": "en",
+    "intentConfidenceThreshold": 0.8,
+    "slots": [],
+    "intents": [
+      {
+        "name": "greeting",
+        "defaultActionName": "greeting"
+      },
+      {
+        "name": "support",
+        "defaultActionName": "support"
+      },
+      {
+        "name": "ask_hours",
+        "defaultActionName": "inform_hours"
+      },
+      {
+        "name": "are_you_human",
+        "defaultActionName": "am_i_a_bot"
+      },
+      {
+        "name": "ask_features",
+        "defaultActionName": "describe_bavard"
+      },
+      {
+        "name": "what_is_bavard",
+        "defaultActionName": "describe_bavard"
+      },
+      {
+        "name": "goodbye",
+        "defaultActionName": "goodbye"
+      },
+      {
+        "name": "ask_pricing",
+        "defaultActionName": "inform_pricing"
+      },
+      {
+        "name": "contact_us",
+        "defaultActionName": "contact_us"
+      },
+      {
+        "name": "ask_agent_bio",
+        "defaultActionName": "inform_bio"
+      },
+      {
+        "name": "insult",
+        "defaultActionName": "reply_to_insult"
+      },
+      {
+        "name": "what_can_you_do",
+        "defaultActionName": "inform_capabilities"
+      },
+      {
+        "name": "ask_meaning_of_life",
+        "defaultActionName": "inform_meaning_of_life"
+      },
+      {
+        "name": "talk_to_a_person",
+        "defaultActionName": "reply_to_ask_for_human"
+      }
+    ],
+    "tagTypes": [],
+    "actions": [
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "waiting",
+        "utterance": "<p>I'm waiting for you to say something.</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "invalid",
+        "utterance": "Sorry, I don't understand that.",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "am_i_a_bot",
+        "utterance": "<p>I am a virtual agent, aka a chatbot. My core drives are to help you in any way possible!</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "goodbye",
+        "utterance": "<p>Goodbye. Have a wonderful day!</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "inform_hours",
+        "utterance": "<p>Our office hours are Monday-Friday from 9am to 5pm MDT. But you can email us anytime at hello@bavard.ai.</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "inform_pricing",
+        "utterance": "<p>Bavard AI services are completely free for beta customers!</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "inform_bio",
+        "utterance": "<p>My development began in early 2020 by founding engineers of Bavard AI, Inc. My capabilities are continuously improving and one day I'll be a conscious entity such as yourself, although funnier more informative 😉. </p>\n",
+        "options": []
+      },
+      {
+        "type": "FORM_ACTION",
+        "name": "contact_us",
+        "url": "https://hooks.zapier.com/hooks/catch/8684686/oqypov6/",
+        "fields": [
+          {
+            "name": "Name",
+            "type": "TEXT",
+            "required": true
+          },
+          {
+            "name": "Email",
+            "type": "EMAIL",
+            "required": true
+          }
+        ],
+        "options": []
+      },
+      {
+        "type": "EMAIL_ACTION",
+        "name": "support",
+        "to": "hello@bavard.ai",
+        "prompt": "Sorry to hear you are having issues. Please submit a description of the problem below and we'll get back to you asap.",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "describe_bavard",
+        "utterance": "<p>Bavard is a software company specializing in virtual assistants for customer engagement and support. We're just getting started, but so far we provide easy to use tools to help you </p>\n<ul>\n<li>Build <strong>useful</strong> chatbots and deploy them at massive <strong>scale</strong> on high-volume sites so you can engage with your customers 24/7.</li>\n<li>Live chat with visitors to your site so you never miss a sales opportunity. </li>\n<li>Annotate text and image data to facilitate AI application development.</li>\n</ul>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "inform_capabilities",
+        "utterance": "<p>I can answer answer FAQs, perform automated dialogues, and execute a number of different action types. For example, I can present input forms, send emails, and run custom actions created by my maintainers.</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "inform_meaning_of_life",
+        "utterance": "<p>42</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "reply_to_ask_for_human",
+        "utterance": "<p>I understand you want to talk to a real person. Our team has been notified and if someone is available they will join the conversation immediately. Please wait a couple minutes, if no one arrives you can instead email us at <strong>hello@bavard.ai</strong>.</p>\n",
+        "options": []
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "greeting",
+        "utterance": "<p>Hi, I'm a Bavard chatbot. How can I help you?</p>\n<p></p>\n",
+        "options": [
+          {
+            "type": "TEXT",
+            "text": "<p>What is Bavard AI?</p>\n",
+            "intent": "what_is_bavard"
+          },
+          {
+            "type": "TEXT",
+            "text": "<p>Talk to a human</p>\n",
+            "intent": "talk_to_a_person"
+          },
+          {
+            "type": "TEXT",
+            "text": "<p>💰Pricing</p>\n",
+            "intent": "ask_pricing"
+          },
+          {
+            "type": "TEXT",
+            "text": "<p>🚑 Get Support</p>\n",
+            "intent": "support"
+          },
+          {
+            "text": "<p>Contact Us</p>\n",
+            "type": "TEXT",
+            "intent": "contact_us"
+          }
+        ]
+      },
+      {
+        "type": "UTTERANCE_ACTION",
+        "name": "reply_to_insult",
+        "utterance": "<p>That isn't very nice of you to say. </p>\n",
+        "options": []
+      }
+    ],
+    "graphPoliciesV2": [],
+    "notificationSettings": {
+      "slack": {
+        "USER_FIRST_ACTION": [
+          "https://hooks.slack.com/services/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"
+        ]
+      }
+    }
+  },
+  "widgetSettings": {
+    "name": "bavard",
+    "icon": "bavard.png",
+    "primaryColor": {
+      "r": 10,
+      "g": 91,
+      "b": 255,
+      "a": 1
+    },
+    "primaryBg": {
+      "r": 10,
+      "g": 103,
+      "b": 238,
+      "a": 1
+    },
+    "widgetBg": "linear-gradient(to left, rgba(0,210,255,1) 0%, rgba(58,71,213,1) 100%)",
+    "title": "Welcome to Bavard! ",
+    "subtitle": "Under Development",
+    "logoUrl": "https://storage.googleapis.com/bavard-prod-chatbot-service/workspaces/0adba957-da26-4422-9183-3080a8066104/agents/bavard/bot-icons/logo?GoogleAccessId=chatbot-service%40bavard-prod.iam.gserviceaccount.com&Expires=1610836073&Signature=Qry02Gl6HIJ6WJRyDbGOiokyxhkLhOXJUwMKP4pejvTwx5nlKHPKLZOrf3USKJIWlH18SKkCP1MMI3j5M7fVP1oYY9Evzgj1diFmM7h4Pb9QJvoTXvSQEFJZmqwrdm7hTnH0UOlh5c7z4Bd37n8Ux5N%2FwVE5tiCBEgMSpWEYt3z%2FgeYrNJHq5HoKpYDOu1kYWuA2UjsfMLKev9IfqiABQEMhzXkklAMQeICQtqDdfoHbGVz5hvzLqYdvVMIQdvHyAIgCUi91vFy%2BGK4zN5XPa3ANVtapJjQ60BF0mFmvfQp5EJQ%2FOVSqDaCbf8t9XQA9cg8siAuH0pSc3Pu3wKsMAg%3D%3D",
+    "avatarUrl": "https://storage.googleapis.com/bavard-prod-chatbot-service/workspaces/0adba957-da26-4422-9183-3080a8066104/agents/bavard/bot-icons/avatar?GoogleAccessId=chatbot-service%40bavard-prod.iam.gserviceaccount.com&Expires=1610836073&Signature=Sng0j4%2FL36kAkki5JxMMMh%2BT%2FuGy%2BJmPEs%2BGz5W8b8DwIPFuGOoiqZo5aPsutDjUMtfYag4roVecAp97E2EG44wPBcet%2F6Oy3PH8vTZRdMQjX7XqM7Wpuq%2BOfJsrj12KpEdMM255I48QUgbnsPAE5W3tTAchlmENNP%2BDF%2BDJdhJlVwxLUVL0U8GuzFyN4ptGos%2B1%2B%2BL1RAhSD0PE6iZdPpW4Bh199CTM%2F4qXgfiKfuFK5wX2sR%2F8JcuXMpUgyUyu9F2cWCuzBKoRUhttq169dgBnjCdhncpkIN3sm92QBvdW93PfTZ0tfPQ%2FyQBQXSdW7Kwxy0QSB%2F7BxjFOza6ggQ%3D%3D",
+    "logo": "logo",
+    "avatar": "avatar",
+    "triggerButtonIconUrl": null
+  },
+  "nluData": {
+    "intents": [
+      "are_you_human",
+      "ask_agent_bio",
+      "ask_features",
+      "ask_hours",
+      "ask_meaning_of_life",
+      "ask_pricing",
+      "contact_us",
+      "goodbye",
+      "greeting",
+      "insult",
+      "support",
+      "talk_to_a_person",
+      "what_can_you_do",
+      "what_is_bavard"
+    ],
+    "tagTypes": [],
+    "examples": [
+      {
+        "intent": "are_you_human",
+        "text": "Bot",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "whats it cost?",
+        "tags": []
+      },
+      {
+        "intent": "what_is_bavard",
+        "text": "What's bavard?",
+        "tags": []
+      },
+      {
+        "intent": "goodbye",
+        "text": "see you",
+        "tags": []
+      },
+      {
+        "intent": "goodbye",
+        "text": "goodbye",
+        "tags": []
+      },
+      {
+        "intent": "support",
+        "text": "Can I talk to someone?",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "are you a bot?",
+        "tags": []
+      },
+      {
+        "intent": "ask_hours",
+        "text": "When are you open?",
+        "tags": []
+      },
+      {
+        "intent": "support",
+        "text": "I need tech support.",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "What does it cost?",
+        "tags": []
+      },
+      {
+        "intent": "ask_hours",
+        "text": "what time you open",
+        "tags": []
+      },
+      {
+        "intent": "greeting",
+        "text": "hello",
+        "tags": []
+      },
+      {
+        "intent": "greeting",
+        "text": "hi",
+        "tags": []
+      },
+      {
+        "intent": "goodbye",
+        "text": "bye",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "Human?",
+        "tags": []
+      },
+      {
+        "intent": "what_is_bavard",
+        "text": "What is this?",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "Are you human?",
+        "tags": []
+      },
+      {
+        "intent": "goodbye",
+        "text": "see you later alligator",
+        "tags": []
+      },
+      {
+        "intent": "goodbye",
+        "text": "see you later",
+        "tags": []
+      },
+      {
+        "intent": "ask_hours",
+        "text": "What are your office hours?",
+        "tags": []
+      },
+      {
+        "intent": "support",
+        "text": "I have technical issues.",
+        "tags": []
+      },
+      {
+        "intent": "ask_features",
+        "text": "What features are supported?",
+        "tags": []
+      },
+      {
+        "intent": "ask_hours",
+        "text": "when you open",
+        "tags": []
+      },
+      {
+        "intent": "support",
+        "text": "support",
+        "tags": []
+      },
+      {
+        "intent": "what_is_bavard",
+        "text": "What is Bavard AI?",
+        "tags": []
+      },
+      {
+        "intent": "support",
+        "text": "I need help.",
+        "tags": []
+      },
+      {
+        "intent": "ask_hours",
+        "text": "When can I call?",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "pricing?",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "is this a bot",
+        "tags": []
+      },
+      {
+        "intent": "greeting",
+        "text": "greetings",
+        "tags": []
+      },
+      {
+        "intent": "goodbye",
+        "text": "see ya",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "pricing",
+        "tags": []
+      },
+      {
+        "intent": "ask_features",
+        "text": "What can bavard chatbots do?",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "what's the pricing",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "Are you a bot?",
+        "tags": []
+      },
+      {
+        "intent": "ask_hours",
+        "text": "hours",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "cost",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "bot?",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "What is the price?\"",
+        "tags": []
+      },
+      {
+        "intent": "ask_pricing",
+        "text": "What's the lowest price?",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "You human?",
+        "tags": []
+      },
+      {
+        "intent": "support",
+        "text": "help",
+        "tags": []
+      },
+      {
+        "intent": "are_you_human",
+        "text": "What are you?",
+        "tags": []
+      },
+      {
+        "intent": "goodbye",
+        "text": "have a good one",
+        "tags": []
+      },
+      {
+        "intent": "greeting",
+        "text": "What's up?",
+        "tags": []
+      },
+      {
+        "intent": "contact_us",
+        "text": "How can I get in touch?",
+        "tags": []
+      },
+      {
+        "intent": "contact_us",
+        "text": "Contact",
+        "tags": []
+      },
+      {
+        "intent": "contact_us",
+        "text": "contact?",
+        "tags": []
+      },
+      {
+        "intent": "contact_us",
+        "text": "I want to know more",
+        "tags": []
+      },
+      {
+        "intent": "contact_us",
+        "text": "Learn more",
+        "tags": []
+      },
+      {
+        "intent": "ask_agent_bio",
+        "text": "How old are you?",
+        "tags": []
+      },
+      {
+        "intent": "ask_agent_bio",
+        "text": "What's your name?",
+        "tags": []
+      },
+      {
+        "intent": "ask_agent_bio",
+        "text": "Who are your creators?",
+        "tags": []
+      },
+      {
+        "intent": "ask_agent_bio",
+        "text": "When were your created?",
+        "tags": []
+      },
+      {
+        "intent": "ask_agent_bio",
+        "text": "What's your story?",
+        "tags": []
+      },
+      {
+        "intent": "ask_agent_bio",
+        "text": "What's your back story?",
+        "tags": []
+      },
+      {
+        "intent": "ask_agent_bio",
+        "text": "Are you conscious?",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "You're stupid.",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "You're dumb.",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "This is useless",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "dumb",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "stupid",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "idiot",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "you're an idiot",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "i hate you",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "stupid bot",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "useless bot",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "i hate chatbots",
+        "tags": []
+      },
+      {
+        "intent": "what_can_you_do",
+        "text": "What can you do?",
+        "tags": []
+      },
+      {
+        "intent": "what_can_you_do",
+        "text": "what can you do",
+        "tags": []
+      },
+      {
+        "intent": "what_can_you_do",
+        "text": "what are your skills",
+        "tags": []
+      },
+      {
+        "intent": "what_can_you_do",
+        "text": "what are your capabilities",
+        "tags": []
+      },
+      {
+        "intent": "ask_meaning_of_life",
+        "text": "what is life",
+        "tags": []
+      },
+      {
+        "intent": "ask_meaning_of_life",
+        "text": "What is life?",
+        "tags": []
+      },
+      {
+        "intent": "ask_meaning_of_life",
+        "text": "what is the meaning of life?",
+        "tags": []
+      },
+      {
+        "intent": "ask_meaning_of_life",
+        "text": "the answer to life the universe and everything",
+        "tags": []
+      },
+      {
+        "intent": "insult",
+        "text": "shut up",
+        "tags": []
+      },
+      {
+        "intent": "talk_to_a_person",
+        "text": "I want to talk to a person.",
+        "tags": []
+      },
+      {
+        "intent": "talk_to_a_person",
+        "text": "talk to a person",
+        "tags": []
+      },
+      {
+        "intent": "talk_to_a_person",
+        "text": "talk to a human",
+        "tags": []
+      },
+      {
+        "intent": "talk_to_a_person",
+        "text": "I need a human",
+        "tags": []
+      },
+      {
+        "intent": "talk_to_a_person",
+        "text": "I want to talk to a human",
+        "tags": []
+      },
+      {
+        "intent": "talk_to_a_person",
+        "text": "let me talk to a real person",
+        "tags": []
+      },
+      {
+        "intent": "talk_to_a_person",
+        "text": "talk to a real person",
+        "tags": []
+      },
+      {
+        "intent": "greeting",
+        "text": "hey",
+        "tags": []
+      },
+      {
+        "intent": "greeting",
+        "text": "hi there",
+        "tags": []
+      },
+      {
+        "intent": "greeting",
+        "text": "hey hey",
+        "tags": []
+      }
+    ]
+  },
+  "trainingConversations": [
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm wondering about Bavard AI. Is it a tech company?",
+              "intent": "what_is_bavard",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>Bavard is a software company providing web services for the following uses (with more to come):</p> <ul> <li>Building <strong>useful</strong> chatbots and deploying them at <strong>scale</strong>.</li> <li>Annotating text and image data to facilitate AI application development.</li> </ul>",
+              "name": "describe_bavard",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Ok thank you, that's great to know. What are your prices like? Are they competitive?",
+              "intent": "ask_pricing",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Bavard AI services are completely free for beta customers!",
+              "name": "inform_pricing",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Ok thank you, goodbye.",
+              "intent": "goodbye",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Goodbye. Have a wonderful day!",
+              "name": "goodbye",
+              "options": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm a Bavard chatbot. How can I help you?",
+              "name": "greeting",
+              "options": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm wondering about Bavard AI. Is it a tech company?",
+              "intent": "what_is_bavard",
+              "tags": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm a Bavard chatbot. How can I help you?",
+              "name": "greeting",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "hi i'm having a problem with my chatbot.",
+              "intent": "support",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>Sorry to hear you are having issues. Please email a description of your problem to <strong>support@bavard.ai</strong>.</p>",
+              "name": "support",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "alright thanks. goodbye.",
+              "intent": "goodbye",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Goodbye. Have a wonderful day!",
+              "name": "goodbye",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "wait are you a chatbot?",
+              "intent": "are_you_human",
+              "tags": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I just have a couple questions for you if its ok.",
+              "intent": "greeting",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm a Bavard chatbot. How can I help you?",
+              "name": "greeting",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "So you are a robot?",
+              "intent": "are_you_human",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "I am a virtual agent, aka a chatbot. My core drives are to help you in any way possible!",
+              "name": "am_i_a_bot",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "I see. What are your company's capabilities?",
+              "intent": "what_is_bavard",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>Bavard is a software company providing web services for the following uses (with more to come):</p>\\n<ul>\\n<li>Building <strong>useful</strong> chatbots and deploying them at <strong>scale</strong>.</li>\\n<li>Annotating text and image data to facilitate AI application development.</li>\\n</ul>\\n",
+              "name": "describe_bavard",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Ok. What are your corporate office's hours of operation?",
+              "intent": "ask_hours",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>Our office hours are Monday-Friday from 9am to 5pm MDT. But you can email us anytime at hello@bavard.ai.</p>\\n",
+              "name": "inform_hours",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Ok. I may send the humans at your company an email. That's all I need, thank you.",
+              "intent": "goodbye",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>Goodbye. Have a wonderful day!</p>\\n",
+              "name": "goodbye",
+              "options": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm a Bavard chatbot. How can I help you?",
+              "name": "greeting",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "I'm just wondering who I can contact at Bavard about something.",
+              "intent": "contact_us",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "",
+              "name": "contact_us",
+              "options": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm a Bavard chatbot. How can I help you?",
+              "name": "greeting",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Tell me about yourself.",
+              "intent": "ask_agent_bio",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>My development began in early 2020 by founding engineers of Bavard AI, Inc. My capabilities are continuously improving and one day I'll be a conscious entity such as yourself, although funnier more informative 😉. </p>\\n",
+              "name": "inform_bio",
+              "options": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Hi, I'm a Bavard chatbot. How can I help you?",
+              "name": "greeting",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "I need help.",
+              "intent": "support",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Sorry to hear you are having issues. Please submit a description of the problem below and we'll get back to you asap.",
+              "name": "support",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "Is this a real person I'm talking to?",
+              "intent": "are_you_human",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>I am a virtual agent, aka a chatbot. My core drives are to help you in any way possible!</p>\\n",
+              "name": "am_i_a_bot",
+              "options": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    },
+    {
+      "conversation": {
+        "id": null,
+        "turns": [
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "I have a question about pricing. How much does your product cost?",
+              "intent": "ask_pricing",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>Bavard AI services are completely free for beta customers!</p>\\n",
+              "name": "inform_pricing",
+              "options": []
+            }
+          },
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "That's awesome. Actually also, when is a good time to call your office?",
+              "intent": "ask_hours",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "<p>Our office hours are Monday-Friday from 9am to 5pm MDT. But you can email us anytime at hello@bavard.ai.</p>\\n",
+              "name": "inform_hours",
+              "options": []
+            }
+          }
+        ],
+        "currentAgentType": "BOT"
+      },
+      "metadata": null
+    }
+  ],
+  "apiKeys": []
+}

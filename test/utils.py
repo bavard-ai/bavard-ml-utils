@@ -1,8 +1,14 @@
+import json
 import os
 import shutil
 import typing as t
 
 from pydantic import BaseModel
+
+
+def load_json_file(path):
+    with open(path) as f:
+        return json.load(f)
 
 
 class FileSpec(BaseModel):

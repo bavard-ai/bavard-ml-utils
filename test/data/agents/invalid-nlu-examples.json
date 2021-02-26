@@ -1,0 +1,102 @@
+{
+  "config": {
+    "projectId": "test",
+    "agentId": 10,
+    "uname": "test",
+    "intents": [
+      {
+        "name": "flight",
+        "defaultActionName": null
+      }
+    ],
+    "tagTypes": [
+      "flight_stop",
+      "fromloc.city_name",
+      "toloc.city_name"
+    ],
+    "slots": [],
+    "actions": []
+  },
+  "widgetSettings": {
+    "name": "test",
+    "icon": "default",
+    "primaryColor": {
+      "r": 10,
+      "g": 91,
+      "b": 255,
+      "a": 1
+    },
+    "primaryBg": {
+      "r": 10,
+      "g": 103,
+      "b": 238,
+      "a": 1
+    }
+  },
+  "nluData": {
+    "intents": [
+      "flight"
+    ],
+    "tagTypes": [
+      "fromloc.city_name",
+      "toloc.city_name"
+    ],
+    "examples": [
+      {
+        "intent": "flight",
+        "text": "i wish to fly from boston to washington please find an airline for me",
+        "tags": []
+      },
+      {
+        "intent": "flight",
+        "text": "i wish to fly from boston to washington please find an airline for me",
+        "tags": [
+          {
+            "tagType": "fromloc.city_name",
+            "start": 19,
+            "end": 25
+          },
+          {
+            "tagType": "toloc.city_name",
+            "start": 29,
+            "end": 39
+          }
+        ]
+      },
+      {
+        "intent": "foo_bar",
+        "text": "are they all nonstop flights from kansas city to st. paul",
+        "tags": [
+          {
+            "tagType": "fromloc.city_name",
+            "start": 34,
+            "end": 45
+          },
+          {
+            "tagType": "toloc.city_name",
+            "start": 49,
+            "end": 57
+          }
+        ]
+      },
+      {
+        "intent": "flight",
+        "text": "find me the earliest flight from boston to atlanta",
+        "tags": [
+          {
+            "tagType": "foo_bar",
+            "start": 43,
+            "end": 50
+          },
+          {
+            "tagType": "fromloc.city_name",
+            "start": 33,
+            "end": 39
+          }
+        ]
+      }
+    ]
+  },
+  "trainingConversations": [],
+  "apiKey": "eyJhbGciOiJSUzI1NiIsI"
+}

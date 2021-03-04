@@ -126,7 +126,13 @@ class Serializer:
     def serialize(self, obj: object, path: str, overwrite: bool = False) -> None:
         """Serialize `obj` to `path`, a directory.
         """
-        os.makedirs(path, exist_ok=overwrite)
+        if os.path.isfile(path):
+            raise ValueError(f"cannot serialize to directory {path}; it is a file")
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        elif len(os.listdir(path)) > 0 and not overwrite:
+            raise ValueError(f"cannot serialize: {path} is already populated and overwrite is set to False")
+
         with open(self._get_pkl_path(path), "wb") as f:
             _CustomPickler(f, path, self._type_serializers).dump(obj)
 

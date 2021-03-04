@@ -1,3 +1,5 @@
+import os
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 import inspect
 import shutil
@@ -240,6 +242,29 @@ class TestSerialization(TestCase):
         self.assertTrue(
             (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
         )
+
+    def test_can_serialize_to_empty_existing_dir(self):
+        model = TestKerasModel(n_units=10)
+        serializer = Serializer(KerasSerializer())
+        with TemporaryDirectory() as tmp:
+            # Can serialize to already existing (but empty) directory without error.
+            serializer.serialize(model, tmp)
+            loaded_model = serializer.deserialize(tmp)
+        self.assertEqual(model, loaded_model)
+
+    def test_overwrite(self):
+        model = TestKerasModel(n_units=10)
+        serializer = Serializer(KerasSerializer())
+        with TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "file.txt"), "w") as f:
+                f.write("hello world")
+            # Can't overwrite when overwrite==False
+            with self.assertRaises(ValueError):
+                serializer.serialize(model, tmp)
+            # Should be able to overwrite existing data when overwrite==True
+            serializer.serialize(model, tmp, overwrite=True)
+            loaded_model = serializer.deserialize(tmp)
+        self.assertEqual(model, loaded_model)
 
     @staticmethod
     def _get_member_types(obj: object) -> dict:

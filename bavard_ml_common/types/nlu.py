@@ -22,3 +22,6 @@ class NLUExample(BaseModel):
 class NLUExampleDataset(LabeledDataset[NLUExample]):
     def get_label(self, item: NLUExample) -> str:
         return item.intent
+
+    def unique_tag_types(self) -> t.Set[str]:
+        return set(tag.tagType for ex in self for tag in ex.tags)

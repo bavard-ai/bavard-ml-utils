@@ -28,6 +28,9 @@ class LabeledDataset(t.List[_T], ABC):
     def labels(self) -> list:
         return [self.get_label(item) for item in self]
 
+    def unique_labels(self) -> set:
+        return set(self.get_label(item) for item in self)
+
     def get_label_distribution(self) -> Counter:
         """
         Counts the number of each type of label present in `self`.

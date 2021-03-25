@@ -22,20 +22,6 @@ class Conversation(BaseModel):
     def is_last_turn_agent(self) -> bool:
         return False if len(self.turns) == 0 else self.turns[-1].actor == Actor.AGENT
 
-    def make_validation_pairs(self) -> t.Tuple[t.List["Conversation"], t.List[str]]:
-        """
-        Expands this conversation into as many conversations as possible,
-        under the constraint that each conversation end with a user action
-        and have an agent action following it.
-        """
-        cls = self.__class__
-        val_convs = []
-        next_actions = []
-        for conv in self.expand():
-            val_convs.append(cls(turns=conv.turns[:-1]))
-            next_actions.append(conv.turns[-1].agentAction.name)
-        return val_convs, next_actions
-
     def expand(self) -> t.List["Conversation"]:
         cls = self.__class__
         convs = []
@@ -71,7 +57,10 @@ class ConversationDataset(LabeledDataset[Conversation]):
 
     @classmethod
     def from_conversations(cls, convs: t.List[Conversation]) -> "ConversationDataset":
-        """Safely builds a dataset from Conversations which may or may not have agent actions as the final turn.
+        """
+        Safely builds a dataset from Conversations which may or may not have agent actions as the final turn.
+        Expands each conversation in `convs` into as many possible conversations as possible, under the constraint
+        that each conversation end with an agent action.
         """
         expanded = []
         for conv in convs:
@@ -105,3 +94,23 @@ class ConversationDataset(LabeledDataset[Conversation]):
                     for slot in turn.state.slotValues:
                         slots.add(slot.name)
         return slots
+
+    def make_validation_pairs(self) -> t.Tuple["ConversationDataset", t.List[str]]:
+        """
+        Takes all the conversations and returns each one having all its turns but the
+        last agent action. Also returns a tuple of those last agent actions.
+
+        Returns
+        -------
+        tuple of (ConversationDataset, str)
+            The first list is the list of conversations. The second
+            is the list of the names of the next actions that should
+            be taken, given the conversations; one action per conversation.
+        """
+        cls = self.__class__
+        val_convs = []
+        next_actions = []
+        for conv in self:
+            val_convs.append(Conversation(turns=conv.turns[:-1]))
+            next_actions.append(self.get_label(conv))
+        return cls(val_convs), next_actions

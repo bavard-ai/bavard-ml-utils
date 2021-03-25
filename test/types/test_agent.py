@@ -38,15 +38,15 @@ class TestAgent(TestCase):
         agent = AgentConfig.parse_obj(raw_agent)
         agent.incorporate_training_conversations()
         # The `agent` object should now have more nlu examples than `n_nlu_examples`.
-        self.assertGreater(len(list(agent.all_examples())), n_nlu_examples)
+        self.assertGreater(len(list(agent.all_nlu_examples())), n_nlu_examples)
 
     def test_excludes_examples_with_unknown_labels(self):
         messy_agent = AgentExport.parse_file("test/data/agents/invalid-nlu-examples.json").config
         messy_agent.remove_unknown_intent_examples()
 
         # Examples with unregistered intents or tag types should be filtered out.
-        self.assertEqual(len(list(messy_agent.all_examples())), 2)
-        for ex in messy_agent.all_examples():
+        self.assertEqual(len(list(messy_agent.all_nlu_examples())), 2)
+        for ex in messy_agent.all_nlu_examples():
             self.assertIn(ex.intent, messy_agent.intent_names())
             for tag in ex.tags:
                 self.assertIn(tag.tagType, messy_agent.tag_names())

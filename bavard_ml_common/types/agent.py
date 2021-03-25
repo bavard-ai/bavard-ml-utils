@@ -5,8 +5,8 @@ from itertools import chain
 from pydantic import BaseModel
 
 from bavard_ml_common.types.conversations.actions import Actor
-from bavard_ml_common.types.conversations.conversation import Conversation
-from bavard_ml_common.types.nlu import NLUExample
+from bavard_ml_common.types.conversations.conversation import Conversation, ConversationDataset
+from bavard_ml_common.types.nlu import NLUExample, NLUExampleDataset
 
 
 class Intent(BaseModel):
@@ -33,7 +33,16 @@ class AgentConfig(BaseModel):
     intentExamples: t.Dict[str, t.List[NLUExample]]
     trainingConversations: t.List[Conversation]
 
-    def all_examples(self) -> t.Iterable[NLUExample]:
+    def to_nlu_dataset(self) -> NLUExampleDataset:
+        self.clean()
+        self.incorporate_training_conversations()
+        return NLUExampleDataset(self.all_nlu_examples())
+
+    def to_conversation_dataset(self) -> ConversationDataset:
+        self.clean()
+        return ConversationDataset.from_conversations(self.trainingConversations)
+
+    def all_nlu_examples(self) -> t.Iterable[NLUExample]:
         return chain.from_iterable(self.intentExamples.values())
 
     def intent_names(self) -> t.Set[str]:
@@ -55,7 +64,7 @@ class AgentConfig(BaseModel):
         valid_intents = self.intent_names()
         valid_tag_types = self.tag_names()
 
-        for example in self.all_examples():
+        for example in self.all_nlu_examples():
             if example.intent not in valid_intents:
                 continue
             if any(tag.tagType not in valid_tag_types for tag in example.tags):

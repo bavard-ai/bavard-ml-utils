@@ -2,6 +2,7 @@ import typing as t
 
 from pydantic import BaseModel
 
+from bavard_ml_common.ml.dataset import LabeledDataset
 from bavard_ml_common.types.conversations.actions import Actor
 from bavard_ml_common.types.conversations.dialogue_turns import DialogueTurn
 
@@ -16,6 +17,10 @@ class Conversation(BaseModel):
     @property
     def is_last_turn_user(self) -> bool:
         return False if len(self.turns) == 0 else self.turns[-1].actor == Actor.USER
+
+    @property
+    def is_last_turn_agent(self) -> bool:
+        return False if len(self.turns) == 0 else self.turns[-1].actor == Actor.AGENT
 
     def make_validation_pairs(self) -> t.Tuple[t.List["Conversation"], t.List[str]]:
         """
@@ -55,3 +60,48 @@ class Conversation(BaseModel):
                     return last_turn.userAction.translatedUtterance
                 return last_turn.userAction.utterance
         return ""
+
+
+class ConversationDataset(LabeledDataset[Conversation]):
+
+    def get_label(self, item: Conversation) -> str:
+        if not item.is_last_turn_agent:
+            raise AssertionError("conversations in a ConversationDataset must have an agent action as final last turn.")
+        return item.turns[-1].agentAction.name
+
+    @classmethod
+    def from_conversations(cls, convs: t.List[Conversation]) -> "ConversationDataset":
+        """Safely builds a dataset from Conversations which may or may not have agent actions as the final turn.
+        """
+        expanded = []
+        for conv in convs:
+            expanded += conv.expand()
+        return cls(expanded)
+
+    def unique_intents(self) -> t.Set[str]:
+        intents = set()
+        for conv in self:
+            for turn in conv.turns:
+                if turn.actor == Actor.USER:
+                    if turn.userAction.intent is not None:
+                        intents.add(turn.userAction.intent)
+        return intents
+
+    def unique_tag_types(self) -> t.Set[str]:
+        tag_types = set()
+        for conv in self:
+            for turn in conv.turns:
+                if turn.actor == Actor.USER:
+                    if turn.userAction.tags is not None:
+                        for tag in turn.userAction.tags:
+                            tag_types.add(tag.tagType)
+        return tag_types
+
+    def unique_slots(self) -> t.Set[str]:
+        slots = set()
+        for conv in self:
+            for turn in conv.turns:
+                if turn.state is not None:
+                    for slot in turn.state.slotValues:
+                        slots.add(slot.name)
+        return slots

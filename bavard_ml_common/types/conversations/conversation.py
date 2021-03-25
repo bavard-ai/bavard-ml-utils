@@ -55,7 +55,3 @@ class Conversation(BaseModel):
                     return last_turn.userAction.translatedUtterance
                 return last_turn.userAction.utterance
         return ""
-
-
-class TrainingConversation(BaseModel):
-    conversation: Conversation

@@ -105,7 +105,7 @@
       {
         "type": "UTTERANCE_ACTION",
         "name": "inform_bio",
-        "utterance": "<p>My development began in early 2020 by founding engineers of Bavard AI, Inc. My capabilities are continuously improving and one day I'll be a conscious entity such as yourself, although funnier more informative 😉. </p>\n",
+        "utterance": "<p>My development began in early 2020 by founding engineers of Bavard AI, Inc. My capabilities are continuously improving and one day I'll be a conscious entity such as yourself, although funnier more informative \ud83d\ude09. </p>\n",
         "options": []
       },
       {
@@ -174,12 +174,12 @@
           },
           {
             "type": "TEXT",
-            "text": "<p>💰Pricing</p>\n",
+            "text": "<p>\ud83d\udcb0Pricing</p>\n",
             "intent": "ask_pricing"
           },
           {
             "type": "TEXT",
-            "text": "<p>🚑 Get Support</p>\n",
+            "text": "<p>\ud83d\ude91 Get Support</p>\n",
             "intent": "support"
           },
           {
@@ -203,492 +203,474 @@
           "https://hooks.slack.com/services/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"
         ]
       }
-    }
-  },
-  "widgetSettings": {
-    "name": "bavard",
-    "icon": "bavard.png",
-    "primaryColor": {
-      "r": 10,
-      "g": 91,
-      "b": 255,
-      "a": 1
     },
-    "primaryBg": {
-      "r": 10,
-      "g": 103,
-      "b": 238,
-      "a": 1
+    "intentExamples": {
+      "are_you_human": [
+        {
+          "intent": "are_you_human",
+          "text": "Bot",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "are you a bot?",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "Human?",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "Are you human?",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "is this a bot",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "Are you a bot?",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "bot?",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "You human?",
+          "tags": []
+        },
+        {
+          "intent": "are_you_human",
+          "text": "What are you?",
+          "tags": []
+        }
+      ],
+      "ask_agent_bio": [
+        {
+          "intent": "ask_agent_bio",
+          "text": "How old are you?",
+          "tags": []
+        },
+        {
+          "intent": "ask_agent_bio",
+          "text": "What's your name?",
+          "tags": []
+        },
+        {
+          "intent": "ask_agent_bio",
+          "text": "Who are your creators?",
+          "tags": []
+        },
+        {
+          "intent": "ask_agent_bio",
+          "text": "When were your created?",
+          "tags": []
+        },
+        {
+          "intent": "ask_agent_bio",
+          "text": "What's your story?",
+          "tags": []
+        },
+        {
+          "intent": "ask_agent_bio",
+          "text": "What's your back story?",
+          "tags": []
+        },
+        {
+          "intent": "ask_agent_bio",
+          "text": "Are you conscious?",
+          "tags": []
+        }
+      ],
+      "ask_features": [
+        {
+          "intent": "ask_features",
+          "text": "What features are supported?",
+          "tags": []
+        },
+        {
+          "intent": "ask_features",
+          "text": "What can bavard chatbots do?",
+          "tags": []
+        }
+      ],
+      "ask_hours": [
+        {
+          "intent": "ask_hours",
+          "text": "When are you open?",
+          "tags": []
+        },
+        {
+          "intent": "ask_hours",
+          "text": "what time you open",
+          "tags": []
+        },
+        {
+          "intent": "ask_hours",
+          "text": "What are your office hours?",
+          "tags": []
+        },
+        {
+          "intent": "ask_hours",
+          "text": "when you open",
+          "tags": []
+        },
+        {
+          "intent": "ask_hours",
+          "text": "When can I call?",
+          "tags": []
+        },
+        {
+          "intent": "ask_hours",
+          "text": "hours",
+          "tags": []
+        }
+      ],
+      "ask_meaning_of_life": [
+        {
+          "intent": "ask_meaning_of_life",
+          "text": "what is life",
+          "tags": []
+        },
+        {
+          "intent": "ask_meaning_of_life",
+          "text": "What is life?",
+          "tags": []
+        },
+        {
+          "intent": "ask_meaning_of_life",
+          "text": "what is the meaning of life?",
+          "tags": []
+        },
+        {
+          "intent": "ask_meaning_of_life",
+          "text": "the answer to life the universe and everything",
+          "tags": []
+        }
+      ],
+      "ask_pricing": [
+        {
+          "intent": "ask_pricing",
+          "text": "whats it cost?",
+          "tags": []
+        },
+        {
+          "intent": "ask_pricing",
+          "text": "What does it cost?",
+          "tags": []
+        },
+        {
+          "intent": "ask_pricing",
+          "text": "pricing?",
+          "tags": []
+        },
+        {
+          "intent": "ask_pricing",
+          "text": "pricing",
+          "tags": []
+        },
+        {
+          "intent": "ask_pricing",
+          "text": "what's the pricing",
+          "tags": []
+        },
+        {
+          "intent": "ask_pricing",
+          "text": "cost",
+          "tags": []
+        },
+        {
+          "intent": "ask_pricing",
+          "text": "What is the price?\"",
+          "tags": []
+        },
+        {
+          "intent": "ask_pricing",
+          "text": "What's the lowest price?",
+          "tags": []
+        }
+      ],
+      "contact_us": [
+        {
+          "intent": "contact_us",
+          "text": "How can I get in touch?",
+          "tags": []
+        },
+        {
+          "intent": "contact_us",
+          "text": "Contact",
+          "tags": []
+        },
+        {
+          "intent": "contact_us",
+          "text": "contact?",
+          "tags": []
+        },
+        {
+          "intent": "contact_us",
+          "text": "I want to know more",
+          "tags": []
+        },
+        {
+          "intent": "contact_us",
+          "text": "Learn more",
+          "tags": []
+        }
+      ],
+      "goodbye": [
+        {
+          "intent": "goodbye",
+          "text": "see you",
+          "tags": []
+        },
+        {
+          "intent": "goodbye",
+          "text": "goodbye",
+          "tags": []
+        },
+        {
+          "intent": "goodbye",
+          "text": "bye",
+          "tags": []
+        },
+        {
+          "intent": "goodbye",
+          "text": "see you later alligator",
+          "tags": []
+        },
+        {
+          "intent": "goodbye",
+          "text": "see you later",
+          "tags": []
+        },
+        {
+          "intent": "goodbye",
+          "text": "see ya",
+          "tags": []
+        },
+        {
+          "intent": "goodbye",
+          "text": "have a good one",
+          "tags": []
+        }
+      ],
+      "greeting": [
+        {
+          "intent": "greeting",
+          "text": "hello",
+          "tags": []
+        },
+        {
+          "intent": "greeting",
+          "text": "hi",
+          "tags": []
+        },
+        {
+          "intent": "greeting",
+          "text": "greetings",
+          "tags": []
+        },
+        {
+          "intent": "greeting",
+          "text": "What's up?",
+          "tags": []
+        },
+        {
+          "intent": "greeting",
+          "text": "hey",
+          "tags": []
+        },
+        {
+          "intent": "greeting",
+          "text": "hi there",
+          "tags": []
+        },
+        {
+          "intent": "greeting",
+          "text": "hey hey",
+          "tags": []
+        }
+      ],
+      "insult": [
+        {
+          "intent": "insult",
+          "text": "You're stupid.",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "You're dumb.",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "This is useless",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "dumb",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "stupid",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "idiot",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "you're an idiot",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "i hate you",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "stupid bot",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "useless bot",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "i hate chatbots",
+          "tags": []
+        },
+        {
+          "intent": "insult",
+          "text": "shut up",
+          "tags": []
+        }
+      ],
+      "support": [
+        {
+          "intent": "support",
+          "text": "Can I talk to someone?",
+          "tags": []
+        },
+        {
+          "intent": "support",
+          "text": "I need tech support.",
+          "tags": []
+        },
+        {
+          "intent": "support",
+          "text": "I have technical issues.",
+          "tags": []
+        },
+        {
+          "intent": "support",
+          "text": "support",
+          "tags": []
+        },
+        {
+          "intent": "support",
+          "text": "I need help.",
+          "tags": []
+        },
+        {
+          "intent": "support",
+          "text": "help",
+          "tags": []
+        }
+      ],
+      "talk_to_a_person": [
+        {
+          "intent": "talk_to_a_person",
+          "text": "I want to talk to a person.",
+          "tags": []
+        },
+        {
+          "intent": "talk_to_a_person",
+          "text": "talk to a person",
+          "tags": []
+        },
+        {
+          "intent": "talk_to_a_person",
+          "text": "talk to a human",
+          "tags": []
+        },
+        {
+          "intent": "talk_to_a_person",
+          "text": "I need a human",
+          "tags": []
+        },
+        {
+          "intent": "talk_to_a_person",
+          "text": "I want to talk to a human",
+          "tags": []
+        },
+        {
+          "intent": "talk_to_a_person",
+          "text": "let me talk to a real person",
+          "tags": []
+        },
+        {
+          "intent": "talk_to_a_person",
+          "text": "talk to a real person",
+          "tags": []
+        }
+      ],
+      "what_can_you_do": [
+        {
+          "intent": "what_can_you_do",
+          "text": "What can you do?",
+          "tags": []
+        },
+        {
+          "intent": "what_can_you_do",
+          "text": "what can you do",
+          "tags": []
+        },
+        {
+          "intent": "what_can_you_do",
+          "text": "what are your skills",
+          "tags": []
+        },
+        {
+          "intent": "what_can_you_do",
+          "text": "what are your capabilities",
+          "tags": []
+        }
+      ],
+      "what_is_bavard": [
+        {
+          "intent": "what_is_bavard",
+          "text": "What's bavard?",
+          "tags": []
+        },
+        {
+          "intent": "what_is_bavard",
+          "text": "What is this?",
+          "tags": []
+        },
+        {
+          "intent": "what_is_bavard",
+          "text": "What is Bavard AI?",
+          "tags": []
+        }
+      ]
     },
-    "widgetBg": "linear-gradient(to left, rgba(0,210,255,1) 0%, rgba(58,71,213,1) 100%)",
-    "title": "Welcome to Bavard! ",
-    "subtitle": "Under Development",
-    "logoUrl": "https://storage.googleapis.com/bavard-prod-chatbot-service/workspaces/0adba957-da26-4422-9183-3080a8066104/agents/bavard/bot-icons/logo?GoogleAccessId=chatbot-service%40bavard-prod.iam.gserviceaccount.com&Expires=1610836073&Signature=Qry02Gl6HIJ6WJRyDbGOiokyxhkLhOXJUwMKP4pejvTwx5nlKHPKLZOrf3USKJIWlH18SKkCP1MMI3j5M7fVP1oYY9Evzgj1diFmM7h4Pb9QJvoTXvSQEFJZmqwrdm7hTnH0UOlh5c7z4Bd37n8Ux5N%2FwVE5tiCBEgMSpWEYt3z%2FgeYrNJHq5HoKpYDOu1kYWuA2UjsfMLKev9IfqiABQEMhzXkklAMQeICQtqDdfoHbGVz5hvzLqYdvVMIQdvHyAIgCUi91vFy%2BGK4zN5XPa3ANVtapJjQ60BF0mFmvfQp5EJQ%2FOVSqDaCbf8t9XQA9cg8siAuH0pSc3Pu3wKsMAg%3D%3D",
-    "avatarUrl": "https://storage.googleapis.com/bavard-prod-chatbot-service/workspaces/0adba957-da26-4422-9183-3080a8066104/agents/bavard/bot-icons/avatar?GoogleAccessId=chatbot-service%40bavard-prod.iam.gserviceaccount.com&Expires=1610836073&Signature=Sng0j4%2FL36kAkki5JxMMMh%2BT%2FuGy%2BJmPEs%2BGz5W8b8DwIPFuGOoiqZo5aPsutDjUMtfYag4roVecAp97E2EG44wPBcet%2F6Oy3PH8vTZRdMQjX7XqM7Wpuq%2BOfJsrj12KpEdMM255I48QUgbnsPAE5W3tTAchlmENNP%2BDF%2BDJdhJlVwxLUVL0U8GuzFyN4ptGos%2B1%2B%2BL1RAhSD0PE6iZdPpW4Bh199CTM%2F4qXgfiKfuFK5wX2sR%2F8JcuXMpUgyUyu9F2cWCuzBKoRUhttq169dgBnjCdhncpkIN3sm92QBvdW93PfTZ0tfPQ%2FyQBQXSdW7Kwxy0QSB%2F7BxjFOza6ggQ%3D%3D",
-    "logo": "logo",
-    "avatar": "avatar",
-    "triggerButtonIconUrl": null
-  },
-  "nluData": {
-    "intents": [
-      "are_you_human",
-      "ask_agent_bio",
-      "ask_features",
-      "ask_hours",
-      "ask_meaning_of_life",
-      "ask_pricing",
-      "contact_us",
-      "goodbye",
-      "greeting",
-      "insult",
-      "support",
-      "talk_to_a_person",
-      "what_can_you_do",
-      "what_is_bavard"
-    ],
-    "tagTypes": [],
-    "examples": [
+    "trainingConversations": [
       {
-        "intent": "are_you_human",
-        "text": "Bot",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "whats it cost?",
-        "tags": []
-      },
-      {
-        "intent": "what_is_bavard",
-        "text": "What's bavard?",
-        "tags": []
-      },
-      {
-        "intent": "goodbye",
-        "text": "see you",
-        "tags": []
-      },
-      {
-        "intent": "goodbye",
-        "text": "goodbye",
-        "tags": []
-      },
-      {
-        "intent": "support",
-        "text": "Can I talk to someone?",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "are you a bot?",
-        "tags": []
-      },
-      {
-        "intent": "ask_hours",
-        "text": "When are you open?",
-        "tags": []
-      },
-      {
-        "intent": "support",
-        "text": "I need tech support.",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "What does it cost?",
-        "tags": []
-      },
-      {
-        "intent": "ask_hours",
-        "text": "what time you open",
-        "tags": []
-      },
-      {
-        "intent": "greeting",
-        "text": "hello",
-        "tags": []
-      },
-      {
-        "intent": "greeting",
-        "text": "hi",
-        "tags": []
-      },
-      {
-        "intent": "goodbye",
-        "text": "bye",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "Human?",
-        "tags": []
-      },
-      {
-        "intent": "what_is_bavard",
-        "text": "What is this?",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "Are you human?",
-        "tags": []
-      },
-      {
-        "intent": "goodbye",
-        "text": "see you later alligator",
-        "tags": []
-      },
-      {
-        "intent": "goodbye",
-        "text": "see you later",
-        "tags": []
-      },
-      {
-        "intent": "ask_hours",
-        "text": "What are your office hours?",
-        "tags": []
-      },
-      {
-        "intent": "support",
-        "text": "I have technical issues.",
-        "tags": []
-      },
-      {
-        "intent": "ask_features",
-        "text": "What features are supported?",
-        "tags": []
-      },
-      {
-        "intent": "ask_hours",
-        "text": "when you open",
-        "tags": []
-      },
-      {
-        "intent": "support",
-        "text": "support",
-        "tags": []
-      },
-      {
-        "intent": "what_is_bavard",
-        "text": "What is Bavard AI?",
-        "tags": []
-      },
-      {
-        "intent": "support",
-        "text": "I need help.",
-        "tags": []
-      },
-      {
-        "intent": "ask_hours",
-        "text": "When can I call?",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "pricing?",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "is this a bot",
-        "tags": []
-      },
-      {
-        "intent": "greeting",
-        "text": "greetings",
-        "tags": []
-      },
-      {
-        "intent": "goodbye",
-        "text": "see ya",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "pricing",
-        "tags": []
-      },
-      {
-        "intent": "ask_features",
-        "text": "What can bavard chatbots do?",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "what's the pricing",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "Are you a bot?",
-        "tags": []
-      },
-      {
-        "intent": "ask_hours",
-        "text": "hours",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "cost",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "bot?",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "What is the price?\"",
-        "tags": []
-      },
-      {
-        "intent": "ask_pricing",
-        "text": "What's the lowest price?",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "You human?",
-        "tags": []
-      },
-      {
-        "intent": "support",
-        "text": "help",
-        "tags": []
-      },
-      {
-        "intent": "are_you_human",
-        "text": "What are you?",
-        "tags": []
-      },
-      {
-        "intent": "goodbye",
-        "text": "have a good one",
-        "tags": []
-      },
-      {
-        "intent": "greeting",
-        "text": "What's up?",
-        "tags": []
-      },
-      {
-        "intent": "contact_us",
-        "text": "How can I get in touch?",
-        "tags": []
-      },
-      {
-        "intent": "contact_us",
-        "text": "Contact",
-        "tags": []
-      },
-      {
-        "intent": "contact_us",
-        "text": "contact?",
-        "tags": []
-      },
-      {
-        "intent": "contact_us",
-        "text": "I want to know more",
-        "tags": []
-      },
-      {
-        "intent": "contact_us",
-        "text": "Learn more",
-        "tags": []
-      },
-      {
-        "intent": "ask_agent_bio",
-        "text": "How old are you?",
-        "tags": []
-      },
-      {
-        "intent": "ask_agent_bio",
-        "text": "What's your name?",
-        "tags": []
-      },
-      {
-        "intent": "ask_agent_bio",
-        "text": "Who are your creators?",
-        "tags": []
-      },
-      {
-        "intent": "ask_agent_bio",
-        "text": "When were your created?",
-        "tags": []
-      },
-      {
-        "intent": "ask_agent_bio",
-        "text": "What's your story?",
-        "tags": []
-      },
-      {
-        "intent": "ask_agent_bio",
-        "text": "What's your back story?",
-        "tags": []
-      },
-      {
-        "intent": "ask_agent_bio",
-        "text": "Are you conscious?",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "You're stupid.",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "You're dumb.",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "This is useless",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "dumb",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "stupid",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "idiot",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "you're an idiot",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "i hate you",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "stupid bot",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "useless bot",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "i hate chatbots",
-        "tags": []
-      },
-      {
-        "intent": "what_can_you_do",
-        "text": "What can you do?",
-        "tags": []
-      },
-      {
-        "intent": "what_can_you_do",
-        "text": "what can you do",
-        "tags": []
-      },
-      {
-        "intent": "what_can_you_do",
-        "text": "what are your skills",
-        "tags": []
-      },
-      {
-        "intent": "what_can_you_do",
-        "text": "what are your capabilities",
-        "tags": []
-      },
-      {
-        "intent": "ask_meaning_of_life",
-        "text": "what is life",
-        "tags": []
-      },
-      {
-        "intent": "ask_meaning_of_life",
-        "text": "What is life?",
-        "tags": []
-      },
-      {
-        "intent": "ask_meaning_of_life",
-        "text": "what is the meaning of life?",
-        "tags": []
-      },
-      {
-        "intent": "ask_meaning_of_life",
-        "text": "the answer to life the universe and everything",
-        "tags": []
-      },
-      {
-        "intent": "insult",
-        "text": "shut up",
-        "tags": []
-      },
-      {
-        "intent": "talk_to_a_person",
-        "text": "I want to talk to a person.",
-        "tags": []
-      },
-      {
-        "intent": "talk_to_a_person",
-        "text": "talk to a person",
-        "tags": []
-      },
-      {
-        "intent": "talk_to_a_person",
-        "text": "talk to a human",
-        "tags": []
-      },
-      {
-        "intent": "talk_to_a_person",
-        "text": "I need a human",
-        "tags": []
-      },
-      {
-        "intent": "talk_to_a_person",
-        "text": "I want to talk to a human",
-        "tags": []
-      },
-      {
-        "intent": "talk_to_a_person",
-        "text": "let me talk to a real person",
-        "tags": []
-      },
-      {
-        "intent": "talk_to_a_person",
-        "text": "talk to a real person",
-        "tags": []
-      },
-      {
-        "intent": "greeting",
-        "text": "hey",
-        "tags": []
-      },
-      {
-        "intent": "greeting",
-        "text": "hi there",
-        "tags": []
-      },
-      {
-        "intent": "greeting",
-        "text": "hey hey",
-        "tags": []
-      }
-    ]
-  },
-  "trainingConversations": [
-    {
-      "conversation": {
-        "id": null,
         "turns": [
           {
             "actor": "USER",
@@ -744,14 +726,9 @@
               "options": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "AGENT",
@@ -762,14 +739,9 @@
               "options": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "USER",
@@ -780,14 +752,9 @@
               "tags": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "AGENT",
@@ -843,14 +810,9 @@
               "tags": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "USER",
@@ -942,14 +904,9 @@
               "options": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "AGENT",
@@ -978,14 +935,9 @@
               "options": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "AGENT",
@@ -1009,19 +961,14 @@
             "actor": "AGENT",
             "agentAction": {
               "type": "UTTERANCE_ACTION",
-              "utterance": "<p>My development began in early 2020 by founding engineers of Bavard AI, Inc. My capabilities are continuously improving and one day I'll be a conscious entity such as yourself, although funnier more informative 😉. </p>\\n",
+              "utterance": "<p>My development began in early 2020 by founding engineers of Bavard AI, Inc. My capabilities are continuously improving and one day I'll be a conscious entity such as yourself, although funnier more informative \ud83d\ude09.\u00a0</p>\\n",
               "name": "inform_bio",
               "options": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "AGENT",
@@ -1068,14 +1015,9 @@
               "options": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
+        ]
       },
-      "metadata": null
-    },
-    {
-      "conversation": {
-        "id": null,
+      {
         "turns": [
           {
             "actor": "USER",
@@ -1113,11 +1055,8 @@
               "options": []
             }
           }
-        ],
-        "currentAgentType": "BOT"
-      },
-      "metadata": null
-    }
-  ],
-  "apiKeys": []
+        ]
+      }
+    ]
+  }
 }

@@ -7,6 +7,10 @@
       {
         "name": "flight",
         "defaultActionName": null
+      },
+      {
+        "name": "airfare",
+        "defaultActionName": null
       }
     ],
     "tagTypes": [
@@ -46,128 +50,103 @@
         "utterance": "I'm waiting for you to say something.",
         "options": []
       }
-    ]
-  },
-  "widgetSettings": {
-    "name": "test",
-    "icon": "default",
-    "primaryColor": {
-      "r": 10,
-      "g": 91,
-      "b": 255,
-      "a": 1
+    ],
+    "intentExamples": {
+      "flight": [
+        {
+          "intent": "flight",
+          "text": "i wish to fly from boston to washington please find an airline for me",
+          "tags": [
+            {
+              "tagType": "fromloc.city_name",
+              "start": 19,
+              "end": 25
+            },
+            {
+              "tagType": "toloc.city_name",
+              "start": 29,
+              "end": 39
+            }
+          ]
+        },
+        {
+          "intent": "flight",
+          "text": "are they all nonstop flights from kansas city to st. paul",
+          "tags": [
+            {
+              "tagType": "flight_stop",
+              "start": 13,
+              "end": 20
+            },
+            {
+              "tagType": "fromloc.city_name",
+              "start": 34,
+              "end": 45
+            },
+            {
+              "tagType": "toloc.city_name",
+              "start": 49,
+              "end": 57
+            }
+          ]
+        },
+        {
+          "intent": "flight",
+          "text": "find me the earliest flight from boston to atlanta",
+          "tags": [
+            {
+              "tagType": "toloc.city_name",
+              "start": 43,
+              "end": 50
+            },
+            {
+              "tagType": "fromloc.city_name",
+              "start": 33,
+              "end": 39
+            },
+            {
+              "tagType": "flight_mod",
+              "start": 12,
+              "end": 20
+            }
+          ]
+        },
+        {
+          "intent": "flight",
+          "text": "hello i would like to plan a flight from boston to denver",
+          "tags": [
+            {
+              "tagType": "toloc.city_name",
+              "start": 51,
+              "end": 57
+            },
+            {
+              "tagType": "fromloc.city_name",
+              "start": 41,
+              "end": 47
+            }
+          ]
+        }
+      ],
+      "airfare": [
+        {
+          "intent": "airfare",
+          "text": "how much is a flight from washington to boston",
+          "tags": [
+            {
+              "tagType": "toloc.city_name",
+              "start": 40,
+              "end": 46
+            },
+            {
+              "tagType": "fromloc.city_name",
+              "start": 26,
+              "end": 36
+            }
+          ]
+        }
+      ]
     },
-    "primaryBg": {
-      "r": 10,
-      "g": 103,
-      "b": 238,
-      "a": 1
-    }
-  },
-  "nluData": {
-    "intents": [
-      "flight",
-      "airfare"
-    ],
-    "tagTypes": [
-      "flight_stop",
-      "fromloc.city_name",
-      "toloc.city_name",
-      "flight_mod"
-    ],
-    "examples": [
-      {
-        "intent": "flight",
-        "text": "i wish to fly from boston to washington please find an airline for me",
-        "tags": [
-          {
-            "tagType": "fromloc.city_name",
-            "start": 19,
-            "end": 25
-          },
-          {
-            "tagType": "toloc.city_name",
-            "start": 29,
-            "end": 39
-          }
-        ]
-      },
-      {
-        "intent": "flight",
-        "text": "are they all nonstop flights from kansas city to st. paul",
-        "tags": [
-          {
-            "tagType": "flight_stop",
-            "start": 13,
-            "end": 20
-          },
-          {
-            "tagType": "fromloc.city_name",
-            "start": 34,
-            "end": 45
-          },
-          {
-            "tagType": "toloc.city_name",
-            "start": 49,
-            "end": 57
-          }
-        ]
-      },
-      {
-        "intent": "flight",
-        "text": "find me the earliest flight from boston to atlanta",
-        "tags": [
-          {
-            "tagType": "toloc.city_name",
-            "start": 43,
-            "end": 50
-          },
-          {
-            "tagType": "fromloc.city_name",
-            "start": 33,
-            "end": 39
-          },
-          {
-            "tagType": "flight_mod",
-            "start": 12,
-            "end": 20
-          }
-        ]
-      },
-      {
-        "intent": "airfare",
-        "text": "how much is a flight from washington to boston",
-        "tags": [
-          {
-            "tagType": "toloc.city_name",
-            "start": 40,
-            "end": 46
-          },
-          {
-            "tagType": "fromloc.city_name",
-            "start": 26,
-            "end": 36
-          }
-        ]
-      },
-      {
-        "intent": "flight",
-        "text": "hello i would like to plan a flight from boston to denver",
-        "tags": [
-          {
-            "tagType": "toloc.city_name",
-            "start": 51,
-            "end": 57
-          },
-          {
-            "tagType": "fromloc.city_name",
-            "start": 41,
-            "end": 47
-          }
-        ]
-      }
-    ]
-  },
-  "trainingConversations": [],
-  "apiKey": "eyJhbGciOiJSUzI1NiIsI"
+    "trainingConversations": []
+  }
 }

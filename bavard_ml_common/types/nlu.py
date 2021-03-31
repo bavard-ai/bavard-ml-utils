@@ -16,7 +16,7 @@ class TrainingTag(BaseModel):
 class NLUExample(BaseModel):
     intent: t.Optional[str]
     text: str
-    tags: t.List[TrainingTag]
+    tags: t.Optional[t.List[TrainingTag]]
 
 
 class NLUExampleDataset(LabeledDataset[NLUExample]):

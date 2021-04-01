@@ -48,5 +48,5 @@ class TestAgent(TestCase):
         self.assertEqual(len(list(messy_agent.all_nlu_examples())), 2)
         for ex in messy_agent.all_nlu_examples():
             self.assertIn(ex.intent, messy_agent.intent_names())
-            for tag in ex.tags:
+            for tag in ex.tags or []:
                 self.assertIn(tag.tagType, messy_agent.tag_names())

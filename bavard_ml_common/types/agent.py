@@ -67,7 +67,7 @@ class AgentConfig(BaseModel):
         for example in self.all_nlu_examples():
             if example.intent not in valid_intents:
                 continue
-            if any(tag.tagType not in valid_tag_types for tag in example.tags):
+            if any(tag.tagType not in valid_tag_types for tag in example.tags or []):
                 continue
             filtered[example.intent].append(example)
 

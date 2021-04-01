@@ -24,4 +24,4 @@ class NLUExampleDataset(LabeledDataset[NLUExample]):
         return item.intent
 
     def unique_tag_types(self) -> t.Set[str]:
-        return set(tag.tagType for ex in self for tag in ex.tags)
+        return set(tag.tagType for ex in self for tag in ex.tags or [])

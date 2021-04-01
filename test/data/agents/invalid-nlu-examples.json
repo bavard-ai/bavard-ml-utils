@@ -20,8 +20,7 @@
       "flight": [
         {
           "intent": "flight",
-          "text": "i wish to fly from boston to washington please find an airline for me",
-          "tags": []
+          "text": "i wish to fly from boston to washington please find an airline for me"
         },
         {
           "intent": "flight",

@@ -26,17 +26,3 @@ class PubSub:
 
     def topic_path(self, topic_id: str) -> str:
         return self.client.topic_path(self._project_id, topic_id)
-
-    def notify_model_ready(
-        self, agent_uname: str, publish_id: str, model_name: str, model_version: str
-    ) -> None:
-        self.publish(
-            "chatbot-service-training-jobs",
-            {
-                "EVENT_TYPE": "MODEL_READY",
-                "AGENT_UNAME": agent_uname,
-                "PUBLISH_ID": publish_id,
-                "MODEL_NAME": model_name,
-                "MODEL_VERSION": model_version,
-            },
-        )

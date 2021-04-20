@@ -1,7 +1,8 @@
 {
   "config": {
     "version": "0.0.139",
-    "uname": "bavard",
+    "name": "bavard",
+    "agentId": "73841f21-e5cd-4e9c-a3c7-27e2f7352405",
     "workspaceId": "0adba957-da26-4422-9183-3080a8066104",
     "language": "en",
     "intentConfidenceThreshold": 0.8,

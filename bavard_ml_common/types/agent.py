@@ -24,7 +24,8 @@ class AgentActionDefinition(BaseModel):
 class AgentConfig(BaseModel):
     """A subset of the `IAgentConfig` interface in our `agent-config` repo.
     """
-    uname: str
+    name: str
+    agentId: t.Optional[str]
     actions: t.List[AgentActionDefinition]
     language: str = "en"
     intents: t.List[Intent]

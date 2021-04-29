@@ -16,7 +16,7 @@ def report_error(
     """Reports errors on Slack || Google Cloud || Both
     """
     assert severity in error_types
-    error = f":warning: {severity}: {message}"
+    error = f":boom: {severity}: {message}"
 
     if slack_url is not None:
         try:

@@ -20,12 +20,12 @@ def report_error(
 
     if slack_url is not None:
         try:
-            requests.post(slack_url, data=error)  # report on slack
+            requests.post(slack_url, json={"text": error})  # report on slack
         except Exception:
-            logger.exception("Error Reporting: Slack")
+            logger.exception("encountered error while reporting error to Slack")
 
     if gcp_project_id is not None:
         try:
             error_reporting.Client(gcp_project_id).report(error)  # report on GCP
         except Exception:
-            logger.exception("Error Reporting: Google")
+            logger.exception("encountered error while reporting error to GCP Error Reporting")

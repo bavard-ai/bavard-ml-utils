@@ -4,7 +4,7 @@ import setuptools
 from setuptools.command.install import install
 
 # The version of this package
-VERSION = "0.1.8"
+VERSION = "0.1.9"
 
 
 class VerifyVersionCommand(install):

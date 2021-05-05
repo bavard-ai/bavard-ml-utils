@@ -50,3 +50,10 @@ class TestAgent(TestCase):
             self.assertIn(ex.intent, messy_agent.intent_names())
             for tag in ex.tags or []:
                 self.assertIn(tag.tagType, messy_agent.tag_names())
+
+    def test_no_side_effects_from_conversion(self):
+        config = AgentExport.parse_file("test/data/agents/bavard.json").config
+        snapshot = config.copy(deep=True)
+        config.to_nlu_dataset()
+        config.to_conversation_dataset()
+        self.assertEqual(config, snapshot)

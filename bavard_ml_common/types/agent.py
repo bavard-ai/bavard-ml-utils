@@ -35,13 +35,15 @@ class AgentConfig(BaseModel):
     trainingConversations: t.List[Conversation]
 
     def to_nlu_dataset(self) -> NLUExampleDataset:
-        self.clean()
-        self.incorporate_training_conversations()
-        return NLUExampleDataset(self.all_nlu_examples())
+        copy = self.copy(deep=True)
+        copy.clean()
+        copy.incorporate_training_conversations()
+        return NLUExampleDataset(copy.all_nlu_examples())
 
     def to_conversation_dataset(self) -> ConversationDataset:
-        self.clean()
-        return ConversationDataset.from_conversations(self.trainingConversations)
+        copy = self.copy(deep=True)
+        copy.clean()
+        return ConversationDataset.from_conversations(copy.trainingConversations)
 
     def all_nlu_examples(self) -> t.Iterable[NLUExample]:
         return chain.from_iterable(self.intentExamples.values())

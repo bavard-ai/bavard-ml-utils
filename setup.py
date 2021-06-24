@@ -4,7 +4,7 @@ import setuptools
 from setuptools.command.install import install
 
 # The version of this package
-VERSION = "0.1.9"
+VERSION = "0.1.10"
 
 
 class VerifyVersionCommand(install):
@@ -45,11 +45,11 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     install_requires=[
-        "fastapi==0.63.0",
-        "pydantic==1.7.3",
-        "google-cloud-storage==1.35.1",
-        "google-cloud-pubsub==2.2.0",
-        "google-cloud-error-reporting==1.1.1",
+        "fastapi>=0.63.0",
+        "pydantic>=1.7.3",
+        "google-cloud-storage>=1.35.1",
+        "google-cloud-pubsub>=2.2.0",
+        "google-cloud-error-reporting>=1.1.1",
         "numpy>=1.15.4",
         "scikit-learn>=0.20.3",
         "requests>=2.21.0",

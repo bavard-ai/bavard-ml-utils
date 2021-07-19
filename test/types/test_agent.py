@@ -57,3 +57,17 @@ class TestAgent(TestCase):
         config.to_nlu_dataset()
         config.to_conversation_dataset()
         self.assertEqual(config, snapshot)
+
+    def test_intent_ood_examples(self):
+        config = AgentExport.parse_file("test/data/agents/ood.json").config
+        n_ood = len(config.intentOODExamples)
+        self.assertGreater(n_ood, 0)
+        without_ood = config.to_nlu_dataset()
+        dataset = config.to_nlu_dataset(include_ood=True)
+        # All the ood examples should be included in `dataset`
+        self.assertEqual(len(without_ood) + n_ood, len(dataset))
+        self.assertEqual(sum(1 for ex in dataset if ex.isOOD), n_ood)
+        # The dataset w/OOD examples should have an extra label: the `None` label.
+        self.assertEqual(len(dataset.unique_labels()), len(without_ood.unique_labels()) + 1)
+        self.assertIn(None, dataset.unique_labels())
+        self.assertNotIn(None, without_ood.unique_labels())

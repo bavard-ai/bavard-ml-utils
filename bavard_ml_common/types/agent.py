@@ -32,21 +32,25 @@ class AgentConfig(BaseModel):
     tagTypes: t.List[str]
     slots: t.List[Slot]
     intentExamples: t.Dict[str, t.List[NLUExample]]
+    intentOODExamples: t.List[str] = []
     trainingConversations: t.List[Conversation]
 
-    def to_nlu_dataset(self) -> NLUExampleDataset:
+    def to_nlu_dataset(self, include_ood=False) -> NLUExampleDataset:
         copy = self.copy(deep=True)
         copy.clean()
         copy.incorporate_training_conversations()
-        return NLUExampleDataset(copy.all_nlu_examples())
+        return NLUExampleDataset(copy.all_nlu_examples(include_ood))
 
     def to_conversation_dataset(self) -> ConversationDataset:
         copy = self.copy(deep=True)
         copy.clean()
         return ConversationDataset.from_conversations(copy.trainingConversations)
 
-    def all_nlu_examples(self) -> t.Iterable[NLUExample]:
-        return chain.from_iterable(self.intentExamples.values())
+    def all_nlu_examples(self, include_ood=False) -> t.List[NLUExample]:
+        examples = list(chain.from_iterable(self.intentExamples.values()))
+        if include_ood:
+            examples += [NLUExample(text=text, isOOD=True) for text in self.intentOODExamples]
+        return examples
 
     def intent_names(self) -> t.Set[str]:
         return set(intent.name for intent in self.intents)

@@ -17,10 +17,12 @@ class NLUExample(BaseModel):
     intent: t.Optional[str]
     text: str
     tags: t.Optional[t.List[TrainingTag]]
+    # `True` if `text` does not belong to any `intent` in the dataset.
+    isOOD = False
 
 
 class NLUExampleDataset(LabeledDataset[NLUExample]):
-    def get_label(self, item: NLUExample) -> str:
+    def get_label(self, item: NLUExample) -> t.Optional[str]:
         return item.intent
 
     def unique_tag_types(self) -> t.Set[str]:

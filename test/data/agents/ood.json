@@ -1,6 +1,6 @@
 {
   "config": {
-    "agentId": "c3e9bba6-c573-48d6-b3aa-bb49644f376b",
+    "agentId": "b9aa00dd-fb0d-4981-b686-bd64fe38e9ab",
     "name": "bavard",
     "language": "en",
     "intentConfidenceThreshold": 0.9,
@@ -837,6 +837,18 @@
         }
       ]
     },
+    "intentOODExamples": [
+      "Please pray for me and please if you can give me a authentic NGO or some good place",
+      "Okay",
+      "Why not",
+      "Okay I’m sorry I’ll keep it in mind for next time",
+      "no",
+      "What is your opinion on Covid",
+      "need help adding my brothers name to my account",
+      "My xbox subscription wont buy with the account balance i have for some reson trys makeing me use a bank card but i have the money on my account to pay for it",
+      "Ehej",
+      "I need help with questions of life"
+    ],
     "trainingConversations": [
       {
         "turns": [

@@ -17,13 +17,23 @@ class Actor(Enum):
     HUMAN_AGENT = 'HUMAN_AGENT'
 
 
+class Sentiment(Enum):
+    NEGATIVE = "NEGATIVE"
+    NEUTRAL = "NEUTRAL"
+    POSITIVE = "POSITIVE"
+
+
 class UserAction(BaseModel):
     """Represents any type of UserAction (email, utterance, option, etc).
     """
     type: str
-    intent: t.Optional[str]
     utterance: t.Optional[str]
     translatedUtterance: t.Optional[str]
+    intent: t.Optional[str]
+    sentiment: t.Optional[Sentiment]
+    confidence: t.Optional[float]
+    ood: t.Optional[bool]
+    oodConfidence: t.Optional[float]
     tags: t.Optional[t.List[TagValue]]
 
 

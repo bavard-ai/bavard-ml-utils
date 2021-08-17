@@ -5,13 +5,8 @@ from pydantic import BaseModel
 from bavard_ml_common.types.conversations.actions import Actor, AgentAction, UserAction, HumanAgentAction
 
 
-class SlotValue(BaseModel):
-    name: str
-    value: str
-
-
 class DialogueState(BaseModel):
-    slotValues: t.List[SlotValue]
+    slotValues: t.Dict[str, t.Any]
 
 
 class BaseDialogueTurn(BaseModel):

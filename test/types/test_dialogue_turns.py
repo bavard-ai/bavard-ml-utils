@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 
 from bavard_ml_common.types.conversations.actions import UserAction, AgentAction, TagValue
 from bavard_ml_common.types.conversations.dialogue_turns import (
-    UserDialogueTurn, DialogueState, SlotValue, AgentDialogueTurn
+    UserDialogueTurn, DialogueState, AgentDialogueTurn
 )
 
 
@@ -12,7 +12,7 @@ class TestDialogueTurns(TestCase):
     def test_user_dialogue_turn_serialization(self):
         turn = UserDialogueTurn(
             state=DialogueState(
-                slotValues=[SlotValue(name="slot3", value="foo"), SlotValue(name="slot1", value="bar")]
+                slotValues={"slot3": "foo", "slot1": "bar"}
             ),
             userAction=UserAction(
                 intent="intent2",
@@ -25,7 +25,7 @@ class TestDialogueTurns(TestCase):
 
     def test_agent_dialogue_turn_serialization(self):
         turn = AgentDialogueTurn(
-            state=DialogueState(slotValues=[SlotValue(name="slot2", value="foo")]),
+            state=DialogueState(slotValues={"slot2": "foo"}),
             agentAction=AgentAction(name="action2", utterance="I utter also.", type="UTTERANCE_ACTION")
         )
         self.assertEqual(turn, AgentDialogueTurn.parse_obj(jsonable_encoder(turn)))

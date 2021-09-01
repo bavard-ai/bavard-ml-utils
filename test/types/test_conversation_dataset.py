@@ -17,3 +17,24 @@ class TestConversationDataset(TestCase):
         # Each validation conversation should end with a user action
         for conv in convs:
             self.assertEqual(conv.turns[-1].actor, Actor.USER)
+
+    def test_properties(self):
+        self.assertSetEqual(
+            self.dataset.unique_slots(),
+            {
+                "hotel-bookday",
+                "hotel-bookpeople",
+                "hotel-bookstay",
+                "hotel-internet",
+                "hotel-name",
+                "hotel-parking",
+                "hotel-pricerange",
+                "hotel-type",
+                "nomatches"
+            }
+        )
+        self.assertSetEqual(self.dataset.unique_intents(), {"Hotel-Inform", "Hotel-Request"})
+        self.assertSetEqual(self.dataset.unique_tag_types(), {"pricerange", "bookstay", "bookday", "bookpeople"})
+        self.assertSetEqual(
+            self.dataset.unique_labels(), {"Hotel-Inform", "Booking-Request", "Booking-NoBook", "general-reqmore"}
+        )

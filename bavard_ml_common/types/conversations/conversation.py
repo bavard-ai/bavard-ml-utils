@@ -91,8 +91,8 @@ class ConversationDataset(LabeledDataset[Conversation]):
         for conv in self:
             for turn in conv.turns:
                 if turn.state is not None:
-                    for slot in turn.state.slotValues:
-                        slots.add(slot.name)
+                    for slot_name in turn.state.slotValues:
+                        slots.add(slot_name)
         return slots
 
     def make_validation_pairs(self) -> t.Tuple["ConversationDataset", t.List[str]]:

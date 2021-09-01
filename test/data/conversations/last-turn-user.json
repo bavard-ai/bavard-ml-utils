@@ -9,16 +9,10 @@
         "tags": []
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-internet",
-            "value": "dontcare"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          }
-        ]
+        "slotValues": {
+          "hotel-internet": "dontcare",
+          "hotel-parking": "yes"
+        }
       }
     },
     {
@@ -29,7 +23,7 @@
         "name": "Hotel-Inform"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -46,20 +40,11 @@
         ]
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-internet",
-            "value": "dontcare"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          }
-        ]
+        "slotValues": {
+          "hotel-internet": "dontcare",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate"
+        }
       }
     },
     {
@@ -70,7 +55,7 @@
         "name": "Hotel-Inform"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -87,20 +72,11 @@
         ]
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-internet",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          }
-        ]
+        "slotValues": {
+          "hotel-internet": "yes",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate"
+        }
       }
     },
     {
@@ -111,7 +87,7 @@
         "name": "Hotel-Inform"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -123,24 +99,12 @@
         "tags": []
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-internet",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-name",
-            "value": "ashley hotel"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          }
-        ]
+        "slotValues": {
+          "hotel-internet": "yes",
+          "hotel-name": "ashley hotel",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate"
+        }
       }
     },
     {
@@ -151,7 +115,7 @@
         "name": "Booking-Request"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -176,44 +140,17 @@
         ]
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-bookday",
-            "value": "wednesday"
-          },
-          {
-            "name": "hotel-bookpeople",
-            "value": "7"
-          },
-          {
-            "name": "hotel-bookstay",
-            "value": "4"
-          },
-          {
-            "name": "hotel-internet",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-name",
-            "value": "ashley hotel"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          },
-          {
-            "name": "hotel-type",
-            "value": "hotel"
-          },
-          {
-            "name": "nomatches",
-            "value": true
-          }
-        ]
+        "slotValues": {
+          "hotel-bookday": "wednesday",
+          "hotel-bookpeople": "7",
+          "hotel-bookstay": "4",
+          "hotel-internet": "yes",
+          "hotel-name": "ashley hotel",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate",
+          "hotel-type": "hotel",
+          "nomatches": true
+        }
       }
     },
     {
@@ -224,7 +161,7 @@
         "name": "Booking-NoBook"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -236,40 +173,16 @@
         "tags": []
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-bookday",
-            "value": "wednesday"
-          },
-          {
-            "name": "hotel-bookpeople",
-            "value": "7"
-          },
-          {
-            "name": "hotel-bookstay",
-            "value": "4"
-          },
-          {
-            "name": "hotel-internet",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-name",
-            "value": "lovell lodge"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          },
-          {
-            "name": "hotel-type",
-            "value": "hotel"
-          }
-        ]
+        "slotValues": {
+          "hotel-bookday": "wednesday",
+          "hotel-bookpeople": "7",
+          "hotel-bookstay": "4",
+          "hotel-internet": "yes",
+          "hotel-name": "lovell lodge",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate",
+          "hotel-type": "hotel"
+        }
       }
     },
     {
@@ -280,7 +193,7 @@
         "name": "general-reqmore"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -292,40 +205,16 @@
         "tags": []
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-bookday",
-            "value": "wednesday"
-          },
-          {
-            "name": "hotel-bookpeople",
-            "value": "7"
-          },
-          {
-            "name": "hotel-bookstay",
-            "value": "4"
-          },
-          {
-            "name": "hotel-internet",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-name",
-            "value": "lovell lodge"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          },
-          {
-            "name": "hotel-type",
-            "value": "hotel"
-          }
-        ]
+        "slotValues": {
+          "hotel-bookday": "wednesday",
+          "hotel-bookpeople": "7",
+          "hotel-bookstay": "4",
+          "hotel-internet": "yes",
+          "hotel-name": "lovell lodge",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate",
+          "hotel-type": "hotel"
+        }
       }
     },
     {
@@ -336,7 +225,7 @@
         "name": "Hotel-Inform"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -348,40 +237,16 @@
         "tags": []
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-bookday",
-            "value": "wednesday"
-          },
-          {
-            "name": "hotel-bookpeople",
-            "value": "7"
-          },
-          {
-            "name": "hotel-bookstay",
-            "value": "4"
-          },
-          {
-            "name": "hotel-internet",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-name",
-            "value": "lovell lodge"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          },
-          {
-            "name": "hotel-type",
-            "value": "hotel"
-          }
-        ]
+        "slotValues": {
+          "hotel-bookday": "wednesday",
+          "hotel-bookpeople": "7",
+          "hotel-bookstay": "4",
+          "hotel-internet": "yes",
+          "hotel-name": "lovell lodge",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate",
+          "hotel-type": "hotel"
+        }
       }
     },
     {
@@ -392,7 +257,7 @@
         "name": "Hotel-Inform"
       },
       "state": {
-        "slotValues": []
+        "slotValues": {}
       }
     },
     {
@@ -404,40 +269,16 @@
         "tags": []
       },
       "state": {
-        "slotValues": [
-          {
-            "name": "hotel-bookday",
-            "value": "wednesday"
-          },
-          {
-            "name": "hotel-bookpeople",
-            "value": "7"
-          },
-          {
-            "name": "hotel-bookstay",
-            "value": "4"
-          },
-          {
-            "name": "hotel-internet",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-name",
-            "value": "lovell lodge"
-          },
-          {
-            "name": "hotel-parking",
-            "value": "yes"
-          },
-          {
-            "name": "hotel-pricerange",
-            "value": "moderate"
-          },
-          {
-            "name": "hotel-type",
-            "value": "hotel"
-          }
-        ]
+        "slotValues": {
+          "hotel-bookday": "wednesday",
+          "hotel-bookpeople": "7",
+          "hotel-bookstay": "4",
+          "hotel-internet": "yes",
+          "hotel-name": "lovell lodge",
+          "hotel-parking": "yes",
+          "hotel-pricerange": "moderate",
+          "hotel-type": "hotel"
+        }
       }
     }
   ]

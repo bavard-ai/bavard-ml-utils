@@ -1,24 +1,24 @@
 import typing as t
+
 import requests
-from fastapi.routing import APIRoute
-from fastapi import Request, Response, HTTPException
+from fastapi import HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
-from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.routing import APIRoute
 from google.cloud import error_reporting
 from loguru import logger
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
-error_types = {'ERROR', 'MINOR', 'MAJOR', 'CRITICAL'}
+error_types = {"ERROR", "MINOR", "MAJOR", "CRITICAL"}
 
 
 def report_error(
     message: str,
     slack_url: t.Optional[str],
     gcp_project_id: t.Optional[str],
-    severity: str = 'ERROR',
+    severity: str = "ERROR",
 ):
-    """Reports errors on Slack || Google Cloud || Both
-    """
+    """Reports errors on Slack || Google Cloud || Both"""
     assert severity in error_types
     error = f":boom: {severity}: {message}"
 
@@ -39,7 +39,7 @@ def make_error_reporting_route_handler_class(
     *,
     msg_prefix: t.Optional[str] = None,
     slack_webhook_url: t.Optional[str] = None,
-    google_cloud_project: t.Optional[str] = None
+    google_cloud_project: t.Optional[str] = None,
 ) -> t.Type[APIRoute]:
     """Makes a route handler class which intercepts, logs, and reports all internal errors that occur in a FastAPI app.
 
@@ -104,5 +104,7 @@ def make_error_reporting_route_handler_class(
                         if was_team_notified:
                             server_response += " Out team has been notified of this incident."
                         raise HTTPException(500, server_response)
+
             return custom_route_handler
+
     return ErrorReportingRouteHandler

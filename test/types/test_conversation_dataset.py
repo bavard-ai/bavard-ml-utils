@@ -6,9 +6,9 @@ from bavard_ml_common.types.conversations.conversation import Conversation, Conv
 
 class TestConversationDataset(TestCase):
     def setUp(self):
-        self.dataset = ConversationDataset.from_conversations([
-            Conversation.parse_file("test/data/conversations/last-turn-user.json")
-        ])
+        self.dataset = ConversationDataset.from_conversations(
+            [Conversation.parse_file("test/data/conversations/last-turn-user.json")]
+        )
 
     def test_make_validation_pairs(self):
         convs, next_actions = self.dataset.make_validation_pairs()
@@ -30,8 +30,8 @@ class TestConversationDataset(TestCase):
                 "hotel-parking",
                 "hotel-pricerange",
                 "hotel-type",
-                "nomatches"
-            }
+                "nomatches",
+            },
         )
         self.assertSetEqual(self.dataset.unique_intents(), {"Hotel-Inform", "Hotel-Request"})
         self.assertSetEqual(self.dataset.unique_tag_types(), {"pricerange", "bookstay", "bookday", "bookpeople"})

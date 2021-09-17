@@ -38,8 +38,8 @@ class FileSpec(BaseModel, FileSystemObjectSpec):
 
 
 class DirSpec(BaseModel, FileSystemObjectSpec):
-    """Recursively write this directory and all of its children.
-    """
+    """Recursively write this directory and all of its children."""
+
     path: str  # should be relative to parent, unless there is no parent
     children: t.List[FileSystemObjectSpec]
 

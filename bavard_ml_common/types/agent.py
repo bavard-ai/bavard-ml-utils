@@ -22,8 +22,8 @@ class AgentActionDefinition(BaseModel):
 
 
 class AgentConfig(BaseModel):
-    """A subset of the `IAgentConfig` interface in our `agent-config` repo.
-    """
+    """A subset of the `IAgentConfig` interface in our `agent-config` repo."""
+
     name: str
     agentId: t.Optional[str]
     actions: t.List[AgentActionDefinition]
@@ -59,13 +59,13 @@ class AgentConfig(BaseModel):
         return set(self.tagTypes)
 
     def clean(self):
-        """Filters out invalid and unusable training data.
-        """
+        """Filters out invalid and unusable training data."""
         self.remove_unknown_intent_examples()
         self.filter_no_agent_convs()
 
     def remove_unknown_intent_examples(self):
-        """Filters out any example in `examples` whose intent is not in `intents`, or whose tags are not in `tag_types`.
+        """
+        Filters out any example in `examples` whose intent is not in `intents`, or whose tags are not in `tag_types`.
         """
         filtered = defaultdict(list)
         valid_intents = self.intent_names()
@@ -85,8 +85,7 @@ class AgentConfig(BaseModel):
         self.trainingConversations = [c for c in self.trainingConversations if c.num_agent_turns > 0]
 
     def incorporate_training_conversations(self):
-        """Adds to this agent's NLU examples any valid examples present in its training conversations.
-        """
+        """Adds to this agent's NLU examples any valid examples present in its training conversations."""
         valid_intents = self.intent_names()
         for conv in self.trainingConversations:
             for turn in conv.turns:
@@ -98,6 +97,6 @@ class AgentConfig(BaseModel):
 
 
 class AgentExport(BaseModel):
-    """A subset of the `IAgentExport` interface in our `chatbot-service` repo.
-    """
+    """A subset of the `IAgentExport` interface in our `chatbot-service` repo."""
+
     config: AgentConfig

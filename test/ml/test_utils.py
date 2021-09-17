@@ -1,5 +1,5 @@
-from unittest import TestCase
 from collections import defaultdict
+from unittest import TestCase
 
 import numpy as np
 import tensorflow as tf
@@ -8,7 +8,6 @@ from bavard_ml_common.ml.utils import make_stratified_folds, onehot
 
 
 class TestUtils(TestCase):
-
     def test_make_stratified_folds(self) -> None:
         data = list(range(10))
         labels = [0, 1] * 5

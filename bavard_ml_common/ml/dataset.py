@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from itertools import chain
 
-from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold
+from sklearn.model_selection import RepeatedStratifiedKFold, train_test_split
 from sklearn.utils import resample
 
 
@@ -70,8 +70,7 @@ class LabeledDataset(t.List[_T], ABC):
     def split(
         self, test_size: t.Union[float, int, None] = None, seed: int = 0, shuffle: bool = True
     ) -> t.Tuple["LabeledDataset", "LabeledDataset"]:
-        """Returns a train/test split of `self`, stratified by label.
-        """
+        """Returns a train/test split of `self`, stratified by label."""
         cls = self.__class__
         train, test = train_test_split(
             self, test_size=test_size, random_state=seed, shuffle=shuffle, stratify=self.labels()

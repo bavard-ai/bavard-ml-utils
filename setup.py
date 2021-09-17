@@ -1,7 +1,9 @@
 import os
 import sys
+
 import setuptools
 from setuptools.command.install import install
+
 
 # The version of this package
 VERSION = "0.1.15"
@@ -19,9 +21,7 @@ class VerifyVersionCommand(install):
         tag = os.getenv("CIRCLE_TAG")
 
         if tag != VERSION:
-            info = (
-                f"Git tag: {tag} does not match the version of this package: {VERSION}"
-            )
+            info = f"Git tag: {tag} does not match the version of this package: {VERSION}"
             sys.exit(info)
 
 
@@ -53,7 +53,7 @@ setuptools.setup(
         "numpy>=1.15.4",
         "scikit-learn>=0.20.3",
         "requests>=2.21.0",
-        "loguru>=0.5.1"
+        "loguru>=0.5.1",
     ],
     cmdclass={"verify": VerifyVersionCommand},
 )

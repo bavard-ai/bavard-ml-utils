@@ -1,6 +1,6 @@
-from unittest import TestCase
-import typing as t
 import statistics
+import typing as t
+from unittest import TestCase
 
 from fastapi.testclient import TestClient
 from pydantic import BaseModel

@@ -1,8 +1,8 @@
 import typing as t
 
+import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.utils import shuffle as do_shuffle
-import numpy as np
 
 
 def leave_one_out(items: t.Sequence):
@@ -13,7 +13,7 @@ def leave_one_out(items: t.Sequence):
     `1, [2,3,4]`, the second will yield `2, [1,3,4]`, and so on.
     """
     for i, item in enumerate(items):
-        yield item, items[:i] + items[i + 1:]
+        yield item, items[:i] + items[i + 1 :]
 
 
 def make_stratified_folds(

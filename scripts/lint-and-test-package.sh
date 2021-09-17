@@ -6,8 +6,11 @@ cd "$DIR/.."  # go to project root
 
 # Perform linting
 
-pip3 install flake8
-flake8 bavard_ml_common test --count
+pip3 install pre-commit
+pre-commit run check-yaml --all-files
+pre-commit run check-json --all-files
+pre-commit run black --all-files
+pre-commit run flake8 --all-files
 
 # Run the unit tests
 

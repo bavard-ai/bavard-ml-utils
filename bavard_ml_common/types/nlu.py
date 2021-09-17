@@ -6,8 +6,8 @@ from bavard_ml_common.ml.dataset import LabeledDataset
 
 
 class TrainingTag(BaseModel):
-    """A tag as it appears in NLU training data.
-    """
+    """A tag as it appears in NLU training data."""
+
     tagType: str
     start: int
     end: int

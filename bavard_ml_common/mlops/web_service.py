@@ -9,10 +9,12 @@ def endpoint(_func=None, **fastapi_args) -> t.Callable:
     arguments are forwarded to `fastapi.FastAPI.add_api_route`, which will
     register `method` as an API route when `WebService.to_app` is called.
     """
+
     def inner(method: t.Callable) -> t.Callable:
         method.is_endpoint = True
         method.fastapi_args = fastapi_args
         return method
+
     if _func is None:
         return inner
     else:
@@ -77,8 +79,7 @@ class WebService:
         }
 
     def to_app(self) -> FastAPI:
-        """Converts the implementing class into an HTTP web service.
-        """
+        """Converts the implementing class into an HTTP web service."""
         app = FastAPI()
         for name, method in self._get_endpoints().items():
             app.add_api_route(
@@ -87,7 +88,7 @@ class WebService:
                     "path": "/" + name,
                     "endpoint": method,
                     "methods": ["GET"],
-                    **method.fastapi_args
+                    **method.fastapi_args,
                 }
             )
 
@@ -102,7 +103,5 @@ class WebService:
         return {
             name: member
             for name, member in getmembers(self)
-            if ismethod(member)
-            and hasattr(member, "is_endpoint")
-            and member.is_endpoint is True
+            if ismethod(member) and hasattr(member, "is_endpoint") and member.is_endpoint is True
         }

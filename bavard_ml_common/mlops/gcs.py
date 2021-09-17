@@ -1,9 +1,9 @@
 import os
 import typing as t
 
-from google.cloud.storage.client import Client
-from google.cloud.storage.blob import Blob
 from google.auth.credentials import AnonymousCredentials
+from google.cloud.storage.blob import Blob
+from google.cloud.storage.client import Client
 
 
 class GCSClient(Client):
@@ -24,8 +24,7 @@ class GCSClient(Client):
 
     @staticmethod
     def is_gcs_uri(path: str) -> bool:
-        """Returns `True` if `path` is a google cloud storage file path.
-        """
+        """Returns `True` if `path` is a google cloud storage file path."""
         return path.startswith("gs://")
 
     def delete_blob(self, uri: str):
@@ -51,7 +50,7 @@ class GCSClient(Client):
         for root, _, filenames in os.walk(source_path):
             for filename in filenames:
                 file_path_local = os.path.join(root, filename)
-                file_path_remote = os.path.join(target_uri, file_path_local[1 + len(source_path):])
+                file_path_remote = os.path.join(target_uri, file_path_local[1 + len(source_path) :])
                 self.upload_filename_to_blob(file_path_local, file_path_remote)
 
     def download_dir(self, source_uri: str, target_path: str):
@@ -65,12 +64,11 @@ class GCSClient(Client):
         blobs = self.list_blobs(bucket_name, prefix=bucket_dir)
         for blob in blobs:
             blob_uri = self.get_blob_uri(blob)
-            blob_path_local = os.path.join(target_path, blob_uri[1 + len(source_uri):])
+            blob_path_local = os.path.join(target_path, blob_uri[1 + len(source_uri) :])
             self.download_blob_to_filename(blob_uri, blob_path_local)
 
     def parse_gcs_uri(self, uri: str) -> t.Tuple[str, str]:
-        """Returns the bucket path components of GCS uri `uri`. Raises an error if no path component exists.
-        """
+        """Returns the bucket path components of GCS uri `uri`. Raises an error if no path component exists."""
         assert self.is_gcs_uri(uri)
         path_components = uri.replace("gs://", "").split("/")
         assert len(path_components) > 1

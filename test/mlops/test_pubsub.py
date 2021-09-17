@@ -1,15 +1,14 @@
 import json
 from unittest import TestCase
 
-from google.cloud.pubsub_v1 import SubscriberClient
 from google.auth.credentials import AnonymousCredentials
+from google.cloud.pubsub_v1 import SubscriberClient
 
 from bavard_ml_common.mlops.pub_sub import PubSub
 from test.config import PUBSUB_PROJECT_ID
 
 
 class TestPubsubClient(TestCase):
-
     def setUp(self):
         self.recieved_message = False
 

@@ -1,18 +1,18 @@
 from unittest import TestCase
 
 from bavard_ml_common.mlops.gcs import GCSClient
-
-from test.utils import FileSpec, DirSpec
+from test.utils import DirSpec, FileSpec
 
 
 class TestGCSClient(TestCase):
-    test_data_spec = DirSpec(path="gcs-test", children=[
-        FileSpec(path="test-file.txt", content="This is a test."),
-        FileSpec(path="test-file-2.txt", content="This is also a test."),
-        DirSpec(path="subdir", children=[
-            FileSpec(path="test-file-3.txt", content="This one too.")
-        ])
-    ])
+    test_data_spec = DirSpec(
+        path="gcs-test",
+        children=[
+            FileSpec(path="test-file.txt", content="This is a test."),
+            FileSpec(path="test-file-2.txt", content="This is also a test."),
+            DirSpec(path="subdir", children=[FileSpec(path="test-file-3.txt", content="This one too.")]),
+        ],
+    )
     test_bucket_name = "gcs-client-bucket"
 
     @classmethod
@@ -47,7 +47,7 @@ class TestGCSClient(TestCase):
         downloaded_spec = DirSpec.from_path("gcs-test-copy")
         for child, dchild in zip(
             sorted(self.test_data_spec.children, key=lambda c: c.path),
-            sorted(downloaded_spec.children, key=lambda c: c.path)
+            sorted(downloaded_spec.children, key=lambda c: c.path),
         ):
             self.assertEqual(child, dchild)
 

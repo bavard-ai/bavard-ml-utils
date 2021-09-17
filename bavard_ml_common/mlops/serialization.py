@@ -1,8 +1,8 @@
+import os
+import pickle
 import shutil
 import typing as t
-import os
 from abc import ABC, abstractmethod
-import pickle
 
 
 class TypeSerializer(ABC):
@@ -43,15 +43,12 @@ class TypeSerializer(ABC):
         pass
 
     def resolve_path(self, path: str) -> str:
-        """Adds this serializer's extension to `path` if it has one.
-        """
+        """Adds this serializer's extension to `path` if it has one."""
         return f"{path}.{self.ext}" if self.ext else path
 
 
 class _CustomPickler(pickle.Pickler):
-    def __init__(
-        self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]
-    ) -> None:
+    def __init__(self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]) -> None:
         super().__init__(pkl_file)
         self._assets_path = assets_path
         self._ser_map = {ser.type_name: ser for ser in type_serializers}
@@ -73,17 +70,14 @@ class _CustomPickler(pickle.Pickler):
         return None
 
     def _get_unique_id(self) -> int:
-        """A primary key generator.
-        """
+        """A primary key generator."""
         id_ = self._unique_id
         self._unique_id += 1
         return id_
 
 
 class _CustomUnpickler(pickle.Unpickler):
-    def __init__(
-        self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]
-    ) -> None:
+    def __init__(self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]) -> None:
         super().__init__(pkl_file)
         self._assets_path = assets_path
         self._ser_map = {ser.type_name: ser for ser in type_serializers}
@@ -115,17 +109,14 @@ class Serializer:
     def __init__(self, *custom_type_serializers: TypeSerializer) -> None:
         self._type_serializers = custom_type_serializers
 
-        if len(self._type_serializers) != len(
-            {ser.type_name for ser in self._type_serializers}
-        ):
+        if len(self._type_serializers) != len({ser.type_name for ser in self._type_serializers}):
             raise ValueError(
                 "The type_name of each type serializer must be unique."
                 f" Currently registered names: {[ser.type_name for ser in self._type_serializers]}"
             )
 
     def serialize(self, obj: object, path: str, overwrite: bool = False) -> None:
-        """Serialize `obj` to `path`, a directory.
-        """
+        """Serialize `obj` to `path`, a directory."""
         if os.path.isfile(path):
             raise ValueError(f"cannot serialize to directory {path}; it is a file")
         if not os.path.isdir(path):
@@ -158,13 +149,12 @@ class Serializer:
 
 
 class Persistent:
-    """Mixin class giving persistence behavior.
-    """
+    """Mixin class giving persistence behavior."""
+
     serializer = Serializer()
 
     def to_dir(self, path: str, overwrite: bool = False) -> None:
-        """Serializes the full state of `self` to directory `path`.
-        """
+        """Serializes the full state of `self` to directory `path`."""
         self.serializer.serialize(self, path, overwrite)
 
     @classmethod

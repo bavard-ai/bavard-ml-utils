@@ -2,7 +2,7 @@ import typing as t
 
 from pydantic import BaseModel
 
-from bavard_ml_common.types.conversations.actions import Actor, AgentAction, UserAction, HumanAgentAction
+from bavard_ml_common.types.conversations.actions import Actor, AgentAction, HumanAgentAction, UserAction
 
 
 class DialogueState(BaseModel):

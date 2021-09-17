@@ -1,14 +1,13 @@
+import json
 import os
 import typing as t
-import json
 
 from google.auth.credentials import AnonymousCredentials
 from google.cloud.pubsub_v1 import PublisherClient
 
 
 class PubSub:
-    """A GCP pub-sub helper client that works out of the box with the GCP pus-sub emulator.
-    """
+    """A GCP pub-sub helper client that works out of the box with the GCP pus-sub emulator."""
 
     def __init__(self, project_id: str, credentials=None) -> None:
         if os.getenv("PUBSUB_EMULATOR_HOST") is not None:

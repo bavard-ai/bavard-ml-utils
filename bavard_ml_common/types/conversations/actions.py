@@ -5,16 +5,16 @@ from pydantic import BaseModel
 
 
 class TagValue(BaseModel):
-    """Represents a named entity's type and value.
-    """
+    """Represents a named entity's type and value."""
+
     tagType: str
     value: str
 
 
 class Actor(Enum):
-    USER = 'USER'
-    AGENT = 'AGENT'
-    HUMAN_AGENT = 'HUMAN_AGENT'
+    USER = "USER"
+    AGENT = "AGENT"
+    HUMAN_AGENT = "HUMAN_AGENT"
 
 
 class Sentiment(Enum):
@@ -24,8 +24,8 @@ class Sentiment(Enum):
 
 
 class UserAction(BaseModel):
-    """Represents any type of UserAction (email, utterance, option, etc).
-    """
+    """Represents any type of UserAction (email, utterance, option, etc)."""
+
     type: str
     utterance: t.Optional[str]
     translatedUtterance: t.Optional[str]
@@ -38,8 +38,8 @@ class UserAction(BaseModel):
 
 
 class AgentAction(BaseModel):
-    """Represents any type of agent action (form, utterance, email, etc.)
-    """
+    """Represents any type of agent action (form, utterance, email, etc.)"""
+
     type: str
     name: str  # the action's name
     utterance: t.Optional[str]

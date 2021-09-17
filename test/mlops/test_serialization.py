@@ -1,12 +1,12 @@
+import inspect
 import os
+import shutil
 from tempfile import TemporaryDirectory
 from unittest import TestCase
-import inspect
-import shutil
 
+import tensorflow as tf
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
-import tensorflow as tf
 from transformers import ReformerModelWithLMHead, ReformerTokenizer
 
 from bavard_ml_common.mlops.serialization import Serializer, TypeSerializer
@@ -71,9 +71,7 @@ class TestSklearnModel:
         return self._clf.predict(X)
 
     def __eq__(self, obj: object) -> bool:
-        unfitted_check = (
-            type(self) == type(obj) and self.C == obj.C and self._fitted == obj._fitted
-        )
+        unfitted_check = type(self) == type(obj) and self.C == obj.C and self._fitted == obj._fitted
         if not self._fitted:
             return unfitted_check
         else:
@@ -104,11 +102,7 @@ class TestKerasModel:
         return self._model.predict(X)
 
     def __eq__(self, obj: object) -> bool:
-        unfitted_check = (
-            type(self) == type(obj)
-            and self.n_units == obj.n_units
-            and self._fitted == obj._fitted
-        )
+        unfitted_check = type(self) == type(obj) and self.n_units == obj.n_units and self._fitted == obj._fitted
 
         if not unfitted_check or not self._fitted:
             return unfitted_check
@@ -183,9 +177,7 @@ class TestSerialization(TestCase):
 
         # Predictions should be identical.
         first_two = self.X[:2, :]
-        self.assertTrue(
-            (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
-        )
+        self.assertTrue((model.predict(first_two) == loaded_fit_model.predict(first_two)).all())
 
     def test_keras_serializer(self) -> None:
         model = TestKerasModel(n_units=10)
@@ -204,9 +196,7 @@ class TestSerialization(TestCase):
 
         # Predictions should be identical.
         first_two = self.X[:2, :]
-        self.assertTrue(
-            (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
-        )
+        self.assertTrue((model.predict(first_two) == loaded_fit_model.predict(first_two)).all())
 
     def test_hf_serializer(self) -> None:
         model = TestHfModel(max_length=25)
@@ -239,9 +229,7 @@ class TestSerialization(TestCase):
 
         # Predictions should be identical.
         first_two = self.X[:2, :]
-        self.assertTrue(
-            (model.predict(first_two) == loaded_fit_model.predict(first_two)).all()
-        )
+        self.assertTrue((model.predict(first_two) == loaded_fit_model.predict(first_two)).all())
 
     def test_can_serialize_to_empty_existing_dir(self):
         model = TestKerasModel(n_units=10)

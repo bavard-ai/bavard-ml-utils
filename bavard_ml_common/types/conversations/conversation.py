@@ -27,7 +27,7 @@ class Conversation(BaseModel):
         convs = []
         for i in range(len(self)):
             if self.turns[i].actor == Actor.AGENT:
-                convs.append(cls(turns=self.turns[:i + 1]))
+                convs.append(cls(turns=self.turns[: i + 1]))
         return convs
 
     def __len__(self):
@@ -49,7 +49,6 @@ class Conversation(BaseModel):
 
 
 class ConversationDataset(LabeledDataset[Conversation]):
-
     def get_label(self, item: Conversation) -> str:
         if not item.is_last_turn_agent:
             raise AssertionError("conversations in a ConversationDataset must have an agent action as final last turn.")

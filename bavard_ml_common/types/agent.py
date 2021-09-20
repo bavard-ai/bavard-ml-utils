@@ -41,10 +41,10 @@ class AgentConfig(BaseModel):
         copy.incorporate_training_conversations()
         return NLUExampleDataset(copy.all_nlu_examples(include_ood))
 
-    def to_conversation_dataset(self) -> ConversationDataset:
+    def to_conversation_dataset(self, expand=True) -> ConversationDataset:
         copy = self.copy(deep=True)
         copy.clean()
-        return ConversationDataset.from_conversations(copy.trainingConversations)
+        return ConversationDataset.from_conversations(copy.trainingConversations, expand)
 
     def all_nlu_examples(self, include_ood=False) -> t.List[NLUExample]:
         examples = list(chain.from_iterable(self.intentExamples.values()))
@@ -94,6 +94,26 @@ class AgentConfig(BaseModel):
                         self.intentExamples[turn.userAction.intent].append(
                             NLUExample(intent=turn.userAction.intent, text=turn.userAction.utterance, tags=[])
                         )
+
+    @classmethod
+    def from_conversation_dataset(cls, convs: ConversationDataset, name: str, **kwargs):
+        """Builds an agent config from a conversation dataset, including all its conversations and NLU examples."""
+        nlu_examples = convs.to_nlu_dataset()
+        examples_by_intent = defaultdict(list)
+        for ex in nlu_examples:
+            if not ex.isOOD and ex.intent is not None:
+                examples_by_intent[ex.intent].append(ex)
+        return cls(
+            name=name,
+            actions=[AgentActionDefinition(name=action) for action in convs.unique_actions()],
+            intents=[Intent(name=intent) for intent in convs.unique_intents()],
+            tagTypes=list(convs.unique_tag_types()),
+            slots=[Slot(name=slot) for slot in convs.unique_slots()],
+            intentOODExamples=list({ex.text for ex in nlu_examples if ex.isOOD}),
+            intentExamples=examples_by_intent,
+            trainingConversations=list(convs),
+            **kwargs
+        )
 
 
 class AgentExport(BaseModel):

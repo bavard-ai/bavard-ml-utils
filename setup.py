@@ -6,7 +6,7 @@ from setuptools.command.install import install
 
 
 # The version of this package
-VERSION = "0.1.15"
+VERSION = "0.1.16"
 
 
 class VerifyVersionCommand(install):

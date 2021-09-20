@@ -71,3 +71,16 @@ class TestAgent(TestCase):
         self.assertEqual(len(dataset.unique_labels()), len(without_ood.unique_labels()) + 1)
         self.assertIn(None, dataset.unique_labels())
         self.assertNotIn(None, without_ood.unique_labels())
+
+    def test_conversation_dataset_conversion(self):
+        config = AgentExport.parse_file("test/data/agents/bavard.json").config
+        config.clean()
+        convs = config.to_conversation_dataset(expand=False)
+        reconstructed = AgentConfig.from_conversation_dataset(convs, name=config.name)
+        # The reconstructed agent should have the same conversation data.
+        self.assertEqual(len(config.trainingConversations), len(reconstructed.trainingConversations))
+        self.assertGreater(len(reconstructed.intent_names()), 0)
+        for intent in reconstructed.intent_names():
+            self.assertIn(intent, config.intent_names())
+        for i in range(len(config.trainingConversations)):
+            self.assertEqual(config.trainingConversations[i], reconstructed.trainingConversations[i])

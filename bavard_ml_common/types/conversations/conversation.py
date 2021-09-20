@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from bavard_ml_common.ml.dataset import LabeledDataset
 from bavard_ml_common.types.conversations.actions import Actor
 from bavard_ml_common.types.conversations.dialogue_turns import DialogueTurn
+from bavard_ml_common.types.nlu import NLUExample, NLUExampleDataset
 
 
 class Conversation(BaseModel):
@@ -23,6 +24,7 @@ class Conversation(BaseModel):
         return False if len(self.turns) == 0 else self.turns[-1].actor == Actor.AGENT
 
     def expand(self) -> t.List["Conversation"]:
+        """Turns this conversation into a list of its partial conversations that each end with an agent action."""
         cls = self.__class__
         convs = []
         for i in range(len(self)):
@@ -55,44 +57,71 @@ class ConversationDataset(LabeledDataset[Conversation]):
         return item.turns[-1].agentAction.name
 
     @classmethod
-    def from_conversations(cls, convs: t.List[Conversation]) -> "ConversationDataset":
+    def from_conversations(cls, convs: t.List[Conversation], expand=True) -> "ConversationDataset":
         """
         Safely builds a dataset from Conversations which may or may not have agent actions as the final turn.
         Expands each conversation in `convs` into as many possible conversations as possible, under the constraint
-        that each conversation end with an agent action.
+        that each conversation end with an agent action. If `expand==False`, expansion is bypassed, and the regular
+        conversations are used.
         """
-        expanded = []
+        result = []
         for conv in convs:
-            expanded += conv.expand()
-        return cls(expanded)
+            if expand:
+                result += conv.expand()
+            else:
+                result.append(conv)
+        return cls(result)
+
+    def turns(self, actor: t.Optional[Actor] = None) -> t.Iterable[DialogueTurn]:
+        """Iterates over all turns of all conversations in the dataset, having `actor`, if supplied."""
+        check_actor = actor is not None
+        for conv in self:
+            for turn in conv.turns:
+                if check_actor:
+                    if turn.actor == actor:
+                        yield turn
+                else:
+                    yield turn
 
     def unique_intents(self) -> t.Set[str]:
         intents = set()
-        for conv in self:
-            for turn in conv.turns:
-                if turn.actor == Actor.USER:
-                    if turn.userAction.intent is not None:
-                        intents.add(turn.userAction.intent)
+        for turn in self.turns(Actor.USER):
+            if turn.userAction.intent is not None:
+                intents.add(turn.userAction.intent)
         return intents
+
+    def unique_actions(self):
+        actions = set()
+        for turn in self.turns(Actor.AGENT):
+            actions.add(turn.agentAction.name)
+        return actions
 
     def unique_tag_types(self) -> t.Set[str]:
         tag_types = set()
-        for conv in self:
-            for turn in conv.turns:
-                if turn.actor == Actor.USER:
-                    if turn.userAction.tags is not None:
-                        for tag in turn.userAction.tags:
-                            tag_types.add(tag.tagType)
+        for turn in self.turns(Actor.USER):
+            if turn.userAction.tags is not None:
+                for tag in turn.userAction.tags:
+                    tag_types.add(tag.tagType)
         return tag_types
 
     def unique_slots(self) -> t.Set[str]:
         slots = set()
-        for conv in self:
-            for turn in conv.turns:
-                if turn.state is not None:
-                    for slot_name in turn.state.slotValues:
-                        slots.add(slot_name)
+        for turn in self.turns():
+            if turn.state is not None:
+                for slot_name in turn.state.slotValues:
+                    slots.add(slot_name)
         return slots
+
+    def to_nlu_dataset(self):
+        examples = []
+        for turn in self.turns(Actor.USER):
+            action = turn.userAction
+            if action.utterance is not None:
+                if action.ood:
+                    examples.append(NLUExample(text=action.utterance, isOOD=True))
+                elif action.intent is not None:
+                    examples.append(NLUExample(text=action.utterance, intent=action.intent))
+        return NLUExampleDataset(examples)
 
     def make_validation_pairs(self) -> t.Tuple["ConversationDataset", t.List[str]]:
         """

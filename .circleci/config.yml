@@ -16,20 +16,14 @@ references:
       - run:
           name: test
           command: scripts/lint-and-test-package.sh
+
   publish: &publish
     <<: *default_config
     steps:
       - checkout
       - run:
           name: publish
-          command: |
-            set -eo pipefail
-            pip3 install setuptools wheel twine
-            python3 setup.py verify
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = __token__" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-            ./scripts/publish.sh
+          command: ./scripts/publish.sh
 
 jobs:
   test:

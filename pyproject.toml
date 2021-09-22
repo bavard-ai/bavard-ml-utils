@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bavard-ml-common"
-version = "0.1.16"
+version = "0.1.17"
 description = "Machine learning and Python web service utilities"
 authors = ["Bavard AI, Inc. <dev@bavard.ai>"]
 
@@ -11,8 +11,8 @@ pydantic = "^1.7.3"
 google-cloud-storage = "^1.35.1"
 google-cloud-pubsub = "^2.2.0"
 google-cloud-error-reporting = "^1.1.1"
-numpy = "^1.15.4"
-scikit-learn = "^0.24.2"
+numpy = {version = "^1.15.4", optional = true}
+scikit-learn = {version = "^0.24.2", optional = true}
 requests = "^2.21.0"
 loguru = "^0.5.1"
 
@@ -21,6 +21,9 @@ torch = "^1.9.1"
 transformers = "^4.10.2"
 tensorflow = "^2.6.0"
 sentencepiece = "^0.1.96"
+
+[tool.poetry.extras]
+ml = ["numpy", "scikit-learn"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

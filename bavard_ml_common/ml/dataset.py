@@ -3,8 +3,16 @@ from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from itertools import chain
 
-from sklearn.model_selection import RepeatedStratifiedKFold, train_test_split
-from sklearn.utils import resample
+from bavard_ml_common.utils import requires_extras
+
+
+try:
+    from sklearn.model_selection import RepeatedStratifiedKFold, train_test_split
+    from sklearn.utils import resample
+except ImportError:
+    _has_ml_deps = False
+else:
+    _has_ml_deps = True
 
 
 _T = t.TypeVar("_T")
@@ -39,6 +47,7 @@ class LabeledDataset(t.List[_T], ABC):
         """
         return Counter(self.labels())
 
+    @requires_extras(ml=_has_ml_deps)
     def cv(
         self, nfolds: int = 5, nrepeats: int = 1, seed: int = 0
     ) -> t.Iterator[t.Tuple["LabeledDataset", "LabeledDataset"]]:
@@ -51,6 +60,7 @@ class LabeledDataset(t.List[_T], ABC):
         for train_index, test_index in rskf.split(self, self.labels()):
             yield cls([self[i] for i in train_index]), cls(self[i] for i in test_index)
 
+    @requires_extras(ml=_has_ml_deps)
     def balance(self, seed: int = 0) -> "LabeledDataset":
         """
         Makes a new version of `self`, where the minority labels
@@ -67,6 +77,7 @@ class LabeledDataset(t.List[_T], ABC):
         )
         return cls(upsampled)
 
+    @requires_extras(ml=_has_ml_deps)
     def split(
         self, test_size: t.Union[float, int, None] = None, seed: int = 0, shuffle: bool = True
     ) -> t.Tuple["LabeledDataset", "LabeledDataset"]:

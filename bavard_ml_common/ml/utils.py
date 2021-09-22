@@ -1,8 +1,16 @@
 import typing as t
 
-import numpy as np
-from sklearn.model_selection import StratifiedKFold
-from sklearn.utils import shuffle as do_shuffle
+
+try:
+    import numpy as np
+    from sklearn.model_selection import StratifiedKFold
+    from sklearn.utils import shuffle as do_shuffle
+except ImportError:
+    _has_ml_deps = False
+else:
+    _has_ml_deps = True
+
+from bavard_ml_common.utils import requires_extras
 
 
 def leave_one_out(items: t.Sequence):
@@ -16,6 +24,7 @@ def leave_one_out(items: t.Sequence):
         yield item, items[:i] + items[i + 1 :]
 
 
+@requires_extras(ml=_has_ml_deps)
 def make_stratified_folds(
     data: t.Sequence, labels: t.Sequence, nfolds: int, shuffle: bool = True, seed: int = 0
 ) -> tuple:
@@ -31,6 +40,7 @@ def make_stratified_folds(
     return folds
 
 
+@requires_extras(ml=_has_ml_deps)
 def aggregate_dicts(dicts: t.Sequence, agg: str) -> dict:
     """
     Aggregates a list of dictionaries all having the same keys.
@@ -58,15 +68,18 @@ def aggregate_dicts(dicts: t.Sequence, agg: str) -> dict:
     return result
 
 
-def onehot(a: np.ndarray, axis=-1, dtype=np.float32) -> np.ndarray:
+@requires_extras(ml=_has_ml_deps)
+def onehot(data, axis=-1, dtype=None):
     """A pure numpy implementation of the one-hot encoding function for arrays of arbitrary dimensionality.
     Source: https://stackoverflow.com/a/63840293
     """
-    pos = axis if axis >= 0 else a.ndim + axis + 1
-    shape = list(a.shape)
-    shape.insert(pos, a.max() + 1)
+    if dtype is None:
+        dtype = np.float32
+    pos = axis if axis >= 0 else data.ndim + axis + 1
+    shape = list(data.shape)
+    shape.insert(pos, data.max() + 1)
     out = np.zeros(shape, dtype)
-    ind = list(np.indices(a.shape, sparse=True))
-    ind.insert(pos, a)
+    ind = list(np.indices(data.shape, sparse=True))
+    ind.insert(pos, data)
     out[tuple(ind)] = True
     return out

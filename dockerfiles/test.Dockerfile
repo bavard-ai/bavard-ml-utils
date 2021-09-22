@@ -24,8 +24,8 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 
 COPY poetry.lock pyproject.toml ./
 
-# Install dependencies.
-RUN poetry install
+# Install dependencies, including all extras.
+RUN poetry install --extras "ml"
 
 COPY ./bavard_ml_common ./bavard_ml_common
 COPY ./test ./test

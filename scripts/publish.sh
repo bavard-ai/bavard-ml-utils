@@ -7,6 +7,7 @@ cd $DIR/..  # go to project root
 
 # Install poetry.
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+source $HOME/.poetry/env
 
 pkg_version="$(poetry version --short)"
 if [pkg_version -ne $CIRCLE_TAG]; then

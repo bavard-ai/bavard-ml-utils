@@ -4,7 +4,10 @@ import shutil
 import typing as t
 from abc import ABC, abstractmethod
 
+import requests
 from pydantic import BaseModel
+
+from test.config import FIRESTORE_EMULATOR_HOST
 
 
 def load_json_file(path):
@@ -70,3 +73,10 @@ class DirSpec(BaseModel, FileSystemObjectSpec):
             elif os.path.isfile(child_path):
                 spec.children.append(FileSpec.from_path(child_name, base_path))
         return spec
+
+
+def clear_database():
+    # Clear the test database.
+    # Source: https://firebase.google.com/docs/emulator-suite/connect_firestore#clear_your_database_between_tests
+    res = requests.delete(f"http://{FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/test/databases/(default)/documents")
+    res.raise_for_status()

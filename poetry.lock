@@ -225,6 +225,20 @@ packaging = ">=14.3"
 proto-plus = ">=1.4.0"
 
 [[package]]
+name = "google-cloud-firestore"
+version = "2.3.2"
+description = "Google Cloud Firestore API client library"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+google-api-core = {version = ">=1.26.0,<3.0.0dev", extras = ["grpc"]}
+google-cloud-core = ">=1.4.1,<3.0.0dev"
+packaging = ">=14.3"
+proto-plus = ">=1.10.0"
+
+[[package]]
 name = "google-cloud-logging"
 version = "2.6.0"
 description = "Stackdriver Logging API client library"
@@ -975,7 +989,7 @@ ml = ["numpy", "scikit-learn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "84b1437b4963943dfe6761341e6ada7616ef3175d458acf9c0e93e89b053a18d"
+content-hash = "c03e786cd3d9847b12e38e3f3d92e33efa3bec69218284608f22ae10ae198d51"
 
 [metadata.files]
 absl-py = [
@@ -1053,6 +1067,10 @@ google-cloud-core = [
 google-cloud-error-reporting = [
     {file = "google-cloud-error-reporting-1.2.2.tar.gz", hash = "sha256:2ca11212940bbe39b2a3c55c6757f131c3c26d413e9b1be69dec686442ab6a67"},
     {file = "google_cloud_error_reporting-1.2.2-py2.py3-none-any.whl", hash = "sha256:ca9cadc21728775a8cfd2f1c1c086c49592815542ba73e24841feab1c553a073"},
+]
+google-cloud-firestore = [
+    {file = "google-cloud-firestore-2.3.2.tar.gz", hash = "sha256:6e2eb65ccd75c6579214fb2099cfb98c57b2b4907ccb38a2ed21f00f492b7a50"},
+    {file = "google_cloud_firestore-2.3.2-py2.py3-none-any.whl", hash = "sha256:8953034b4a838317633b27385cdaf75c4b920ea5462a0ae79dd9b9a97c47b053"},
 ]
 google-cloud-logging = [
     {file = "google-cloud-logging-2.6.0.tar.gz", hash = "sha256:499eed5f13cab805c8780b0d14a0d931a9ff1d65efccdd9e68772d40e7dad4c5"},

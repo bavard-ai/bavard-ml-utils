@@ -17,6 +17,16 @@ services:
       PORT: 4442
       PUBSUB_PROJECT_ID: test
 
+  firestore_emulator:
+    build:
+      context: .
+      dockerfile: firestore.Dockerfile
+    ports:
+      - 8081:8081
+    environment:
+      FIRESTORE_PROJECT_ID: test
+      PORT: 8081
+
   test:
     build:
       context: ..
@@ -24,7 +34,10 @@ services:
     image: bavard-ml-common:test
     depends_on:
       - gcs_emulator
+      - pubsub_emulator
+      - firestore_emulator
     environment:
       STORAGE_EMULATOR_HOST: http://gcs_emulator:4443
+      FIRESTORE_EMULATOR_HOST: firestore_emulator:8081
       PUBSUB_EMULATOR_HOST: pubsub_emulator:4442
       PUBSUB_PROJECT_ID: test

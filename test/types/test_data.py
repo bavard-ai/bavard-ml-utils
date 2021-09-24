@@ -48,11 +48,6 @@ class TestData(TestCase):
         # The model should have reconstructed perfectly.
         self.assertEqual(self.model, rebuilt)
 
-    def test_can_encode_to_primitives(self):
-        data = self.model.encode()
-        rebuilt = TestModel.parse_obj(data)
-        self.assertEqual(self.model, rebuilt)
-
     def test_numpy_serialization(self):
         for dtype in ["uint8", "int16", "float32"]:
             for mode in ["w", "wb"]:

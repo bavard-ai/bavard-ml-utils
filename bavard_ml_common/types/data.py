@@ -53,19 +53,24 @@ class DataModel(BaseModel):
     reconstructed == MyModel.parse_raw(model.json())
     # `reconstructed`'s contents are identical to `model`
     ```
+
+    Serializing to primitive python data structures is also supported, via `model.dict()` and `MyModel.parse_obj()`.
     """
 
     class Config:
         arbitrary_types_allowed = True
-        json_encoders = {
-            # TODO: the top level call to `NumpyModel.json()` bloats the string returned here by `encode_numpy`,
-            #   because it inserts escape characters and converts '\x' to '\u00' sometimes.
-            np.ndarray: lambda arr: encode_numpy(arr, mode="w")
-        }
 
-    def encode(self):
-        """Returns an encoded version of this model composed of primitive Python types."""
-        return jsonable_encoder(self)
+    def dict(self, *args, **kwargs):
+        """
+        Creates a dictionary representation of the model, encoding all values to basic Python data types, for example,
+        enum values become strings, and numpy arrays become data strings.
+        """
+        # First convert to a `dict`, to prevent `jsonable_encoder` from recursively calling this object's `dict` method,
+        # which would cause infinite recursion.
+        d = super().dict(*args, **kwargs)
+        # TODO: the top level call to `DataModel.json()` bloats the string returned here by `encode_numpy`,
+        #   because it inserts escape characters and converts '\x' to '\u00' sometimes.
+        return jsonable_encoder(d, custom_encoder={np.ndarray: lambda arr: encode_numpy(arr, mode="w")})
 
     @classmethod
     def _get_fields_of_type(cls, type_: t.Type) -> t.Set[str]:

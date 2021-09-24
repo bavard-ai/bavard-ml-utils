@@ -151,7 +151,7 @@ class Serializer:
 class Persistent:
     """Mixin class giving persistence behavior."""
 
-    serializer = Serializer()
+    serializer = Serializer()  # override for custom serialization behavior
 
     def to_dir(self, path: str, overwrite: bool = False) -> None:
         """Serializes the full state of `self` to directory `path`."""

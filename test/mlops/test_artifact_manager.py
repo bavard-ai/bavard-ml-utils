@@ -130,3 +130,24 @@ class TestArtifactManager(TestCase):
         datasets2 = list(self.datasets.get_all())
         self.assertEqual(len(datasets2), 1)
         self.assertEqual(datasets1[0], datasets2[0])
+
+    def test_should_sync_missed_artifacts_on_the_fly(self):
+        mgr = ArtifactManager(self.artifacts, self.datasets, self.versions, "v1")
+        # Simulate a dataset being saved to a prior service version (no artifact data exists for it for the current
+        # service version).
+        dataset_record = self.dataset_records[0]
+        self.datasets.save(dataset_record)
+        # The artifact should not exist in the database for the current service version.
+        artifact = self.artifacts.get(ArtifactRecord.make_id("v1", dataset_record.agent_id))
+        self.assertIsNone(artifact)
+        artifact = mgr.load_artifact(dataset_record.agent_id)  # should compute and save the artifact on the fly
+        self.assertIsNotNone(artifact)
+        # The artifact should now exist in the database for the current service version, and will no longer
+        # need to be computed on the fly.
+        artifact = self.artifacts.get(ArtifactRecord.make_id("v1", dataset_record.agent_id))
+        self.assertIsNotNone(artifact)
+        self.assertEqual(artifact.agent_id, dataset_record.agent_id)
+        self.assertEqual(artifact.service_version, "v1")
+        self.assertEqual(artifact.dataset_digest, dataset_record.digest)
+        self.assertIsNotNone(artifact.A)
+        self.assertIsNotNone(artifact.b)

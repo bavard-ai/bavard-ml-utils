@@ -96,12 +96,13 @@ class BaseArtifactManager(ABC):
         pass
 
     def delete_artifact(self, agent_id: str):
-        """Deletes from Firestore a dataset and all artifacts associated with it."""
-        dataset_record = self._datasets.get(agent_id)
-        if dataset_record is None:
-            self.raise_no_dataset(agent_id)
-        self._datasets.delete(agent_id)
-        self._artifacts.delete_all(agent_id=agent_id)  # get rid of any old versions as well
+        """
+        Deletes from Firestore a dataset and all artifacts associated with it, if they exist. Returns the number of
+        total database records that were deleted.
+        """
+        num_deleted = int(self._datasets.delete(agent_id))
+        num_deleted += self._artifacts.delete_all(agent_id=agent_id)  # get rid of any old versions as well
+        return num_deleted
 
     def save_artifact(self, artifact: BaseArtifactRecord, dataset: BaseDatasetRecord):
         """

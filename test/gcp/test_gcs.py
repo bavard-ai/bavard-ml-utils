@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from bavard_ml_common.mlops.gcs import GCSClient
+from bavard_ml_common.gcp.gcs import GCSClient
 from test.utils import DirSpec, FileSpec
 
 

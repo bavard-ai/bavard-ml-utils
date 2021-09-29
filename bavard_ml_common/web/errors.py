@@ -1,10 +1,20 @@
+import inspect
 import typing as t
 
 import requests
 from fastapi import HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
-from google.cloud import error_reporting
+
+from bavard_ml_common.utils import ImportExtraError
+
+
+try:
+    from google.cloud import error_reporting
+except ImportError:
+    _has_gcp_deps = False
+else:
+    _has_gcp_deps = True
 from loguru import logger
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -29,6 +39,9 @@ def report_error(
             logger.exception("encountered error while reporting error to Slack")
 
     if gcp_project_id is not None:
+        if not _has_gcp_deps:
+            function_name = inspect.stack()[0][3]  # source: https://stackoverflow.com/a/5067654
+            raise ImportExtraError("gcp", function_name)
         try:
             error_reporting.Client(gcp_project_id).report(error)  # report on GCP
         except Exception:

@@ -1,9 +1,15 @@
 import os
 import typing as t
 
-from google.auth.credentials import AnonymousCredentials
-from google.cloud.storage.blob import Blob
-from google.cloud.storage.client import Client
+from bavard_ml_common.utils import ImportExtraError
+
+
+try:
+    from google.auth.credentials import AnonymousCredentials
+    from google.cloud.storage.blob import Blob
+    from google.cloud.storage.client import Client
+except ImportError:
+    raise ImportExtraError("gcp", __name__)
 
 
 class GCSClient(Client):

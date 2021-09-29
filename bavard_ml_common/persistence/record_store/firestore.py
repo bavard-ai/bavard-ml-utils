@@ -1,11 +1,17 @@
 import os
 import typing as t
 
-from google.auth.credentials import AnonymousCredentials, Credentials
-from google.cloud import firestore
-from google.cloud.firestore_v1 import DocumentSnapshot
+from bavard_ml_common.utils import ImportExtraError
 
-from bavard_ml_common.mlops.persistence.record_store.base import BaseRecordStore, Record, RecordT
+
+try:
+    from google.auth.credentials import AnonymousCredentials, Credentials
+    from google.cloud import firestore
+    from google.cloud.firestore_v1 import DocumentSnapshot
+except ImportError:
+    raise ImportExtraError("gcp", __name__)
+
+from bavard_ml_common.persistence.record_store.base import BaseRecordStore, Record, RecordT
 
 
 class FirestoreRecordStore(BaseRecordStore[RecordT]):

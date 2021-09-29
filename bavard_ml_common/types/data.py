@@ -11,7 +11,7 @@ from bavard_ml_common.utils import ImportExtraError
 try:
     import numpy as np
 except ImportError:
-    raise ImportExtraError("ml", "data module")
+    raise ImportExtraError("ml", __name__)
 
 
 def encode_numpy(data: np.ndarray, mode="w"):

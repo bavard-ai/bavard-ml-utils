@@ -9,7 +9,7 @@ from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 from transformers import ReformerModelWithLMHead, ReformerTokenizer
 
-from bavard_ml_common.mlops.serialization import Serializer, TypeSerializer
+from bavard_ml_common.persistence.serialization import Serializer, TypeSerializer
 
 
 class ReformerModelSerializer(TypeSerializer):

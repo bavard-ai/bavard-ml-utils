@@ -2,8 +2,14 @@ import json
 import os
 import typing as t
 
-from google.auth.credentials import AnonymousCredentials
-from google.cloud.pubsub_v1 import PublisherClient
+from bavard_ml_common.utils import ImportExtraError
+
+
+try:
+    from google.auth.credentials import AnonymousCredentials
+    from google.cloud.pubsub_v1 import PublisherClient
+except ImportError:
+    raise ImportExtraError("gcp", __name__)
 
 
 class PubSub:

@@ -5,7 +5,7 @@ from io import BytesIO
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, root_validator
 
-from bavard_ml_common.utils import ImportExtraError
+from bavard_ml_utils.utils import ImportExtraError
 
 
 try:

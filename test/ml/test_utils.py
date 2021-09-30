@@ -4,7 +4,7 @@ from unittest import TestCase
 import numpy as np
 import tensorflow as tf
 
-from bavard_ml_common.ml.utils import make_stratified_folds, onehot
+from bavard_ml_utils.ml.utils import make_stratified_folds, onehot
 
 
 class TestUtils(TestCase):

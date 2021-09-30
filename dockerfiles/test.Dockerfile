@@ -27,7 +27,7 @@ COPY poetry.lock pyproject.toml ./
 # Install dependencies, including all extras.
 RUN poetry install --extras "ml gcp"
 
-COPY ./bavard_ml_common ./bavard_ml_common
+COPY ./bavard_ml_utils ./bavard_ml_utils
 COPY ./test ./test
 
 CMD ["poetry", "run", "python", "-m", "unittest", "--verbose"]

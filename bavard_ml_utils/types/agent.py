@@ -4,9 +4,9 @@ from itertools import chain
 
 from pydantic import BaseModel
 
-from bavard_ml_common.types.conversations.actions import Actor
-from bavard_ml_common.types.conversations.conversation import Conversation, ConversationDataset
-from bavard_ml_common.types.nlu import NLUExample, NLUExampleDataset
+from bavard_ml_utils.types.conversations.actions import Actor
+from bavard_ml_utils.types.conversations.conversation import Conversation, ConversationDataset
+from bavard_ml_utils.types.nlu import NLUExample, NLUExampleDataset
 
 
 class Intent(BaseModel):

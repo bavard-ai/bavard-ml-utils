@@ -2,10 +2,10 @@ import typing as t
 
 from pydantic import BaseModel
 
-from bavard_ml_common.ml.dataset import LabeledDataset
-from bavard_ml_common.types.conversations.actions import Actor
-from bavard_ml_common.types.conversations.dialogue_turns import DialogueTurn
-from bavard_ml_common.types.nlu import NLUExample, NLUExampleDataset
+from bavard_ml_utils.ml.dataset import LabeledDataset
+from bavard_ml_utils.types.conversations.actions import Actor
+from bavard_ml_utils.types.conversations.dialogue_turns import DialogueTurn
+from bavard_ml_utils.types.nlu import NLUExample, NLUExampleDataset
 
 
 class Conversation(BaseModel):

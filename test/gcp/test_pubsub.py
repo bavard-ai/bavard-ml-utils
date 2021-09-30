@@ -4,7 +4,7 @@ from unittest import TestCase
 from google.auth.credentials import AnonymousCredentials
 from google.cloud.pubsub_v1 import SubscriberClient
 
-from bavard_ml_common.gcp.pub_sub import PubSub
+from bavard_ml_utils.gcp.pub_sub import PubSub
 from test.config import PUBSUB_PROJECT_ID
 
 

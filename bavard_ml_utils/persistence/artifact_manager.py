@@ -5,8 +5,8 @@ from abc import ABC, abstractmethod
 from fastapi import HTTPException, status
 from loguru import logger
 
-from bavard_ml_common.persistence.record_store.base import BaseRecordStore, Record
-from bavard_ml_common.types.utils import hash_model
+from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record
+from bavard_ml_utils.types.utils import hash_model
 
 
 class ServiceVersionMetadata(Record):

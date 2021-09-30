@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from fastapi.encoders import jsonable_encoder
 
-from bavard_ml_common.types.conversations.actions import AgentAction, TagValue, UserAction
-from bavard_ml_common.types.conversations.dialogue_turns import AgentDialogueTurn, DialogueState, UserDialogueTurn
+from bavard_ml_utils.types.conversations.actions import AgentAction, TagValue, UserAction
+from bavard_ml_utils.types.conversations.dialogue_turns import AgentDialogueTurn, DialogueState, UserDialogueTurn
 
 
 class TestDialogueTurns(TestCase):

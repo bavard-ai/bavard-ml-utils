@@ -1,7 +1,7 @@
 import typing as t
 from unittest import TestCase
 
-from bavard_ml_common.ml.dataset import LabeledDataset
+from bavard_ml_utils.ml.dataset import LabeledDataset
 
 
 Pair = t.Tuple[str, int]

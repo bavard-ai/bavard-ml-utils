@@ -1,7 +1,7 @@
 import os
 import typing as t
 
-from bavard_ml_common.utils import ImportExtraError
+from bavard_ml_utils.utils import ImportExtraError
 
 
 try:

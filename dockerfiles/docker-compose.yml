@@ -31,7 +31,7 @@ services:
     build:
       context: ..
       dockerfile: dockerfiles/test.Dockerfile
-    image: bavard-ml-common:test
+    image: bavard-ml-utils:test
     depends_on:
       - gcs_emulator
       - pubsub_emulator

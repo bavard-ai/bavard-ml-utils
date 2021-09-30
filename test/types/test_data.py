@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from bavard_ml_common.types.data import DataModel, decode_numpy, encode_numpy
+from bavard_ml_utils.types.data import DataModel, decode_numpy, encode_numpy
 
 
 class InnerModel(DataModel):

@@ -2,10 +2,10 @@ from unittest import TestCase
 
 from fastapi.encoders import jsonable_encoder
 
-from bavard_ml_common.types.agent import AgentConfig, AgentExport
-from bavard_ml_common.types.conversations.actions import UserAction
-from bavard_ml_common.types.conversations.conversation import Conversation
-from bavard_ml_common.types.conversations.dialogue_turns import UserDialogueTurn
+from bavard_ml_utils.types.agent import AgentConfig, AgentExport
+from bavard_ml_utils.types.conversations.actions import UserAction
+from bavard_ml_utils.types.conversations.conversation import Conversation
+from bavard_ml_utils.types.conversations.dialogue_turns import UserDialogueTurn
 from test.utils import load_json_file
 
 

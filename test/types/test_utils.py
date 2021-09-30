@@ -4,8 +4,8 @@ from unittest import TestCase
 import numpy as np
 from pydantic import BaseModel
 
-from bavard_ml_common.types.data import DataModel
-from bavard_ml_common.types.utils import hash_model
+from bavard_ml_utils.types.data import DataModel
+from bavard_ml_utils.types.utils import hash_model
 
 
 class MyModel(BaseModel):

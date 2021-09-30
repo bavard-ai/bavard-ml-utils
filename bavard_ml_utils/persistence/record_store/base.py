@@ -1,7 +1,7 @@
 import typing as t
 from abc import ABC, abstractmethod
 
-from bavard_ml_common.types.data import DataModel
+from bavard_ml_utils.types.data import DataModel
 
 
 class Record(DataModel, ABC):

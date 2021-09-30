@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from itertools import chain
 
-from bavard_ml_common.utils import requires_extras
+from bavard_ml_utils.utils import requires_extras
 
 
 try:

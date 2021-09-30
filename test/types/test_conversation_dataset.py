@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from bavard_ml_common.types.conversations.actions import Actor
-from bavard_ml_common.types.conversations.conversation import Conversation, ConversationDataset
+from bavard_ml_utils.types.conversations.actions import Actor
+from bavard_ml_utils.types.conversations.conversation import Conversation, ConversationDataset
 
 
 class TestConversationDataset(TestCase):

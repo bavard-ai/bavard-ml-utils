@@ -1,7 +1,7 @@
 import os
 import typing as t
 
-from bavard_ml_common.utils import ImportExtraError
+from bavard_ml_utils.utils import ImportExtraError
 
 
 try:
@@ -11,7 +11,7 @@ try:
 except ImportError:
     raise ImportExtraError("gcp", __name__)
 
-from bavard_ml_common.persistence.record_store.base import BaseRecordStore, Record, RecordT
+from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record, RecordT
 
 
 class FirestoreRecordStore(BaseRecordStore[RecordT]):

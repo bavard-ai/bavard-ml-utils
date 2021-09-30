@@ -5,7 +5,7 @@ from unittest import TestCase
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
-from bavard_ml_common.web.web_service import WebService, endpoint
+from bavard_ml_utils.web.web_service import WebService, endpoint
 
 
 class FitInput(BaseModel):

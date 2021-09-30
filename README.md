@@ -1,4 +1,4 @@
-# bavard-ml-common
+# bavard-ml-utils
 
 A package of common code and utilities for machine learning and MLOps. Includes classes and methods for:
 
@@ -9,7 +9,7 @@ A package of common code and utilities for machine learning and MLOps. Includes 
 5. Common data structures/models used across our organization
 6. And more
 
-This package maintains common data structures/models used across our organization. They can all be found in the `bavard_ml_common.types` sub-package. These data models are all declared as [Pydantic](https://pydantic-docs.helpmanual.io/) data models. For example the `bavard_ml_common.types.agent.AgentConfig` class represents a chatbot's configuration, and is used heavily across Bavard.
+This package maintains common data structures/models used across our organization. They can all be found in the `bavard_ml_utils.types` sub-package. These data models are all declared as [Pydantic](https://pydantic-docs.helpmanual.io/) data models. For example the `bavard_ml_utils.types.agent.AgentConfig` class represents a chatbot's configuration, and is used heavily across Bavard.
 
 ## Developing Locally
 

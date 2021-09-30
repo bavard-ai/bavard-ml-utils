@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "bavard-ml-common"
-version = "0.1.21"
-description = "Machine learning and Python web service utilities"
+name = "bavard-ml-utils"
+version = "0.1.22"
+description = "Utilities for machine learning, python web services, and cloud infrastructure"
 authors = ["Bavard AI, Inc. <dev@bavard.ai>"]
 
 [tool.poetry.dependencies]

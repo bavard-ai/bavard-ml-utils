@@ -2,7 +2,7 @@ import typing as t
 
 from pydantic import BaseModel
 
-from bavard_ml_common.ml.dataset import LabeledDataset
+from bavard_ml_utils.ml.dataset import LabeledDataset
 
 
 class TrainingTag(BaseModel):

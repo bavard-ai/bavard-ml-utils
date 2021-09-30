@@ -10,7 +10,7 @@ except ImportError:
 else:
     _has_ml_deps = True
 
-from bavard_ml_common.utils import requires_extras
+from bavard_ml_utils.utils import requires_extras
 
 
 def leave_one_out(items: t.Sequence):

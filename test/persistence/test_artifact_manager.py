@@ -5,13 +5,13 @@ from unittest import TestCase
 
 import numpy as np
 
-from bavard_ml_common.persistence.artifact_manager import (
+from bavard_ml_utils.persistence.artifact_manager import (
     BaseArtifactManager,
     BaseArtifactRecord,
     BaseDatasetRecord,
     ServiceVersionMetadata,
 )
-from bavard_ml_common.persistence.record_store.firestore import FirestoreRecordStore
+from bavard_ml_utils.persistence.record_store.firestore import FirestoreRecordStore
 from test.utils import clear_database
 
 

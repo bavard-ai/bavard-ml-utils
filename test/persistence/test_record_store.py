@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from bavard_ml_common.persistence.record_store.base import BaseRecordStore, Record
-from bavard_ml_common.persistence.record_store.firestore import FirestoreRecordStore
-from bavard_ml_common.persistence.record_store.memory import InMemoryRecordStore
+from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record
+from bavard_ml_utils.persistence.record_store.firestore import FirestoreRecordStore
+from bavard_ml_utils.persistence.record_store.memory import InMemoryRecordStore
 from test.utils import clear_database
 
 

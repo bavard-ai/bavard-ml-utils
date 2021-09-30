@@ -6,7 +6,7 @@ from fastapi import HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 
-from bavard_ml_common.utils import ImportExtraError
+from bavard_ml_utils.utils import ImportExtraError
 
 
 try:

@@ -23,6 +23,10 @@ torch = "^1.9.1"
 transformers = "^4.10.2"
 tensorflow = "^2.6.0"
 sentencepiece = "^0.1.96"
+Sphinx = "^4.2.0"
+myst-parser = "^0.15.2"
+sphinx-rtd-theme = "^1.0.0"
+toml = "^0.10.2"
 
 [tool.poetry.extras]
 ml = ["numpy", "scikit-learn", "networkx"]

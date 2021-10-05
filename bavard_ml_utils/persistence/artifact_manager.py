@@ -11,7 +11,8 @@ from bavard_ml_utils.types.utils import hash_model
 
 class ServiceVersionMetadata(Record):
     name: str
-    synced_at: float  # time the service version was most recently synced.
+    synced_at: float
+    """Time the service version was most recently synced."""
 
     def get_id(self) -> str:
         return self.name
@@ -25,7 +26,8 @@ class BaseDatasetRecord(Record):
 
     agent_id: str
     updated_at: float
-    digest: t.Optional[str]  # hash of this record.
+    digest: t.Optional[str]
+    """An automatically generated hash of this record."""
 
     def __init__(self, **data):
         """Custom constructor. Includes a post-init step to update the record's digest."""
@@ -51,8 +53,12 @@ class BaseArtifactRecord(Record):
     """
 
     agent_id: str
-    dataset_digest: str  # the hash of the dataset that was used to produce this artifact
-    service_version: str  # the version of the model that produced this artifact
+    dataset_digest: str
+    """The hash of the dataset that was used to produce this artifact."""
+
+    service_version: str
+    """The version of the model that produced this artifact."""
+
     updated_at: float
 
     def get_id(self) -> str:
@@ -72,7 +78,7 @@ class BaseArtifactManager(ABC):
     """
     Abstract base class which provides a simple API for creating, persisting, and managing artifacts produced by a
     versioned machine learning (ML) model. Each artifact is associated with an agent. An artifact is the deterministic
-    product of a specific ML model version, and a specific version of a specific dataset.
+    product of a specific ML model version, and a specific version of a dataset.
     """
 
     def __init__(
@@ -92,12 +98,15 @@ class BaseArtifactManager(ABC):
 
     @abstractmethod
     def create_artifact_from_dataset(self, dataset: BaseDatasetRecord) -> BaseArtifactRecord:
-        """Takes `dataset`, and the model associated with version `self.version`, and produces an artifact."""
+        """
+        Implementing subclasses should take `dataset`, and the model associated with version `self.version`, and
+        producee an artifact.
+        """
         pass
 
     def delete_artifact(self, agent_id: str):
         """
-        Deletes from Firestore a dataset and all artifacts associated with it, if they exist. Returns the number of
+        Deletes from the database a dataset and all artifacts associated with it, if they exist. Returns the number of
         total database records that were deleted.
         """
         num_deleted = int(self._datasets.delete(agent_id))
@@ -119,7 +128,7 @@ class BaseArtifactManager(ABC):
         """
         dataset = self._datasets.get(agent_id)
         if dataset is None:
-            self.raise_no_dataset(agent_id)
+            self._raise_no_dataset(agent_id)
         artifact = self._artifacts.get(BaseArtifactRecord.make_id(self.version, agent_id))
         if artifact is not None and artifact.dataset_digest == dataset.digest:
             return artifact
@@ -162,7 +171,7 @@ class BaseArtifactManager(ABC):
         return len(datasets_to_index)
 
     @staticmethod
-    def raise_no_dataset(agent_id: str):
+    def _raise_no_dataset(agent_id: str):
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             f"no dataset exists for agent id {agent_id}; artifact cannot be retrieved or computed",

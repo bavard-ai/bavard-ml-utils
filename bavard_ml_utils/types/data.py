@@ -16,8 +16,16 @@ except ImportError:
 
 def encode_numpy(data: np.ndarray, mode="w"):
     """
-    Serializes a numpy array to `bytes` or `str`, depending on `mode`. Includes shape, datatype, and endianness
+    Serializes a numpy array to ``bytes`` or `str`, depending on ``mode``. Includes shape, datatype, and endianness
     information for perfect cross-platform reconstruction.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        The data to serialize.
+    mode : {'w', 'wb'}
+        The serialization mode to use. if ``mode=="w"``, the output will be a string. If ``mode=="wb"``, the output
+        will be ``bytes``.
     """
     mf = BytesIO()
     np.save(mf, data)
@@ -29,7 +37,9 @@ def encode_numpy(data: np.ndarray, mode="w"):
 
 
 def decode_numpy(data: t.Union[str, bytes]):
-    """Deserializes a numpy array from `bytes` or `str`, which was serialized using the `encode_numpy` method."""
+    """
+    Deserializes a numpy array from ``bytes`` or ``str``, which was serialized using the :func:`encode_numpy` method.
+    """
     if isinstance(data, str):
         data = data.encode("latin-1")
     mf = BytesIO(data)
@@ -40,7 +50,7 @@ def decode_numpy(data: t.Union[str, bytes]):
 
 class DataModel(BaseModel):
     """
-    A base class for defining pydantic models which also supports numpy fields, including serialization and
+    A base class for defining pydantic models which automatically support numpy fields, including serialization and
     deserialization of those fields. E.g.
 
     >>> import numpy as np
@@ -54,7 +64,7 @@ class DataModel(BaseModel):
     ... reconstructed = MyModel.parse_raw(model.json())
     ... # `reconstructed`'s contents are identical to `model`
 
-    Serializing to primitive python data structures is also supported, via `model.dict()` and `MyModel.parse_obj()`.
+    Serializing to primitive python data structures is also supported, via :meth:`dict` and :meth:`parse_obj`.
     """
 
     class Config:

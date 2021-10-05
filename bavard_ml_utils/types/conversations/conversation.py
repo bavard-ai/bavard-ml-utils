@@ -52,6 +52,10 @@ class Conversation(BaseModel):
 
 class ConversationDataset(LabeledDataset[Conversation]):
     def get_label(self, item: Conversation) -> str:
+        """
+        Returns the name of the final agent action in ``item`` (a :class:`Conversation`), and ensures the last turn
+        in the conversation is in fact an agent turn.
+        """
         if not item.is_last_turn_agent:
             raise AssertionError("conversations in a ConversationDataset must have an agent action as final last turn.")
         return item.turns[-1].agentAction.name
@@ -60,8 +64,8 @@ class ConversationDataset(LabeledDataset[Conversation]):
     def from_conversations(cls, convs: t.List[Conversation], expand=True) -> "ConversationDataset":
         """
         Safely builds a dataset from Conversations which may or may not have agent actions as the final turn.
-        Expands each conversation in `convs` into as many possible conversations as possible, under the constraint
-        that each conversation end with an agent action. If `expand==False`, expansion is bypassed, and the regular
+        Expands each conversation in ``convs`` into as many possible conversations as possible, under the constraint
+        that each conversation end with an agent action. If ``expand==False``, expansion is bypassed, and the regular
         conversations are used.
         """
         result = []
@@ -73,7 +77,7 @@ class ConversationDataset(LabeledDataset[Conversation]):
         return cls(result)
 
     def turns(self, actor: t.Optional[Actor] = None) -> t.Iterable[DialogueTurn]:
-        """Iterates over all turns of all conversations in the dataset, having `actor`, if supplied."""
+        """Iterates over all turns of all conversations in the dataset, having ``actor``, if supplied."""
         check_actor = actor is not None
         for conv in self:
             for turn in conv.turns:
@@ -90,7 +94,7 @@ class ConversationDataset(LabeledDataset[Conversation]):
                 intents.add(turn.userAction.intent)
         return intents
 
-    def unique_actions(self):
+    def unique_actions(self) -> t.Set[str]:
         actions = set()
         for turn in self.turns(Actor.AGENT):
             actions.add(turn.agentAction.name)

@@ -5,9 +5,10 @@ from fastapi import FastAPI
 
 
 def endpoint(_func=None, **fastapi_args) -> t.Callable:
-    """Decorator for identifying methods as FastAPI endpoints. All decorator
-    arguments are forwarded to `fastapi.FastAPI.add_api_route`, which will
-    register `method` as an API route when `WebService.to_app` is called.
+    """
+    Decorator for identifying methods as FastAPI endpoints. All decorator
+    arguments are forwarded to :meth:`fastapi.FastAPI.add_api_route`, which will
+    register ``method`` as an API route when `WebService.to_app` is called.
     """
 
     def inner(method: t.Callable) -> t.Callable:
@@ -27,11 +28,11 @@ class WebService:
     When inherited from and implemented, the subclass will inherit
     behavior for turning automatically into a web service.
 
-    All sublcass methods that are decorated with `@endpoint` will be exposed as
-    endpoints in a web service, and should be declared the way a FastAPI app method
+    All sublcass methods that are decorated with :func:`endpoint` will be exposed as
+    endpoints in a web service, and should be declared the way a FastAPI app endpoint
     would be declared. This includes the requirement that the return value of each method be JSON
-    serializeable. All parameters passed to the `@endpoint` decorator will be
-    forwarded on to `fastapi.FastAPI.add_api_route`.
+    serializeable. All parameters passed to the :func:`endpoint` decorator will be
+    forwarded on to :meth:`fastapi.FastAPI.add_api_route`.
 
     As an example:
 
@@ -56,9 +57,9 @@ class WebService:
     ... service = MyWebService()
     ... app = service.to_app()
 
-    `app` is a FastApi web service with two endpoints: `/hello` supporting GET
-    requests, and `/do-add` supporting POST requests with a request body that must
-    look like: `{ "num": <int> }`.
+    In this example, ``app`` is a FastApi web service with two endpoints: ``/hello`` supporting GET
+    requests, and ``/do-add`` supporting POST requests with a request body that must
+    look like: ``{ "num": <int> }``.
     """
 
     def _base_route(self) -> dict:

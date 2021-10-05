@@ -28,7 +28,19 @@ def report_error(
     gcp_project_id: t.Optional[str],
     severity: str = "ERROR",
 ):
-    """Reports errors on Slack || Google Cloud || Both"""
+    """Reports an error ``message`` on Slack || Google Cloud || Both.
+
+    Parameters
+    ----------
+    message : str
+        The error message to send.
+    slack_url : str, optional
+        An optional Slack webhook URL. If provided, ``message`` will be sent to this URL, prepended by the ``:boom:``
+        icon.
+    gcp_project_id : str, optional
+        If provided, this message will be sent to google cloud error reporting, associated with ``gcp_project_id``.
+        Requires the ``gcp`` extra for this package to be installed.
+    """
     assert severity in error_types
     error = f":boom: {severity}: {message}"
 
@@ -54,7 +66,10 @@ def make_error_reporting_route_handler_class(
     slack_webhook_url: t.Optional[str] = None,
     google_cloud_project: t.Optional[str] = None,
 ) -> t.Type[APIRoute]:
-    """Makes a route handler class which intercepts, logs, and reports all internal errors that occur in a FastAPI app.
+    """
+    Makes a FastAPI route handler class which intercepts, logs, and reports all internal errors that occur in a
+    FastAPI app. Intercepts all ``Exception`` objects which are uncaught by the app, as well as all 500-level errors
+    intentially thrown by your app.
 
     Example usage:
 
@@ -78,7 +93,7 @@ def make_error_reporting_route_handler_class(
         If provided, error messages for all intercepted errors will be posted to this Slack url.
     google_cloud_project : str, optional
         If provided, error messages for all intercepted errors will be reported to GCP Error Reporting for the
-        `google_cloud_project` GCP project name.
+        ``google_cloud_project`` GCP project name.
     """
     msg_prefix = "" if msg_prefix is None else msg_prefix
 

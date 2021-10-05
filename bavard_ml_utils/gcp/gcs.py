@@ -14,8 +14,9 @@ except ImportError:
 
 class GCSClient(Client):
     """
-    Version of `google.cloud.storage.client.Client` that has additional helper methods, and
-    support for GCS emulator.
+    Subclassed version of `google.cloud.storage.client.Client` that has additional helper methods, and
+    support for working with the unofficial `fsouza/fake-gcs-server <https://hub.docker.com/r/fsouza/fake-gcs-server>`_
+    GCS emulator Docker image.
     """
 
     def __init__(self, **kwargs):
@@ -30,13 +31,15 @@ class GCSClient(Client):
 
     @staticmethod
     def is_gcs_uri(path: str) -> bool:
-        """Returns `True` if `path` is a google cloud storage file path."""
+        """Returns ``True`` if `path` is a google cloud storage file path."""
         return path.startswith("gs://")
 
     def delete_blob(self, uri: str):
+        """Deletes a blob by its global `uri` e.g. ``gs://my-bucket/my-object``."""
         Blob.from_string(uri, self).delete()
 
     def upload_filename_to_blob(self, source_path: str, target_uri: str) -> Blob:
+        """Uploads the file living locally at `source_path` to the GCS `target_uri`."""
         blob = Blob.from_string(target_uri, self)
         blob.upload_from_filename(source_path)
         return blob
@@ -49,8 +52,8 @@ class GCSClient(Client):
     def upload_dir(self, source_path: str, target_uri: str):
         """
         Recursively uploads all files in the directory at `source_path`
-        to the GCS directory at `target_uri`. Source:
-        https://stackoverflow.com/questions/48514933/how-to-copy-a-directory-to-google-cloud-storage-using-google-cloud-python-api
+        to the GCS directory at `target_uri` (`Source <https://stackoverflow.com/questions/48514933/how-to-copy-a-direct
+        ory-to-google-cloud-storage-using-google-cloud-python-api>`_).
         """
         assert os.path.isdir(source_path)
         for root, _, filenames in os.walk(source_path):
@@ -62,8 +65,8 @@ class GCSClient(Client):
     def download_dir(self, source_uri: str, target_path: str):
         """
         Recursively downloads all files living under `source_uri` in GCS, downloading
-        them into the `target_path` directory. Source:
-        https://stackoverflow.com/questions/49748910/python-download-entire-directory-from-google-cloud-storage
+        them into the `target_path` directory (`Source <https://stackoverflow.com/questions/49748910/python-download-ent
+        ire-directory-from-google-cloud-storage>`_).
         """
         bucket_name, bucket_dir = self.parse_gcs_uri(source_uri)
         # Get list of files under `uri` directory

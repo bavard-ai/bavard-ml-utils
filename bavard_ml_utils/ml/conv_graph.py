@@ -21,11 +21,17 @@ class DSTuple(t.NamedTuple):
     Non-Deterministic Dialogue Management" (2021). It represents the state of a conversation at a given turn.
     """
 
-    bs: t.FrozenSet[str] = frozenset()  # the set of dialogue slots that are populated
-    action: t.Optional[str] = None  # the action that was taken
-    # The actor that took the action, one of "HUMAN", "AGENT" (chatbot), or `None` (in the case of the starting root
-    # node of the graph).
+    bs: t.FrozenSet[str] = frozenset()
+    """The set of dialogue slots that are populated."""
+
+    action: t.Optional[str] = None
+    """The action that was taken."""
+
     actor: t.Optional[str] = None
+    """
+    The actor that took the action, one of ``"HUMAN"``, ``"AGENT"`` (chatbot), or ```None``` (in the case of the
+    starting root node of the graph).
+    """
 
 
 class ConvGraph:
@@ -36,8 +42,12 @@ class ConvGraph:
     as well as for evaluating dialogue act predictions using _soft_ metrics. The graph can also be used for
     dataset augmentation in a task-oriented-dialogue training setting.
 
-    Each node in the graph is a unique dialogue state, where a dialogue state is defined as a tuple of 1) the current
-    belief state, 2) the action that was taken, and 3) the type of actor who took that action (human or chatbot).
+    Each node in the graph is a unique dialogue state, where a dialogue state is defined as a tuple of:
+
+    #. the current belief state
+    #. the action that was taken
+    #. the type of actor who took that action (human or chatbot).
+
     A belief state is the set of dialogue slots that are populated at a given turn.
     """
 
@@ -66,7 +76,7 @@ class ConvGraph:
             bs_str = ", ".join(sorted(ds.bs))
             self.graph.add_node(ds, bs=bs_str, action=ds.action, actor=ds.actor)
 
-    def soft_accuracy(self, y_pred: t.List[str], last_turns: t.List[DialogueTurn]):
+    def soft_accuracy(self, y_pred: t.List[str], last_turns: t.List[DialogueTurn]) -> float:
         """
         Calcuates the soft accuracy, which is accuracy when there is more than one acceptable answer for a prediction.
 
@@ -84,7 +94,7 @@ class ConvGraph:
             num_correct += self.is_pred_correct(pred, last_turn)
         return num_correct / len(last_turns)
 
-    def balanced_soft_accuracy(self, y_pred: t.List[str], last_turns: t.List[DialogueTurn]):
+    def balanced_soft_accuracy(self, y_pred: t.List[str], last_turns: t.List[DialogueTurn]) -> float:
         """Same as `ConvGraph.soft_accuracy`, but equally weights the accuracy calculation of each class, or action."""
         correct = defaultdict(int)
         out_of = defaultdict(int)
@@ -99,10 +109,9 @@ class ConvGraph:
                 for label in valid_next_actions:
                     out_of[label] += 1 / len(valid_next_actions)
         # Compute the soft accuracy for each class/action, then return the mean of those.
-        print("correct:", correct, "out_of:", out_of)
         return mean(correct[action] / out_of[action] for action in out_of.keys())
 
-    def is_pred_correct(self, pred: str, last_turn: DialogueTurn):
+    def is_pred_correct(self, pred: str, last_turn: DialogueTurn) -> bool:
         valid_next_actions = self.get_valid_next_actions(last_turn)
         return pred in valid_next_actions
 
@@ -115,7 +124,7 @@ class ConvGraph:
         ds = self.encode_dialogue_state(turn)
         return {v[1] for u, v in self.graph.out_edges(ds)}
 
-    def avg_num_valid_next_actions(self):
+    def avg_num_valid_next_actions(self) -> int:
         """
         The average out-degree of the conversation graph, which is equal to the average number of correct agent actions
         for each dialogue state in the graph.
@@ -126,7 +135,7 @@ class ConvGraph:
         nx.write_graphml(self.graph, path)
 
     @staticmethod
-    def encode_dialogue_state(turn: DialogueTurn):
+    def encode_dialogue_state(turn: DialogueTurn) -> DSTuple:
         belief_state_keys = list(turn.state.slotValues.keys()) if turn.state else []
         action = turn.agentAction.name if turn.actor == Actor.AGENT else turn.userAction.intent
         return DSTuple(bs=frozenset(belief_state_keys), action=action, actor=turn.actor.value)

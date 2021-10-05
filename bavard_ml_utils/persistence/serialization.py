@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 class TypeSerializer(ABC):
     """
     When implemented, provides functionality for serializing instance
-    of some type or group of types, for use with the `Serializer` class.
+    of some type or group of types, for use with the :class:`Serializer` class.
     """
 
     @property
@@ -16,7 +16,7 @@ class TypeSerializer(ABC):
     def type_name(self) -> str:
         """
         A name identifying the type this serializer serializers. Should be
-        unique among all the other `TypeSerializer`s used. Should also
+        unique among all the other :class:`TypeSerializer`s used. Should also
         contain only letters, numbers, and dashes.
         """
         pass
@@ -26,24 +26,30 @@ class TypeSerializer(ABC):
     def ext(self) -> str:
         """
         The filename extension, if the serializer serializes its data
-        to a single file. Should be `None` otherwise.
+        to a single file. Should be ``None`` otherwise.
         """
         pass
 
     @abstractmethod
     def serialize(self, obj: object, path: str) -> None:
+        """Should serialize ``obj`` and save it to ``path``."""
         pass
 
     @abstractmethod
     def deserialize(self, path: str) -> object:
+        """
+        Should load the persisted object at ``path``, and return the deserialized version. The object living at ``path``
+        is guaranteed to have the type associated with this serializer.
+        """
         pass
 
     @abstractmethod
     def is_serializable(self, obj: object) -> bool:
+        """Should return ``True`` if this serializer should be used to serialze ``obj``."""
         pass
 
     def resolve_path(self, path: str) -> str:
-        """Adds this serializer's extension to `path` if it has one."""
+        """Adds this serializer's associated file extension to ``path``, if the serializer has one."""
         return f"{path}.{self.ext}" if self.ext else path
 
 
@@ -99,11 +105,11 @@ class _CustomUnpickler(pickle.Unpickler):
 
 class Serializer:
     """
-    A replacement for the `pickle.dump` and `pickle.load` functions that allows
-    custom serialization behavior for different data types (e.g. `keras` models,
-    `numpy` arrays, etc.). Includes support for serializing `keras` models using their
+    A replacement for the :func:`pickle.dump` and :func:`pickle.load` functions. Exposes a hook for
+    custom serialization behavior of different data types (e.g. keras models, PyTorch models,
+    numpy arrays, etc.). Includes support for serializing keras models using their
     native protocols. You can use your own type serializers and pass those in too. Just
-    implement the `TypeSerializer` class and pass an instance of it to the constructor.
+    implement the :class:`TypeSerializer` class and pass an instance of your class to the constructor.
     """
 
     def __init__(self, *custom_type_serializers: TypeSerializer) -> None:
@@ -116,7 +122,7 @@ class Serializer:
             )
 
     def serialize(self, obj: object, path: str, overwrite: bool = False) -> None:
-        """Serialize `obj` to `path`, a directory."""
+        """Serialize ``obj`` to ``path``, a directory."""
         if os.path.isfile(path):
             raise ValueError(f"cannot serialize to directory {path}; it is a file")
         if not os.path.isdir(path):
@@ -130,8 +136,8 @@ class Serializer:
     def deserialize(self, path: str, delete: bool = False) -> object:
         """
         Load the data that was serialized to the directory at
-        `path`. It should have been serialized using this class's
-        `serialize` method. If `delete==True`, `path` will be
+        ``path``. It should have been serialized using this class's
+        :meth:`serialize` method. If ``delete==True``, ``path`` will be
         deleted once the deserialization is finished.
         """
         # Deserialize the data
@@ -149,9 +155,14 @@ class Serializer:
 
 
 class Persistent:
-    """Mixin class giving persistence behavior."""
+    """
+    Mixin class giving persistence behavior. Any inheriting subclass will automatically recieve :meth:`to_dir` and
+    :meth:`from_dir` methods, which allows a class instance to easily be serialized to and deserialized from a
+    directory.
+    """
 
-    serializer = Serializer()  # override for custom serialization behavior
+    serializer = Serializer()
+    """The serializer to use. Override this for custom serialization behavior."""
 
     def to_dir(self, path: str, overwrite: bool = False) -> None:
         """Serializes the full state of `self` to directory `path`."""

@@ -20,10 +20,27 @@ _T = t.TypeVar("_T")
 
 class LabeledDataset(t.List[_T], ABC):
     """
-    Essentially an abstract typed array with attached helper functions related to categorically-labeled
+    An abstract typed array with attached helper functions related to categorically-labeled
     datasets. Subclassing instances can be used as regular lists with indexeing, etc. The only method
     that needs to be implemented is `get_label`, which should return the label associated with
     an instance of this dataset.
+
+    >>> from typing import Tuple
+    ...
+    ... class SentimentDataset(LabeledDataset[Tuple[str, int]]):
+    ...     def get_label(self, item: Tuple[str, int]) -> int:
+    ...         return item[1]
+    ...
+    ... dataset = SentimentDataset(
+    ...     [("I hate this", -1), ("no good", -1), ("I love this", 1), ("This is great", 1)]
+    ... )
+    ... dataset.labels()
+    ... # [-1, 1, 1]
+    ... dataset.unique_labels()
+    ... # {-1, 1}
+    ... train, test = next(dataset.cv(nfolds=2))
+    ... # train == [('I hate this', -1), ('This is great', 1)]
+    ... # test == [('no good', -1), ('I love this', 1)]
     """
 
     def __init__(self, items: t.Optional[t.Iterable[_T]] = None):
@@ -31,6 +48,10 @@ class LabeledDataset(t.List[_T], ABC):
 
     @abstractmethod
     def get_label(self, item: _T) -> t.Any:
+        """
+        The only method that needs to be implemented by a concrete subclass. Given an `item` in the dataset, returns
+        the classification label for that item.
+        """
         pass
 
     def labels(self) -> list:

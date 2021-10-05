@@ -6,8 +6,9 @@ from bavard_ml_utils.types.data import DataModel
 
 class Record(DataModel, ABC):
     """
-    A pdyantic model that can be saved to Firestore. Override the `dict` method for custom serialization behavior,
-    and the `parse_obj` class method for custom deserialization behavior.
+    A pdyantic model that can be persisted. Override this class's :meth:`dict` method for custom serialization behavior,
+    and its :meth:`parse_obj` class method for custom deserialization behavior. Numpy arrays are supported out of the
+    box.
     """
 
     @abstractmethod
@@ -23,6 +24,11 @@ class BaseRecordStore(ABC, t.Generic[RecordT]):
     """
     Abstract base class for implementing a Data Access Object (DAO) which can save pydantic models to some back-end
     persistence solution.
+
+    Parameters
+    ----------
+    record_class : Record type
+        The pydantic-based class that persisted objects should be deserialized into.
     """
 
     def __init__(self, record_class: t.Type[Record]):
@@ -30,30 +36,31 @@ class BaseRecordStore(ABC, t.Generic[RecordT]):
 
     @abstractmethod
     def save(self, record: RecordT):
-        """Updates `record` in the database, or creates it if it's not there."""
+        """Updates ``record`` in the database, or creates it if it's not there."""
         pass
 
     @abstractmethod
     def get(self, id_: str) -> t.Optional[RecordT]:
-        """Retrieves a record from the database, returning `None` if it doesn't exist."""
+        """Retrieves a record from the database, returning ``None`` if it doesn't exist."""
         pass
 
     @abstractmethod
     def delete(self, id_: str) -> bool:
         """
-        Deletes a record from the database, returning `True` if the record was deleted, and `False` if it didn't exist.
+        Deletes a record from the database, returning ``True`` if the record was deleted, and ``False`` if it didn't
+        exist.
         """
         pass
 
     @abstractmethod
     def get_all(self, **where_equals) -> t.Iterable[RecordT]:
-        """Retreives all records saved under `kind` which satisfy the optional `*where_equals` equality conditions."""
+        """Retreives all records which satisfy the optional ``*where_equals`` equality conditions."""
         pass
 
     @abstractmethod
     def delete_all(self, **where_equals) -> int:
         """
-        Deletes all records saved under `kind` which satisfy the optional `*where_equals` equality conditions. Returns
+        Deletes all records which satisfy the optional ``*where_equals`` equality conditions. Returns
         the number of records that were deleted.
         """
         pass

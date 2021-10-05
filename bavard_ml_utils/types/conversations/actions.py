@@ -24,7 +24,7 @@ class Sentiment(Enum):
 
 
 class UserAction(BaseModel):
-    """Represents any type of UserAction (email, utterance, option, etc)."""
+    """Represents any type of user action (email, utterance, option, etc)."""
 
     type: str
     utterance: t.Optional[str]

@@ -5,19 +5,36 @@ from enum import Enum
 
 class Severity(Enum):
     """
-    GCP Logging log severity levels.
-    Source: https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#FIELDS.trace
+    GCP Logging log severity levels
+    (`Source <https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#LogSeverity>`_).
     """
 
-    DEFAULT = "DEFAULT"  # The log entry has no assigned severity level.
-    DEBUG = "DEBUG"  # Debug or trace information.
-    INFO = "INFO"  # Routine information, such as ongoing status or performance.
-    NOTICE = "NOTICE"  # Normal but significant events, such as start up, shut down, or a configuration change.
-    WARNING = "WARNING"  # Warning events might cause problems.
-    ERROR = "ERROR"  # Error events are likely to cause problems.
-    CRITICAL = "CRITICAL"  # Critical events cause more severe problems or outages.
-    ALERT = "ALERT"  # A person must take an action immediately.
-    EMERGENCY = "EMERGENCY"  # One or more systems are unusable.
+    DEFAULT = "DEFAULT"
+    """The log entry has no assigned severity level."""
+
+    DEBUG = "DEBUG"
+    """Debug or trace information."""
+
+    INFO = "INFO"
+    """Routine information, such as ongoing status or performance."""
+
+    NOTICE = "NOTICE"
+    """Normal but significant events, such as start up, shut down, or a configuration change."""
+
+    WARNING = "WARNING"
+    """Warning events might cause problems."""
+
+    ERROR = "ERROR"
+    """Error events are likely to cause problems."""
+
+    CRITICAL = "CRITICAL"
+    """Critical events cause more severe problems or outages."""
+
+    ALERT = "ALERT"
+    """A person must take an action immediately."""
+
+    EMERGENCY = "EMERGENCY"
+    """One or more systems are unusable."""
 
 
 def log(

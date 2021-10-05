@@ -15,7 +15,12 @@ from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Recor
 
 
 class FirestoreRecordStore(BaseRecordStore[RecordT]):
-    """A Firestore DAO for Pydantic data models."""
+    """
+    A Firestore DAO for Pydantic data models. In addition to its parent class's `WHERE equals` behavior, this class
+    also supports arbitrary `WHERE` clauses (e.g. ``<=``), using Firestore's `operator string syntax <https://googleapis
+    .dev/python/firestore/latest/collection.html?highlight=where#google.cloud.firestore_v1.base_collection.BaseCollectio
+    nReference.where>`_.
+    """
 
     def __init__(
         self,
@@ -53,16 +58,15 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
 
     def get_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> t.Iterable[RecordT]:
         """
-        Retreives all records saved under `kind` which satisfy the optional `*conditions` and `*where_equals`
-        equality conditions.
+        Retreives all records which satisfy the optional ``*conditions`` and ``**where_equals`` equality conditions.
         """
         for doc in self._stream(*conditions, **where_equals):
             yield self.record_cls.parse_obj(doc.to_dict())
 
     def delete_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> int:
         """
-        Deletes all records saved under `kind` which satisfy the optional `*conditions` and `*where_equals`
-        conditions. Returns the number of records that were deleted.
+        Deletes all records which satisfy the optional `*conditions` and `*where_equals` conditions. Returns the number
+        of records that were deleted.
         """
         num_deleted = 0
         for doc in self._stream(*conditions, **where_equals):

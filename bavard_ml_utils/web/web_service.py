@@ -35,28 +35,26 @@ class WebService:
 
     As an example:
 
-    ```python
-    from pydantic import BaseModel
-
-    class AddInput(BaseModel):
-        num: int
-
-    class MyWebService(WebService):
-
-        @endpoint
-        def hello(self):
-            return {"message": "Hello world!"}
-
-        @endpoint(methods=["POST"], path="/do-add")
-        def add(self, inputs: AddInput):
-            return inputs.num + 1
-
-        def other(self):
-            return "This method will not be a HTTP endpoint"
-
-    service = MyWebService()
-    app = service.to_app()
-    ```
+    >>> from pydantic import BaseModel
+    ...
+    ... class AddInput(BaseModel):
+    ...     num: int
+    ...
+    ... class MyWebService(WebService):
+    ...
+    ...     @endpoint
+    ...     def hello(self):
+    ...         return {"message": "Hello world!"}
+    ...
+    ...     @endpoint(methods=["POST"], path="/do-add")
+    ...     def add(self, inputs: AddInput):
+    ...         return inputs.num + 1
+    ...
+    ...     def other(self):
+    ...         return "This method will not be a HTTP endpoint"
+    ...
+    ... service = MyWebService()
+    ... app = service.to_app()
 
     `app` is a FastApi web service with two endpoints: `/hello` supporting GET
     requests, and `/do-add` supporting POST requests with a request body that must

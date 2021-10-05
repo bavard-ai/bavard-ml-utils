@@ -43,16 +43,16 @@ class DataModel(BaseModel):
     A base class for defining pydantic models which also supports numpy fields, including serialization and
     deserialization of those fields. E.g.
 
-    ```python
-    class MyModel(DataModel):
-        a: str
-        b: numpy.ndarray
-
-    model = MyModel(a="hello world", b=numpy.array([1,2,3]))
-    # Serialize to a string and then back again.
-    reconstructed == MyModel.parse_raw(model.json())
-    # `reconstructed`'s contents are identical to `model`
-    ```
+    >>> import numpy as np
+    ...
+    ... class MyModel(DataModel):
+    ...     a: str
+    ...     b: np.ndarray
+    ...
+    ... model = MyModel(a="hello world", b=np.array([1,2,3]))
+    ... # Serialize to a string and then back again.
+    ... reconstructed = MyModel.parse_raw(model.json())
+    ... # `reconstructed`'s contents are identical to `model`
 
     Serializing to primitive python data structures is also supported, via `model.dict()` and `MyModel.parse_obj()`.
     """

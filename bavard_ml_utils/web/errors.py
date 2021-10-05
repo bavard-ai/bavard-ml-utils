@@ -58,14 +58,14 @@ def make_error_reporting_route_handler_class(
 
     Example usage:
 
-    ```python
-    from fastapi import FastAPI
-
-    app = FastAPI()
-    app.router.route_class = make_error_reporting_route_handler_class(msg_prefix="SERVICE 123: ")
-
-    # Then define all routes on `app` like normal.
-    ```
+    >>> from fastapi import FastAPI
+    ...
+    ... app = FastAPI()
+    ... app.router.route_class = make_error_reporting_route_handler_class(
+    ...     msg_prefix="SERVICE 123: "
+    ... )
+    ...
+    ... # Then define all routes on `app` like normal.
 
     Related docs: https://fastapi.tiangolo.com/advanced/custom-request-and-route/
 

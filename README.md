@@ -12,6 +12,8 @@ A package of common code and utilities for machine learning and MLOps. Includes 
 
 This package maintains common data structures used across our organization. They can all be found in the `bavard_ml_utils.types` sub-package, and are all [Pydantic](https://pydantic-docs.helpmanual.io/) data models. For example the `bavard_ml_utils.types.agent.AgentConfig` class represents a chatbot's configuration and training data, and is used heavily across Bavard.
 
+API docs for this package can be found [here](https://docs-bavard-ml-utils.web.app/).
+
 ## Getting Started
 
 To begin using the package, use your favorite package manager to install it from PyPi. For example, using pip:

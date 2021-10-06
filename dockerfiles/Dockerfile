@@ -40,6 +40,7 @@ WORKDIR /app
 COPY ./bavard_ml_utils ./bavard_ml_utils
 COPY ./docs ./docs
 COPY ./pyproject.toml ./
+COPY ./README.md ./
 COPY ./scripts/build-docs.sh ./scripts/build-docs.sh
 RUN ./scripts/build-docs.sh
 WORKDIR /app/docs

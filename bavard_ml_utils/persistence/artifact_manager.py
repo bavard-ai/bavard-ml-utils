@@ -20,8 +20,9 @@ class ServiceVersionMetadata(Record):
 
 class BaseDatasetRecord(Record):
     """
-    Base class for a generic dataset object. Supports versioning of the dataset (via its `digest` attribute). Used to
-    create `ArtifactRecord`s from. Override with additional attributes to store the actual dataset data in this object.
+    Base class for a generic dataset object. Supports versioning of the dataset (via its :attr:`digest` attribute). Used
+    to create :class:`BaseArtifactRecord` objects from. Override with additional attributes to store the actual dataset
+    data in this object.
     """
 
     agent_id: str

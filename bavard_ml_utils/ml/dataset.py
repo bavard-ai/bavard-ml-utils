@@ -22,7 +22,7 @@ class LabeledDataset(t.List[_T], ABC):
     """
     An abstract typed array with attached helper functions related to categorically-labeled
     datasets. Subclassing instances can be used as regular lists with indexeing, etc. The only method
-    that needs to be implemented is `get_label`, which should return the label associated with
+    that needs to be implemented is :meth:`get_label`, which should return the label associated with
     an instance of this dataset.
 
     >>> from typing import Tuple
@@ -49,7 +49,7 @@ class LabeledDataset(t.List[_T], ABC):
     @abstractmethod
     def get_label(self, item: _T) -> t.Any:
         """
-        The only method that needs to be implemented by a concrete subclass. Given an `item` in the dataset, returns
+        The only method that needs to be implemented by a concrete subclass. Given an ``item`` in the dataset, returns
         the classification label for that item.
         """
         pass
@@ -62,9 +62,9 @@ class LabeledDataset(t.List[_T], ABC):
 
     def get_label_distribution(self) -> Counter:
         """
-        Counts the number of each type of label present in `self`.
-        The returned `Counter` object can be treated as a dictionary e.g.
-        `my_label_count = counter["my_label"]`.
+        Counts the number of each type of label present in ``self``.
+        The returned :class:`Counter` object can be treated as a dictionary e.g.
+        ``my_label_count = counter["my_label"]``.
         """
         return Counter(self.labels())
 
@@ -73,8 +73,8 @@ class LabeledDataset(t.List[_T], ABC):
         self, nfolds: int = 5, nrepeats: int = 1, seed: int = 0
     ) -> t.Iterator[t.Tuple["LabeledDataset", "LabeledDataset"]]:
         """
-        Yields train/test splits for `nfolds` cross-validation, stratified by label.
-        Repeats the random splitting `nrepeats` times.
+        Yields train/test splits for ``nfolds`` cross-validation, stratified by label.
+        Repeats the random splitting ``nrepeats`` times.
         """
         cls = self.__class__
         rskf = RepeatedStratifiedKFold(n_splits=nfolds, n_repeats=nrepeats, random_state=seed)
@@ -84,7 +84,7 @@ class LabeledDataset(t.List[_T], ABC):
     @requires_extras(ml=_has_ml_deps)
     def balance(self, seed: int = 0) -> "LabeledDataset":
         """
-        Makes a new version of `self`, where the minority labels
+        Makes a new version of ``self``, where the minority labels
         are upsampled to have the same number items as the majority label.
         """
         cls = self.__class__
@@ -102,7 +102,7 @@ class LabeledDataset(t.List[_T], ABC):
     def split(
         self, test_size: t.Union[float, int, None] = None, seed: int = 0, shuffle: bool = True
     ) -> t.Tuple["LabeledDataset", "LabeledDataset"]:
-        """Returns a train/test split of `self`, stratified by label."""
+        """Returns a train/test split of ``self``, stratified by label."""
         cls = self.__class__
         train, test = train_test_split(
             self, test_size=test_size, random_state=seed, shuffle=shuffle, stratify=self.labels()

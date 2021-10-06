@@ -17,8 +17,8 @@ from bavard_ml_utils.types.conversations.dialogue_turns import DialogueTurn
 
 class DSTuple(t.NamedTuple):
     """
-    A dialogue state, as defined by Gritta et al. in "Conversation Graph: Data Augmentation, Training and Evaluation for
-    Non-Deterministic Dialogue Management" (2021). It represents the state of a conversation at a given turn.
+    A dialogue state, as defined in "Conversation Graph: Data Augmentation, Training and Evaluation for
+    Non-Deterministic Dialogue Management"[1]_. It represents the state of a conversation at a given turn.
     """
 
     bs: t.FrozenSet[str] = frozenset()
@@ -29,18 +29,19 @@ class DSTuple(t.NamedTuple):
 
     actor: t.Optional[str] = None
     """
-    The actor that took the action, one of ``"HUMAN"``, ``"AGENT"`` (chatbot), or ```None``` (in the case of the
+    The actor that took the action, one of ``"HUMAN"``, ``"AGENT"`` (chatbot), or ``None`` (in the case of the
     starting root node of the graph).
     """
 
 
 class ConvGraph:
     """
-    Implementation of Algorithm (1) in "Conversation Graph: Data Augmentation, Training and Evaluation for
-    Non-Deterministic Dialogue Management" by Gritta et al. (2021). Can convert a `ConversationDataset` into
-    a conversation graph, which is useful for visualizing the different paths that an agent's conversations take,
-    as well as for evaluating dialogue act predictions using _soft_ metrics. The graph can also be used for
-    dataset augmentation in a task-oriented-dialogue training setting.
+    Implementation of Algorithm (1) in "Conversation Graph: Data Augmentation, Training, and Evaluation for
+    Non-Deterministic Dialogue Management"[1]_. Can convert a
+    :class:`~bavard_ml_utils.types.conversations.conversation.ConversationDataset` into a conversation graph, which is
+    useful for visualizing the different paths that an agent's conversations take, as well as for evaluating dialogue
+    act predictions using "soft" metrics. The graph can also be used for dataset augmentation in a
+    task-oriented-dialogue training setting.
 
     Each node in the graph is a unique dialogue state, where a dialogue state is defined as a tuple of:
 
@@ -49,6 +50,10 @@ class ConvGraph:
     #. the type of actor who took that action (human or chatbot).
 
     A belief state is the set of dialogue slots that are populated at a given turn.
+
+    .. [1] Gritta, M., Lampouras, G., & Iacobacci, I. (2021). Conversation Graph: Data Augmentation, Training, and
+       Evaluation for Non-Deterministic Dialogue Management. Transactions of the Association for Computational
+       Linguistics, 9, 36-52.
     """
 
     def __init__(self, data: ConversationDataset):
@@ -69,7 +74,7 @@ class ConvGraph:
 
     def add_node(self, ds: DSTuple):
         """
-        The `ds` tuple is used as the node's unique id, but we also add the attributes of `ds` as attributes of the
+        The ``ds`` tuple is used as the node's unique id, but we also add the attributes of ``ds`` as attributes of the
         node, so they can be interacted with easily in the graph.
         """
         if not self.graph.has_node(ds):
@@ -85,9 +90,9 @@ class ConvGraph:
         y_pred : list of str
             A list of agent action predictions.
         last_turns : list of DialogueTurn
-            A list, having the same length as `y_pred`, of the dialogue turns the agent action predictions in `y_pred`
-            are following. For example, `y_pred[i]` should be the agent action which was predicted as coming after the
-            turn `last_turns[i]`.
+            A list, having the same length as ``y_pred``, of the dialogue turns the agent action predictions in
+            ``y_pred`` are following. For example, ``y_pred[i]`` should be the agent action which was predicted as
+            coming after the turn ``last_turns[i]``.
         """
         num_correct = 0
         for pred, last_turn in zip(y_pred, last_turns):
@@ -95,7 +100,7 @@ class ConvGraph:
         return num_correct / len(last_turns)
 
     def balanced_soft_accuracy(self, y_pred: t.List[str], last_turns: t.List[DialogueTurn]) -> float:
-        """Same as `ConvGraph.soft_accuracy`, but equally weights the accuracy calculation of each class, or action."""
+        """Same as :meth:`soft_accuracy`, but equally weights the accuracy calculation of each class, or action."""
         correct = defaultdict(int)
         out_of = defaultdict(int)
         for pred, last_turn in zip(y_pred, last_turns):
@@ -117,9 +122,9 @@ class ConvGraph:
 
     def get_valid_next_actions(self, turn: DialogueTurn) -> t.Set[str]:
         """
-        Given the dialogue state of `turn`, find the actions of all dialogue states that directly follow `turn` in the
-        conversation graph. In other words, return the valid next actions that appear after `turn` in the training data
-        the conversation graph was constructed from.
+        Given the dialogue state of ``turn``, find the actions of all dialogue states that directly follow ``turn`` in
+        the conversation graph. In other words, return the valid next actions that appear after `turn` in the training
+        data the conversation graph was constructed from.
         """
         ds = self.encode_dialogue_state(turn)
         return {v[1] for u, v in self.graph.out_edges(ds)}
@@ -136,6 +141,9 @@ class ConvGraph:
 
     @staticmethod
     def encode_dialogue_state(turn: DialogueTurn) -> DSTuple:
+        """
+        Encodes a :obj:`~bavard_ml_utils.types.conversations.dialogue_turns.DialogueTurn` into a :class:`DSTuple`.
+        """
         belief_state_keys = list(turn.state.slotValues.keys()) if turn.state else []
         action = turn.agentAction.name if turn.actor == Actor.AGENT else turn.userAction.intent
         return DSTuple(bs=frozenset(belief_state_keys), action=action, actor=turn.actor.value)

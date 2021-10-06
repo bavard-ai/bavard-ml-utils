@@ -46,8 +46,8 @@ def log(
     **fields,
 ):
     """
-    Logs `**fields` out as a JSON object string. GCP Cloud Run automatically parses the fields, and also captures
-    any special fields, like `severity` and `message`.
+    Logs ``**fields`` out as a JSON object string. GCP Cloud Run automatically parses the fields, and also captures
+    any special fields, like ``severity`` and ``message``.
 
     Parameters
     ----------
@@ -55,14 +55,14 @@ def log(
         The severity of the log entry.
     trace_header : str, optional
         If this log entry is being logged in the context of an HTTP request and response occuring in GCP Cloud Run, then
-        the request will have a `X-Cloud-Trace-Context` header. If the value of that header is passed to this function
-        as the `trace_header` field, this log entry will be associated with that trace, and the entry's fields will be
-        nested under the trace's log entry. *Note*: the `gcp_project_id` field must also be passed in.
+        the request will have a ``X-Cloud-Trace-Context`` header. If the value of that header is passed to this function
+        as the ``trace_header`` field, this log entry will be associated with that trace, and the entry's fields will be
+        nested under the trace's log entry. *Note*: the ``gcp_project_id`` field must also be passed in.
     gcp_project_id : str, optional
         If applicable, the ID of the GCP project the code is running under. Required for this log entry to be associated
         with a trace.
     logger : callable, optional
-        The function that will do the logging to the console. Default is the builtin `print`, which is sufficient for
+        The function that will do the logging to the console. Default is the builtin ``print``, which is sufficient for
         GCP to capture the log entry.
     """
     if isinstance(severity, str):

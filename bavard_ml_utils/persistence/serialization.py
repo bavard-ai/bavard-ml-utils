@@ -16,7 +16,7 @@ class TypeSerializer(ABC):
     def type_name(self) -> str:
         """
         A name identifying the type this serializer serializers. Should be
-        unique among all the other :class:`TypeSerializer`s used. Should also
+        unique among all the other :class:`TypeSerializer` serializers used. Should also
         contain only letters, numbers, and dashes.
         """
         pass
@@ -165,13 +165,13 @@ class Persistent:
     """The serializer to use. Override this for custom serialization behavior."""
 
     def to_dir(self, path: str, overwrite: bool = False):
-        """Serializes the full state of `self` to directory `path`."""
+        """Serializes the full state of ``self`` to directory ``path``."""
         self.serializer.serialize(self, path, overwrite)
 
     @classmethod
     def from_dir(cls, path: str, delete: bool = False) -> "Persistent":
         """
-        Deserializes a full instance of this class from directory `path`. If `delete==True`,
+        Deserializes a full instance of this class from directory ``path``. If ``delete==True``,
         the persisted instance will be deleted once loaded into memory.
         """
         obj = cls.serializer.deserialize(path, delete)

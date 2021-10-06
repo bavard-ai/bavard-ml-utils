@@ -8,7 +8,7 @@ def endpoint(_func=None, **fastapi_args) -> t.Callable:
     """
     Decorator for identifying methods as FastAPI endpoints. All decorator
     arguments are forwarded to :meth:`fastapi.FastAPI.add_api_route`, which will
-    register ``method`` as an API route when `WebService.to_app` is called.
+    register ``method`` as an API route when :meth:`WebService.to_app` is called.
     """
 
     def inner(method: t.Callable) -> t.Callable:

@@ -65,8 +65,8 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
 
     def delete_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> int:
         """
-        Deletes all records which satisfy the optional `*conditions` and `*where_equals` conditions. Returns the number
-        of records that were deleted.
+        Deletes all records which satisfy the optional ``*conditions`` and ``*where_equals`` conditions. Returns the
+        number of records that were deleted.
         """
         num_deleted = 0
         for doc in self._stream(*conditions, **where_equals):

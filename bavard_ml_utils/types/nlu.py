@@ -9,7 +9,7 @@ class TrainingTag(BaseModel):
     """A tag as it appears in NLU training data."""
 
     tagType: str
-    """The type of named entity that is referenced e.g. "person", "location", "size", etc."""
+    """The type of named entity that is referenced e.g. ``"person"``, ``"location"``, ``"size"``, etc."""
 
     start: int
     """The starting index where this tag can be found in its parent utterance (inclusive)."""

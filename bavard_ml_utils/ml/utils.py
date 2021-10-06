@@ -18,7 +18,7 @@ _T = t.TypeVar("_T")
 
 def leave_one_out(items: t.List[_T]) -> t.Iterable[t.Tuple[_T, t.List[_T]]]:
     """
-    Cycles through `items`. On each ith item ``item_i``, it yields
+    Cycles through ``items``. On each ith item ``item_i``, it yields
     ``item_i``, as well as all items in `items` except ``item_i`` as a list.
     So given ``items==[1,2,3,4]``, the first iteration would yield
     ``(1, [2,3,4])``, the second will yield ``(2, [1,3,4])``, and so on.
@@ -32,7 +32,7 @@ def make_stratified_folds(
     data: t.Sequence[_T], labels: t.Sequence, nfolds: int, shuffle: bool = True, seed: int = 0
 ) -> t.Tuple[t.List[_T]]:
     """
-    Takes `data`, a list, and breaks it into `nfolds` chunks. Each chunk is stratified
+    Takes ``data``, a list, and breaks it into ``nfolds`` chunks. Each chunk is stratified
     by `labels`.
     """
     skf = StratifiedKFold(n_splits=nfolds, shuffle=shuffle, random_state=seed)
@@ -46,8 +46,8 @@ def make_stratified_folds(
 @requires_extras(ml=_has_ml_deps)
 def aggregate_dicts(dicts: t.Sequence[dict], agg: str = "mean") -> dict:
     """
-    Aggregates a list of dictionaries into a single dictionary. All dictionaries in `dicts` should have the same keys.
-    All values for a given key are aggregated into a single value using `agg`. Returns a single dictionary with the
+    Aggregates a list of dictionaries into a single dictionary. All dictionaries in ``dicts`` should have the same keys.
+    All values for a given key are aggregated into a single value using ``agg``. Returns a single dictionary with the
     aggregated values.
 
     Parameters

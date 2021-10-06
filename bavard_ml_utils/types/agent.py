@@ -154,6 +154,9 @@ class AgentConfig(BaseModel):
 
 
 class AgentExport(BaseModel):
-    """A subset of the `IAgentExport` interface in our `chatbot-service` repo."""
+    """
+    Wrapper data structure for an :class:`AgentConfig` object. Often, Bavard agent configs are saved as JSON files in
+    this format.
+    """
 
     config: AgentConfig

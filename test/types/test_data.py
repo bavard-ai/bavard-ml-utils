@@ -31,7 +31,7 @@ class TestModel(DataModel):
 
 
 class TestData(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.array = np.random.normal(size=(3, 4))
         self.array2 = np.random.normal(size=(5, 4))
         self.model = TestModel(string="hello", array=self.array, inner=InnerModel(data=self.array2))

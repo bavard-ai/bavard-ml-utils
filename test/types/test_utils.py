@@ -24,7 +24,7 @@ class MyNumpyModel(DataModel):
 
 
 class TestUtils(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.model = MyModel(a="a", b=1, c=2.0, d=True, e=["b", "c"], f={"a": 1}, g=b"123")
         self.np_model = MyNumpyModel(a=123, b=np.random.normal(size=(5, 5)))
 

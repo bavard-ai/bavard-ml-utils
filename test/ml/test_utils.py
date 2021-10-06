@@ -8,7 +8,7 @@ from bavard_ml_utils.ml.utils import make_stratified_folds, onehot
 
 
 class TestUtils(TestCase):
-    def test_make_stratified_folds(self) -> None:
+    def test_make_stratified_folds(self):
         data = list(range(10))
         labels = [0, 1] * 5
         data_counts = defaultdict(int)

@@ -13,11 +13,11 @@ class PairDataset(LabeledDataset[Pair]):
 
 
 class TestLabeledDataset(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.dataset = PairDataset([("a", 0), ("b", 0), ("c", 0), ("d", 1), ("e", 1), ("f", 2), ("g", 2)])
         self.labels = set(self.dataset.labels())
 
-    def test_balance_by_intent(self) -> None:
+    def test_balance_by_intent(self):
         label_distribution = self.dataset.get_label_distribution()
         majority_class_n = label_distribution.most_common(1)[0][1]
 

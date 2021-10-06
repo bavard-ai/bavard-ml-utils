@@ -20,7 +20,7 @@ class TestLogger:
 
 
 class TestLogging(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.trace_id = uuid4()
         # Has the format `TRACE_ID/SPAN_ID;o=TRACE_TRUE`. Source: https://cloud.google.com/trace/docs/setup#force-trace
         self.trace_header = f"{self.trace_id}/1;o=1"

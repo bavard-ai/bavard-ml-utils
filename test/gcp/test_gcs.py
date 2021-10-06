@@ -16,13 +16,13 @@ class TestGCSClient(TestCase):
     test_bucket_name = "gcs-client-bucket"
 
     @classmethod
-    def setUpClass(cls) -> None:
+    def setUpClass(cls):
         cls.test_data_spec.write()
         cls.client = GCSClient()
         cls.client.create_bucket(cls.test_bucket_name)
 
     @classmethod
-    def tearDownClass(cls) -> None:
+    def tearDownClass(cls):
         cls.test_data_spec.remove()
 
     def tes_can_upload_and_download_blob(self):

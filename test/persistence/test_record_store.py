@@ -16,7 +16,7 @@ class Fruit(Record):
 
 
 class TestRecordStore(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         clear_database()
         # Test multiple kinds of record stores.
         self.databases = [FirestoreRecordStore("fruits", Fruit), InMemoryRecordStore(Fruit)]

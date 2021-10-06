@@ -18,7 +18,7 @@ class Clf(WebService):
     Clf stands for classifier.
     """
 
-    def fit(self, X, y) -> None:
+    def fit(self, X, y):
         self._mode = statistics.mode(y)
 
     @endpoint(methods=["POST"])
@@ -27,7 +27,7 @@ class Clf(WebService):
 
 
 class ClfNoTypes(WebService):
-    def fit(self, X, y) -> None:
+    def fit(self, X, y):
         self._mode = statistics.mode(y)
 
     @endpoint(methods=["POST"])
@@ -36,7 +36,7 @@ class ClfNoTypes(WebService):
 
 
 class ClfMultipleEndpoints(WebService):
-    def fit(self, X, y) -> None:
+    def fit(self, X, y):
         self._mode = statistics.mode(y)
 
     @endpoint(path="/my-custom-predict-path", methods=["POST"])
@@ -50,7 +50,7 @@ class ClfMultipleEndpoints(WebService):
 
 class ClfWithFitEndpoint(WebService):
     @endpoint(methods=["POST"])
-    def fit(self, dataset: FitInput) -> None:
+    def fit(self, dataset: FitInput):
         self._mode = statistics.mode(dataset.y)
 
     @endpoint(methods=["POST"])
@@ -59,12 +59,12 @@ class ClfWithFitEndpoint(WebService):
 
 
 class TestWebService(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.X = [[0], [1], [2], [3], [4], [5], [6], [7], [8]]
         self.y = [1, 2, 2, 3, 3, 3, 4, 4, 5]
         self.y2 = [2, 2, 2, 2, 2, 2, 2, 2, 2]
 
-    def test_web_service(self) -> None:
+    def test_web_service(self):
         client = self._get_client(Clf)
 
         # Has a home page
@@ -88,7 +88,7 @@ class TestWebService(TestCase):
         # Knows how to handle unknown routes properly.
         self.assertEqual(client.get("/foo").status_code, 404)
 
-    def test_multiple_endpoints(self) -> None:
+    def test_multiple_endpoints(self):
         # `WebService` should be able to create multiple endpoints
         # for a single class.
 
@@ -102,7 +102,7 @@ class TestWebService(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()["mode"], 3)
 
-    def test_can_alter_state(self) -> None:
+    def test_can_alter_state(self):
         # The state of the model should be able to be altered even while
         # its a web service, if methods to do so are exposed in an endpoint.
         model = ClfWithFitEndpoint()

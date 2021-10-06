@@ -43,7 +43,7 @@ class ArtifactManager(BaseArtifactManager):
 
 
 class TestArtifactManager(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         clear_database()
         self.artifacts = FirestoreRecordStore[ArtifactRecord]("artifacts", ArtifactRecord)
         self.datasets = FirestoreRecordStore[DatasetRecord]("datasets", DatasetRecord)

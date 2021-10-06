@@ -16,7 +16,7 @@ class ReformerModelSerializer(TypeSerializer):
     type_name = "hf"
     ext = None
 
-    def serialize(self, obj: ReformerModelWithLMHead, path: str) -> None:
+    def serialize(self, obj: ReformerModelWithLMHead, path: str):
         obj.save_pretrained(path)
 
     def deserialize(self, path: str) -> object:
@@ -30,7 +30,7 @@ class KerasSerializer(TypeSerializer):
     type_name = "keras"
     ext = None
 
-    def serialize(self, obj: tf.keras.Model, path: str) -> None:
+    def serialize(self, obj: tf.keras.Model, path: str):
         obj.save(path, save_format="tf")
 
     def deserialize(self, path: str) -> object:
@@ -43,7 +43,7 @@ class KerasSerializer(TypeSerializer):
 class TestClass:
     class_attr = "class_attr"
 
-    def __init__(self, *, public_attr) -> None:
+    def __init__(self, *, public_attr):
         self.public_attr = public_attr
         self._private_attr = "_private_attr"
 
@@ -57,12 +57,12 @@ class TestClass:
 
 
 class TestSklearnModel:
-    def __init__(self, *, C: float = 1.0) -> None:
+    def __init__(self, *, C: float = 1.0):
         self._fitted = False
         self._clf = LogisticRegression(C=C)
         self.C = C
 
-    def fit(self, X, y) -> None:
+    def fit(self, X, y):
         self._clf.fit(X, y)
         self._fitted = True
 
@@ -83,11 +83,11 @@ class TestSklearnModel:
 
 
 class TestKerasModel:
-    def __init__(self, *, n_units: int) -> None:
+    def __init__(self, *, n_units: int):
         self.n_units = n_units
         self._fitted = False
 
-    def fit(self, X, y) -> None:
+    def fit(self, X, y):
         inputs = tf.keras.Input(shape=(X.shape[1],))
         outputs = tf.keras.layers.Dense(self.n_units)(inputs)
         outputs = tf.keras.layers.Dense(y.shape[1], activation="softmax")(outputs)
@@ -134,14 +134,14 @@ class TestHfModel:
 
 
 class TestSerialization(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.temp_dir = "temp-data"
         iris = load_iris()
         self.X = iris.data
         self.y = iris.target
         self.n_features = len(iris.feature_names)
 
-    def test_can_serialize_basic(self) -> None:
+    def test_can_serialize_basic(self):
         # Can serialize when no custom serializers are used.
         data = {"foo": 1, "bar": None, "baz": [1, 2, 3], 0: "Hello"}
         serializer = Serializer()
@@ -151,7 +151,7 @@ class TestSerialization(TestCase):
 
         self.assertDictEqual(data, loaded_data)
 
-    def test_can_serialize_class(self) -> None:
+    def test_can_serialize_class(self):
         obj = TestClass(public_attr=1)
         serializer = Serializer()
 
@@ -160,7 +160,7 @@ class TestSerialization(TestCase):
 
         self.assertEqual(obj, loaded_obj)
 
-    def test_sklearn_serializer(self) -> None:
+    def test_sklearn_serializer(self):
         model = TestSklearnModel(C=0.5)
         serializer = Serializer()
 
@@ -179,7 +179,7 @@ class TestSerialization(TestCase):
         first_two = self.X[:2, :]
         self.assertTrue((model.predict(first_two) == loaded_fit_model.predict(first_two)).all())
 
-    def test_keras_serializer(self) -> None:
+    def test_keras_serializer(self):
         model = TestKerasModel(n_units=10)
         serializer = Serializer(KerasSerializer())
 
@@ -198,7 +198,7 @@ class TestSerialization(TestCase):
         first_two = self.X[:2, :]
         self.assertTrue((model.predict(first_two) == loaded_fit_model.predict(first_two)).all())
 
-    def test_hf_serializer(self) -> None:
+    def test_hf_serializer(self):
         model = TestHfModel(max_length=25)
         serializer = Serializer(ReformerModelSerializer())
 
@@ -209,7 +209,7 @@ class TestSerialization(TestCase):
         # Predictions should be identical.
         self.assertEqual(model.predict("A few months later"), loaded_model.predict("A few months later"))
 
-    def test_can_load_moved_object(self) -> None:
+    def test_can_load_moved_object(self):
         move_location = "moved-dir"
         model = TestKerasModel(n_units=10)
         serializer = Serializer(KerasSerializer())

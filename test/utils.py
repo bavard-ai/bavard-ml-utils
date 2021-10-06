@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from test.config import FIRESTORE_EMULATOR_HOST
 
 
-def load_json_file(path):
+def load_json_file(path) -> t.Any:
     with open(path) as f:
         return json.load(f)
 

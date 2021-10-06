@@ -31,7 +31,7 @@ class TypeSerializer(ABC):
         pass
 
     @abstractmethod
-    def serialize(self, obj: object, path: str) -> None:
+    def serialize(self, obj: object, path: str):
         """Should serialize ``obj`` and save it to ``path``."""
         pass
 
@@ -54,7 +54,7 @@ class TypeSerializer(ABC):
 
 
 class _CustomPickler(pickle.Pickler):
-    def __init__(self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]) -> None:
+    def __init__(self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]):
         super().__init__(pkl_file)
         self._assets_path = assets_path
         self._ser_map = {ser.type_name: ser for ser in type_serializers}
@@ -83,7 +83,7 @@ class _CustomPickler(pickle.Pickler):
 
 
 class _CustomUnpickler(pickle.Unpickler):
-    def __init__(self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]) -> None:
+    def __init__(self, pkl_file, assets_path: str, type_serializers: t.Sequence[TypeSerializer]):
         super().__init__(pkl_file)
         self._assets_path = assets_path
         self._ser_map = {ser.type_name: ser for ser in type_serializers}
@@ -112,7 +112,7 @@ class Serializer:
     implement the :class:`TypeSerializer` class and pass an instance of your class to the constructor.
     """
 
-    def __init__(self, *custom_type_serializers: TypeSerializer) -> None:
+    def __init__(self, *custom_type_serializers: TypeSerializer):
         self._type_serializers = custom_type_serializers
 
         if len(self._type_serializers) != len({ser.type_name for ser in self._type_serializers}):
@@ -121,7 +121,7 @@ class Serializer:
                 f" Currently registered names: {[ser.type_name for ser in self._type_serializers]}"
             )
 
-    def serialize(self, obj: object, path: str, overwrite: bool = False) -> None:
+    def serialize(self, obj: object, path: str, overwrite: bool = False):
         """Serialize ``obj`` to ``path``, a directory."""
         if os.path.isfile(path):
             raise ValueError(f"cannot serialize to directory {path}; it is a file")
@@ -164,7 +164,7 @@ class Persistent:
     serializer = Serializer()
     """The serializer to use. Override this for custom serialization behavior."""
 
-    def to_dir(self, path: str, overwrite: bool = False) -> None:
+    def to_dir(self, path: str, overwrite: bool = False):
         """Serializes the full state of `self` to directory `path`."""
         self.serializer.serialize(self, path, overwrite)
 

@@ -1,7 +1,7 @@
 ```{toctree}
 ---
 maxdepth: 3
-caption: API Table of Contents
+caption: API Documentation
 ---
 
 src/bavard_ml_utils

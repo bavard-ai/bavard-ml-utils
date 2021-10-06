@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Builds the docs site for this package. Assumes all the package's dependencies are already installed.
+
 set -eo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd "$DIR/../docs"

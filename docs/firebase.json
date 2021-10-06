@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "site": "docs-bavard-ml-utils",
+    "public": "_build/html",
+    "ignore": [
+      "firebase.json",
+      "**/.*"
+    ]
+  }
+}

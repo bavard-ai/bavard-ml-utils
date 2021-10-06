@@ -1,5 +1,6 @@
 version: 2
 references:
+
   default_config: &default_config
     docker:
       - image: gcr.io/bavard-infra/devops:1.0.0
@@ -7,7 +8,17 @@ references:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GOOGLE_CREDENTIALS  # JSON service account you created
 
-  test: &test
+  version-tags-only: &version-tags-only
+    # Filter that only matches when there's a git tag representing
+    # a package version.
+    tags:
+      only: /[0-9]+(\.[0-9]+)*/
+    branches:
+      ignore: /.*/
+
+jobs:
+
+  test:
     <<: *default_config
     steps:
       - setup_remote_docker:
@@ -17,7 +28,7 @@ references:
           name: test
           command: scripts/lint-and-test-package.sh
 
-  publish: &publish
+  publish:
     <<: *default_config
     steps:
       - checkout
@@ -25,11 +36,16 @@ references:
           name: publish
           command: ./scripts/publish.sh
 
-jobs:
-  test:
-    <<: *test
-  publish:
-    <<: *publish
+  publish-docs:
+    <<: *default_config
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: publish-docs
+          command: ./scripts/deploy_docs.sh $FIREBASE_TOKEN
+
 workflows:
   version: 2
   test-and-publish:
@@ -38,6 +54,7 @@ workflows:
           context: bavard
           filters:
             tags:
+              # Run on all branches, tag or no tag.
               only: /.*/
       - publish:
           context: bavard
@@ -46,7 +63,10 @@ workflows:
           filters:
             # Only publish to pypi when there's a git tag representing
             # a package version.
-            tags:
-              only: /[0-9]+(\.[0-9]+)*/
-            branches:
-              ignore: /.*/
+            <<: *version-tags-only
+      - publish-docs:
+          context: bavard
+          requires:
+            - publish
+          filters:
+            <<: *version-tags-only

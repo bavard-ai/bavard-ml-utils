@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bavard-ml-utils"
-version = "0.1.26"
+version = "0.1.27"
 description = "Utilities for machine learning, python web services, and cloud infrastructure"
 authors = ["Bavard AI, Inc. <dev@bavard.ai>"]
 

@@ -44,7 +44,7 @@ jobs:
       - checkout
       - run:
           name: publish-docs
-          command: ./scripts/deploy_docs.sh $FIREBASE_TOKEN
+          command: ./scripts/deploy-docs.sh $FIREBASE_TOKEN
 
 workflows:
   version: 2

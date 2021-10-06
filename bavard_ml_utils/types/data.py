@@ -1,3 +1,11 @@
+"""
+Features related to working with numpy data in data structures and persistence. Requires the ``ml`` extra to be
+installed, which can be installed in this way:
+
+.. code-block::
+
+   pip install bavard-ml-utils[ml]
+"""
 import inspect
 import typing as t
 from io import BytesIO

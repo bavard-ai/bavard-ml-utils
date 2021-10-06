@@ -27,6 +27,7 @@ Sphinx = "^4.2.0"
 myst-parser = "^0.15.2"
 sphinx-rtd-theme = "^1.0.0"
 toml = "^0.10.2"
+pre-commit = "^2.15.0"
 
 [tool.poetry.extras]
 ml = ["numpy", "scikit-learn", "networkx"]

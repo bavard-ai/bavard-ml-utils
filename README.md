@@ -1,5 +1,11 @@
 # bavard-ml-utils
 
+[![CircleCI Build Status](https://circleci.com/gh/bavard-ai/bavard-ml-utils/tree/main.svg?style=shield)](https://circleci.com/gh/bavard-ai/bavard-ml-utils/tree/main)
+[![PyPI Version](https://badge.fury.io/py/bavard-ml-utils.svg)](https://badge.fury.io/py/bavard-ml-utils)
+[![PyPI Downloads](https://pepy.tech/badge/bavard-ml-utils)](https://pepy.tech/project/bavard-ml-utils)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bavard-ml-utils)](https://pypi.org/project/bavard-ml-utils/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A package of common code and utilities for machine learning and MLOps. Includes classes and methods for:
 
 1. ML model serialization/deserialization

@@ -18,10 +18,9 @@ _T = t.TypeVar("_T")
 
 def leave_one_out(items: t.List[_T]) -> t.Iterable[t.Tuple[_T, t.List[_T]]]:
     """
-    Cycles through ``items``. On each ith item ``item_i``, it yields
-    ``item_i``, as well as all items in `items` except ``item_i`` as a list.
-    So given ``items==[1,2,3,4]``, the first iteration would yield
-    ``(1, [2,3,4])``, the second will yield ``(2, [1,3,4])``, and so on.
+    Performs leave-one-out cross validation. Cycles through ``items``. On each ith item ``item_i``, it yields
+    ``item_i``, as well as all items in ``items`` except ``item_i`` as a list. So given ``items==[1,2,3,4]``, the first
+    iteration would yield ``(1, [2,3,4])``, the second will yield ``(2, [1,3,4])``, and so on.
     """
     for i, item in enumerate(items):
         yield item, items[:i] + items[i + 1 :]

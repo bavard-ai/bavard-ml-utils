@@ -17,8 +17,7 @@ from bavard_ml_utils.types.conversations.dialogue_turns import DialogueTurn
 
 class DSTuple(t.NamedTuple):
     """
-    A dialogue state, as defined in "Conversation Graph: Data Augmentation, Training and Evaluation for
-    Non-Deterministic Dialogue Management"[1]_. It represents the state of a conversation at a given turn.
+    A dialogue state, as defined in [1]_. It represents the state of a conversation at a given turn.
     """
 
     bs: t.FrozenSet[str] = frozenset()
@@ -36,8 +35,7 @@ class DSTuple(t.NamedTuple):
 
 class ConvGraph:
     """
-    Implementation of Algorithm (1) in "Conversation Graph: Data Augmentation, Training, and Evaluation for
-    Non-Deterministic Dialogue Management"[1]_. Can convert a
+    Implementation of Algorithm (1) in [1]_. Can convert a
     :class:`~bavard_ml_utils.types.conversations.conversation.ConversationDataset` into a conversation graph, which is
     useful for visualizing the different paths that an agent's conversations take, as well as for evaluating dialogue
     act predictions using "soft" metrics. The graph can also be used for dataset augmentation in a
@@ -51,6 +49,8 @@ class ConvGraph:
 
     A belief state is the set of dialogue slots that are populated at a given turn.
 
+    References
+    ----------
     .. [1] Gritta, M., Lampouras, G., & Iacobacci, I. (2021). Conversation Graph: Data Augmentation, Training, and
        Evaluation for Non-Deterministic Dialogue Management. Transactions of the Association for Computational
        Linguistics, 9, 36-52.

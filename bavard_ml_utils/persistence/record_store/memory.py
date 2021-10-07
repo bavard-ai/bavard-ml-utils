@@ -4,9 +4,9 @@ from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Recor
 
 
 class InMemoryRecordStore(BaseRecordStore[RecordT]):
-    """
+    r"""
     A simple in-memory DAO for Pydantic data models. Useful for testing or other lightweight needs. Does not keep any
-    indexes of non-primary key fields, so `WHERE` clause queries are `O(n)`.
+    indexes of non-primary key fields, so `WHERE` clause queries are :math:`\mathcal{O}(n)`.
     """
 
     def __init__(self, record_class: t.Type[Record]):

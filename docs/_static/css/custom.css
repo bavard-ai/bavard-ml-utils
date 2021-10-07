@@ -67,3 +67,18 @@ html.writer-html5
   border-top: 3px solid var(--bright-blue);
   background-color: var(--light-blue);
 }
+
+/* Format footnotes in the Numpy reference style e.g. `"[1]"` instead of `<sup>1</sup>`. */
+
+.rst-content .footnote-reference {
+  font-size: inherit;
+  top: inherit;
+}
+
+.rst-content .footnote-reference::before {
+    content: "["
+}
+
+.rst-content .footnote-reference::after {
+    content: "]"
+}

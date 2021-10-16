@@ -45,9 +45,15 @@ class ArtifactManager(BaseArtifactManager):
 class TestArtifactManager(TestCase):
     def setUp(self):
         clear_database()
-        self.artifacts = FirestoreRecordStore[ArtifactRecord]("artifacts", ArtifactRecord)
-        self.datasets = FirestoreRecordStore[DatasetRecord]("datasets", DatasetRecord)
-        self.versions = FirestoreRecordStore[ServiceVersionMetadata]("versions", ServiceVersionMetadata)
+        self.artifacts: FirestoreRecordStore[ArtifactRecord] = FirestoreRecordStore[ArtifactRecord](
+            "artifacts", ArtifactRecord
+        )
+        self.datasets: FirestoreRecordStore[DatasetRecord] = FirestoreRecordStore[DatasetRecord](
+            "datasets", DatasetRecord
+        )
+        self.versions: FirestoreRecordStore[ServiceVersionMetadata] = FirestoreRecordStore[ServiceVersionMetadata](
+            "versions", ServiceVersionMetadata
+        )
         self.dataset_records = [
             DatasetRecord(examples=["a", "b", "c"], agent_id="1", updated_at=time.time()),
             DatasetRecord(examples=["d", "e"], agent_id="2", updated_at=time.time()),
@@ -151,3 +157,40 @@ class TestArtifactManager(TestCase):
         self.assertEqual(artifact.dataset_digest, dataset_record.digest)
         self.assertIsNotNone(artifact.A)
         self.assertIsNotNone(artifact.b)
+
+    def test_remove_old_versions(self):
+        max_service_versions = 5
+        n_old = 2
+        version_names = [f"v{i}" for i in range(max_service_versions + n_old)]
+
+        # Create artificial metadata and a couple artifacts for each version.
+        for version_name in version_names:
+            self.versions.save(ServiceVersionMetadata(name=version_name, synced_at=time.time()))
+            mgr = ArtifactManager(self.artifacts, self.datasets, self.versions, version_name)
+            for dataset_record in self.dataset_records:
+                artifact = mgr.create_artifact_from_dataset(dataset_record)
+                mgr.save_artifact(artifact, dataset_record)
+
+        mgr = ArtifactManager(self.artifacts, self.datasets, self.versions, version_names[-1])
+        mgr._remove_old_service_versions()
+
+        # Metadata for old versions should have been removed, and data for the newer versions should have been kept.
+        versions = list(self.versions.get_all())
+        new_version_names = {v.name for v in versions}
+        expected_version_names = set(version_names[n_old:])
+        self.assertSetEqual(new_version_names, expected_version_names)
+
+        # Artifacts for newer versions should have been preserved.
+        for version_name in new_version_names:
+            tasks_for_version = list(self.artifacts.get_all(service_version=version_name))
+            self.assertSetEqual(
+                {task.dataset_digest for task in tasks_for_version}, {rec.digest for rec in self.dataset_records}
+            )
+            self.assertSetEqual(
+                {task.agent_id for task in tasks_for_version}, {rec.agent_id for rec in self.dataset_records}
+            )
+
+        # Artifacts for old versions should have been removed.
+        for removed_version_name in set(version_names) - new_version_names:
+            n_artifacts_for_version = sum(1 for _ in self.artifacts.get_all(service_version=removed_version_name))
+            self.assertEqual(n_artifacts_for_version, 0)

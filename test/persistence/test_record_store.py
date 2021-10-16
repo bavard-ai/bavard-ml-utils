@@ -65,6 +65,38 @@ class TestRecordStore(TestCase):
             self.assertEqual(num_deleted, 1)
             self.assertEqual(len(list(db.get_all())), 0)  # should be none left
 
+    def test_read_only_firestore(self):
+        db = FirestoreRecordStore("fruits", Fruit)
+        self._create_some_records(db)
+        # Connected to the same collection in Firestore.
+        read_only_db = FirestoreRecordStore("fruits", Fruit, read_only=True)
+        # Should be able to retrieve the data, but not edit it in any way.
+        data = tuple(sorted(item.get_id() for item in read_only_db.get_all()))
+        self.assertEqual(len(data), 3)
+        with self.assertRaises(AssertionError):
+            read_only_db.save(self.mango)
+        with self.assertRaises(AssertionError):
+            read_only_db.delete(self.mango.get_id())
+        with self.assertRaises(AssertionError):
+            read_only_db.delete_all()
+        # The data should not have changed.
+        data2 = tuple(sorted(item.get_id() for item in read_only_db.get_all()))
+        self.assertEqual(data, data2)
+
+    def test_read_only_in_memory(self):
+        read_only_db = InMemoryRecordStore(Fruit, read_only=True)
+        # Should be able to retrieve the data, but not edit it in any way.
+        n_records = sum(1 for _ in read_only_db.get_all())
+        self.assertEqual(n_records, 0)
+        retrieved_mango = read_only_db.get(self.mango.get_id())
+        self.assertIsNone(retrieved_mango)
+        with self.assertRaises(AssertionError):
+            read_only_db.save(self.mango)
+        with self.assertRaises(AssertionError):
+            read_only_db.delete(self.mango.get_id())
+        with self.assertRaises(AssertionError):
+            read_only_db.delete_all()
+
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)
         db.save(self.mango)

@@ -9,18 +9,20 @@ class InMemoryRecordStore(BaseRecordStore[RecordT]):
     indexes of non-primary key fields, so `WHERE` clause queries are :math:`\mathcal{O}(n)`.
     """
 
-    def __init__(self, record_class: t.Type[Record]):
-        super().__init__(record_class)
+    def __init__(self, record_class: t.Type[Record], read_only=False):
+        super().__init__(record_class, read_only)
         # Records in the db can be resolved via `self._db[id]`.
         self._db: t.Dict[str, RecordT] = {}
 
     def save(self, record: RecordT):
+        self.assert_can_edit()
         self._db[record.get_id()] = record
 
     def get(self, id_: str) -> t.Optional[RecordT]:
         return self._db.get(id_)
 
     def delete(self, id_: str) -> bool:
+        self.assert_can_edit()
         if self.get(id_) is not None:
             del self._db[id_]
             return True
@@ -32,6 +34,7 @@ class InMemoryRecordStore(BaseRecordStore[RecordT]):
                 yield record
 
     def delete_all(self, **where_equals) -> int:
+        self.assert_can_edit()
         to_delete = [id_ for id_, record in self._db.items() if self._matches(record, **where_equals)]
         for id_ in to_delete:
             del self._db[id_]

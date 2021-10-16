@@ -29,10 +29,14 @@ class BaseRecordStore(ABC, t.Generic[RecordT]):
     ----------
     record_class : Record type
         The pydantic-based class that persisted objects should be deserialized into.
+    read_only : bool
+        Whether the record store is read only. Inheriting classes must call the :meth:`assert_can_edit` method of each
+        abstract method in order for read only checks to be enforced.
     """
 
-    def __init__(self, record_class: t.Type[Record]):
+    def __init__(self, record_class: t.Type[Record], read_only: bool):
         self.record_cls = record_class
+        self._read_only = read_only
 
     @abstractmethod
     def save(self, record: RecordT):
@@ -64,3 +68,8 @@ class BaseRecordStore(ABC, t.Generic[RecordT]):
         the number of records that were deleted.
         """
         pass
+
+    def assert_can_edit(self):
+        """Raises an assertion error if this record store is read only."""
+        if self._read_only:
+            raise AssertionError("record store is read only")

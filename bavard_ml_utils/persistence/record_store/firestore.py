@@ -27,10 +27,11 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
         collection_name: str,
         record_class: t.Type[Record],
         *,
+        read_only=False,
         project: t.Optional[str] = None,
         credentials: t.Optional[Credentials] = None,
     ):
-        super().__init__(record_class)
+        super().__init__(record_class, read_only)
         if os.getenv("FIRESTORE_EMULATOR_HOST") is not None:
             # We are in a testing context. Make sure the client's default args
             # work in this emulator scenario.
@@ -41,6 +42,7 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
         self.collection = firestore.Client(project=project, credentials=credentials).collection(collection_name)
 
     def save(self, record: RecordT):
+        self.assert_can_edit()
         self.collection.document(record.get_id()).set(record.dict())
 
     def get(self, id_: str) -> t.Optional[RecordT]:
@@ -50,6 +52,7 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
         return self.record_cls.parse_obj(doc.to_dict())
 
     def delete(self, id_: str) -> bool:
+        self.assert_can_edit()
         doc = self.collection.document(id_).get()
         if not doc.exists:
             return False
@@ -68,6 +71,7 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
         Deletes all records which satisfy the optional ``*conditions`` and ``*where_equals`` conditions. Returns the
         number of records that were deleted.
         """
+        self.assert_can_edit()
         num_deleted = 0
         for doc in self._stream(*conditions, **where_equals):
             if doc.exists:

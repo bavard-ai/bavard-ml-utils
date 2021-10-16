@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "bavard-ml-utils"
-version = "0.2.1"
+version = "0.2.2"
 description = "Utilities for machine learning, python web services, and cloud infrastructure"
+license = "MIT"
 authors = ["Bavard AI, Inc. <dev@bavard.ai>"]
+readme = "README.md"
+repository = "https://github.com/bavard-ai/bavard-ml-utils"
+documentation = "https://docs-bavard-ml-utils.web.app/"
 
 [tool.poetry.dependencies]
 python = "^3.8"

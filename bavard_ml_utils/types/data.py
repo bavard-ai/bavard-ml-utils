@@ -8,6 +8,7 @@ installed, which can be installed in this way:
 """
 import inspect
 import typing as t
+from datetime import datetime
 from io import BytesIO
 
 from fastapi.encoders import jsonable_encoder
@@ -78,17 +79,23 @@ class DataModel(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    def dict(self, *args, **kwargs):
+    def dict(self, custom_encoder: t.Optional[t.Dict[t.Any, t.Callable[[t.Any], t.Any]]] = None, **kwargs):
         """
         Creates a dictionary representation of the model, encoding all values to basic Python data types, for example,
-        enum values become strings, and numpy arrays become data strings.
+        enum values become strings, and numpy arrays become data strings. By default, :class:``datetime.datetime``
+        objects are kept as is, but this behavior can be changed by adding a custom parser for the
+        :class:``datetime.datetime`` type in the :param:``custom_encoder`` parameter.
         """
+        _custom_encoder = {np.ndarray: lambda arr: encode_numpy(arr, mode="w"), datetime: lambda date: date}
+        if custom_encoder is not None:
+            # Accept user overrides and customization.
+            _custom_encoder.update(custom_encoder)
         # First convert to a `dict`, to prevent `jsonable_encoder` from recursively calling this object's `dict` method,
         # which would cause infinite recursion.
-        d = super().dict(*args, **kwargs)
+        d = super().dict(**kwargs)
         # TODO: the top level call to `DataModel.json()` bloats the string returned here by `encode_numpy`,
         #   because it inserts escape characters and converts '\x' to '\u00' sometimes.
-        return jsonable_encoder(d, custom_encoder={np.ndarray: lambda arr: encode_numpy(arr, mode="w")})
+        return jsonable_encoder(d, custom_encoder=_custom_encoder, **kwargs)
 
     @classmethod
     def _get_fields_of_type(cls, type_: t.Type) -> t.Set[str]:

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from unittest import TestCase
 
 from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record
@@ -13,6 +14,15 @@ class Fruit(Record):
 
     def get_id(self) -> str:
         return self.name
+
+
+class DatedRecord(Record):
+    id: int
+    createdAt: datetime
+    payload: str
+
+    def get_id(self) -> str:
+        return str(self.id)
 
 
 class TestRecordStore(TestCase):
@@ -96,6 +106,20 @@ class TestRecordStore(TestCase):
             read_only_db.delete(self.mango.get_id())
         with self.assertRaises(AssertionError):
             read_only_db.delete_all()
+
+    def test_query_with_conditions(self):
+        # First, make some data.
+        db = FirestoreRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            db.save(DatedRecord(id=i, createdAt=now - timedelta(days=i), payload="arbitrary data"))
+        four_days_ago = now - timedelta(days=4)
+        # Perform a conditional search.
+        new_records = list(db.get_all(("createdAt", ">=", four_days_ago)))
+        # Should have retrieved the five new records from the last four days.
+        self.assertEqual(len(new_records), 5)
+        for record in new_records:
+            self.assertGreaterEqual(record.createdAt, four_days_ago)
 
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)

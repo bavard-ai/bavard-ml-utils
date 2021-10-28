@@ -4,7 +4,7 @@ from itertools import chain
 
 from pydantic import BaseModel
 
-from bavard_ml_utils.types.conversations.actions import Actor
+from bavard_ml_utils.types.conversations.actions import Actor, AgentAction
 from bavard_ml_utils.types.conversations.conversation import Conversation, ConversationDataset
 from bavard_ml_utils.types.nlu import NLUExample, NLUExampleDataset
 
@@ -17,10 +17,6 @@ class Slot(BaseModel):
     name: str
 
 
-class AgentActionDefinition(BaseModel):
-    name: str
-
-
 class AgentConfig(BaseModel):
     """A configuration for a chatbot, including its NLU and dialogue policy training data."""
 
@@ -30,7 +26,7 @@ class AgentConfig(BaseModel):
     agentId: t.Optional[str]
     """The chatbot's unique id."""
 
-    actions: t.List[AgentActionDefinition]
+    actions: t.List[AgentAction]
     """The unique actions this chatbot can take when interacting with users."""
 
     language: str = "en"
@@ -142,14 +138,14 @@ class AgentConfig(BaseModel):
                 examples_by_intent[ex.intent].append(ex)
         return cls(
             name=name,
-            actions=[AgentActionDefinition(name=action) for action in convs.unique_actions()],
+            actions=[action.copy(deep=True) for action in convs.unique_actions().values()],
             intents=[Intent(name=intent) for intent in convs.unique_intents()],
             tagTypes=list(convs.unique_tag_types()),
             slots=[Slot(name=slot) for slot in convs.unique_slots()],
             intentOODExamples=list({ex.text for ex in nlu_examples if ex.isOOD}),
             intentExamples=examples_by_intent,
             trainingConversations=list(convs),
-            **kwargs
+            **kwargs,
         )
 
 

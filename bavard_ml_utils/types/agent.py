@@ -2,6 +2,7 @@ import typing as t
 from collections import defaultdict
 from itertools import chain
 
+from loguru import logger
 from pydantic import BaseModel
 
 from bavard_ml_utils.types.conversations.actions import Actor, AgentAction
@@ -89,33 +90,77 @@ class AgentConfig(BaseModel):
     def tag_names(self) -> t.Set[str]:
         return set(self.tagTypes)
 
+    def action_names(self) -> t.Set[str]:
+        return set(a.name for a in self.actions)
+
     def clean(self):
         """Filters out invalid and unusable training data from the config."""
-        self.remove_unknown_intent_examples()
+        self.filter_invalid_intent_examples()
         self.filter_no_agent_convs()
+        self.filter_invalid_intent_convs()
+        self.filter_invalid_action_convs()
 
-    def remove_unknown_intent_examples(self):
+    def filter_invalid_intent_examples(self):
         """
         Filters out all of the chatbot's NLU examples whose intents are not explicitly defined in its :attr:`intents`,
         or whose tags are not explicitly defined in its :attr:`tagTypes`.
         """
         filtered = defaultdict(list)
-        valid_intents = self.intent_names()
-        valid_tag_types = self.tag_names()
+        valid_intents, valid_tag_types = self.intent_names(), self.tag_names()
+        invalid_intents, invalid_tag_types = set(), set()
+        lost_to_intents, lost_to_tags = 0, 0
 
         for example in self.all_nlu_examples():
+            example_tag_types = set(tag.tagType for tag in example.tags or [])
             if example.intent not in valid_intents:
+                invalid_intents.add(example.intent)
+                lost_to_intents += 1
                 continue
-            if any(tag.tagType not in valid_tag_types for tag in example.tags or []):
+            if not example_tag_types.issubset(valid_tag_types):
+                invalid_tag_types.update(example_tag_types - valid_tag_types)
+                lost_to_tags += 1
                 continue
             filtered[example.intent].append(example)
 
+        self._warn_lost_data("NLU examples", lost_to_intents, "intents", invalid_intents)
+        self._warn_lost_data("NLU examples", lost_to_tags, "tag types", invalid_tag_types)
         self.intentExamples = filtered
 
     def filter_no_agent_convs(self):
         """Removes all training conversations from this chatbot config which have no agent turns."""
-        # We only include training conversations that have at least one agent action.
         self.trainingConversations = [c for c in self.trainingConversations if c.num_agent_turns > 0]
+
+    def filter_invalid_intent_convs(self):
+        """Removes all training conversations that use any intents not defined in the chatbot's :attr:`intents`."""
+        valid_intents = set(intent.name for intent in self.intents)
+        invalid_intents = set()
+        new_convs = []
+        num_lost = 0
+        for c in self.trainingConversations:
+            if c.intents_used.issubset(valid_intents):
+                new_convs.append(c)
+            else:
+                num_lost += 1
+                invalid_intents.update(c.intents_used - valid_intents)
+        self._warn_lost_data("training conversations", num_lost, "intents", invalid_intents)
+        self.trainingConversations = new_convs
+
+    def filter_invalid_action_convs(self):
+        """
+        Removes all training conversations that use any agent actions not defined in the chatbot's :attr:`actions`.
+        """
+        valid_actions = set(a.name for a in self.actions)
+        invalid_actions = set()
+        new_convs = []
+        num_lost = 0
+        for c in self.trainingConversations:
+            if c.actions_used.issubset(valid_actions):
+                new_convs.append(c)
+            else:
+                num_lost += 1
+                invalid_actions.update(c.actions_used - valid_actions)
+        self._warn_lost_data("training conversations", num_lost, "actions", invalid_actions)
+        self.trainingConversations = new_convs
 
     def incorporate_training_conversations(self):
         """Adds to this agent's NLU examples any valid examples present in its training conversations."""
@@ -147,6 +192,15 @@ class AgentConfig(BaseModel):
             trainingConversations=list(convs),
             **kwargs,
         )
+
+    def _warn_lost_data(self, lost_type: str, num_lost: int, invalid_type: str, invalid: set):
+        if num_lost > 0:
+            logger.warning(
+                f"There are {len(invalid)} {invalid_type} found in {lost_type} that are not defined "
+                f"in the {self.name} config. Because of this, {num_lost} {lost_type} are being filtered out. "
+                f"Consider either adding these {invalid_type} to your config or removing use of them from your "
+                f"{lost_type}: {invalid}"
+            )
 
 
 class AgentExport(BaseModel):

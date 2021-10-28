@@ -42,7 +42,7 @@ class TestAgent(TestCase):
 
     def test_excludes_examples_with_unknown_labels(self):
         messy_agent = AgentExport.parse_file("test/data/agents/invalid-nlu-examples.json").config
-        messy_agent.remove_unknown_intent_examples()
+        messy_agent.filter_invalid_intent_examples()
 
         # Examples with unregistered intents or tag types should be filtered out.
         self.assertEqual(len(list(messy_agent.all_nlu_examples())), 2)
@@ -79,8 +79,7 @@ class TestAgent(TestCase):
         reconstructed = AgentConfig.from_conversation_dataset(convs, name=config.name)
         # The reconstructed agent should have the same conversation data.
         self.assertEqual(len(config.trainingConversations), len(reconstructed.trainingConversations))
-        self.assertGreater(len(reconstructed.intent_names()), 0)
-        for intent in reconstructed.intent_names():
-            self.assertIn(intent, config.intent_names())
+        self.assertTrue(reconstructed.intent_names().issubset(config.intent_names()))
+        self.assertSetEqual(config.action_names(), reconstructed.action_names())
         for i in range(len(config.trainingConversations)):
             self.assertEqual(config.trainingConversations[i], reconstructed.trainingConversations[i])

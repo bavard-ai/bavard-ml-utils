@@ -2,7 +2,7 @@
   "config": {
     "projectId": "test",
     "agentId": "18d5a1b7-fc27-4a64-8357-1b2a471b68ed",
-    "name": "test",
+    "name": "test-agent",
     "intents": [
       {
         "name": "flight",

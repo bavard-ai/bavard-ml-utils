@@ -8,7 +8,44 @@
     "kbConfidenceThreshold": 0.5,
     "slots": [],
     "tagTypes": [],
-    "actions": [],
+    "actions": [
+      {
+        "name": "am_i_a_bot",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "describe_bavard",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "inform_hours",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "inform_bio",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "inform_pricing",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "goodbye",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "support",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "greeting",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "contact_us",
+        "type": "UTTERANCE_ACTION"
+      }
+    ],
     "graphPolicies": [],
     "notificationSettings": {},
     "updatedAt": 1626118967229,

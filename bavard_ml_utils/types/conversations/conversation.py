@@ -9,6 +9,8 @@ from bavard_ml_utils.types.nlu import NLUExample, NLUExampleDataset
 
 
 class Conversation(BaseModel):
+    id: t.Optional[str]
+    agentId: t.Optional[str]
     turns: t.List[DialogueTurn]
 
     @property

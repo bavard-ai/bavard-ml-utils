@@ -2,7 +2,7 @@
   "config": {
     "projectId": "test",
     "agentId": "0414081c-3158-4141-9f25-e66642db950b",
-    "name": "test",
+    "name": "invalid-nlu-examples",
     "intents": [
       {
         "name": "flight",

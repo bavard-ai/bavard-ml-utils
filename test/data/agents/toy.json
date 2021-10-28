@@ -1,19 +1,22 @@
 {
   "config": {
     "agentId": "c3e9bba6-c573-48d6-b3aa-bb49644f376b",
-    "name": "bavard",
+    "name": "toy",
     "language": "en",
     "slots": [],
     "tagTypes": [],
     "actions": [
       {
-        "name": "state_mood_good"
+        "name": "state_mood_good",
+        "type": "UTTERANCE_ACTION"
       },
       {
-        "name": "state_mood_bad"
+        "name": "state_mood_bad",
+        "type": "UTTERANCE_ACTION"
       },
       {
-        "name": "state_weather"
+        "name": "state_weather",
+        "type": "UTTERANCE_ACTION"
       }
     ],
     "intents": [

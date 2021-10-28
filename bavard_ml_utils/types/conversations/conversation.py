@@ -23,6 +23,18 @@ class Conversation(BaseModel):
     def is_last_turn_agent(self) -> bool:
         return False if len(self.turns) == 0 else self.turns[-1].actor == Actor.AGENT
 
+    @property
+    def intents_used(self):
+        return set(
+            turn.userAction.intent
+            for turn in self.turns
+            if turn.actor == Actor.USER and turn.userAction.intent is not None
+        )
+
+    @property
+    def actions_used(self):
+        return set(turn.agentAction.name for turn in self.turns if turn.actor == Actor.AGENT)
+
     def expand(self) -> t.List["Conversation"]:
         """Turns this conversation into a list of its partial conversations that each end with an agent action."""
         cls = self.__class__

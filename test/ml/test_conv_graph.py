@@ -30,7 +30,7 @@ class TestConvGraph(TestCase):
     def test_has_correct_actions(self):
         # The conv graph should only have the actions and intents seen in the training data, and should have *all*
         # of them, because they all occur in one or more dialogue states in the training data.
-        valid_actions = self.bavard_data.unique_actions().union(self.bavard_data.unique_intents()).union({None})
+        valid_actions = set(self.bavard_data.unique_actions()).union(self.bavard_data.unique_intents()).union({None})
         graph_actions = {action for n, action in self.bavard_graph.graph.nodes.data("action")}
         self.assertEqual(graph_actions, valid_actions)
 

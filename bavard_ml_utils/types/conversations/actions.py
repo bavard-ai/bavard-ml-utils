@@ -43,6 +43,7 @@ class AgentAction(BaseModel):
     type: str
     name: str  # the action's name
     utterance: t.Optional[str]
+    requiredSlots: t.Optional[t.List[str]]
 
 
 class HumanAgentAction(BaseModel):

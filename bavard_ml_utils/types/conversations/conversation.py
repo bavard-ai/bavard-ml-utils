@@ -3,7 +3,7 @@ import typing as t
 from pydantic import BaseModel
 
 from bavard_ml_utils.ml.dataset import LabeledDataset
-from bavard_ml_utils.types.conversations.actions import Actor
+from bavard_ml_utils.types.conversations.actions import Actor, AgentAction
 from bavard_ml_utils.types.conversations.dialogue_turns import DialogueTurn
 from bavard_ml_utils.types.nlu import NLUExample, NLUExampleDataset
 
@@ -94,10 +94,11 @@ class ConversationDataset(LabeledDataset[Conversation]):
                 intents.add(turn.userAction.intent)
         return intents
 
-    def unique_actions(self) -> t.Set[str]:
-        actions = set()
+    def unique_actions(self) -> t.Dict[str, AgentAction]:
+        """Returns a mapping of unique action names, each to an example of that action found in the dataset."""
+        actions = {}
         for turn in self.turns(Actor.AGENT):
-            actions.add(turn.agentAction.name)
+            actions[turn.agentAction.name] = turn.agentAction
         return actions
 
     def unique_tag_types(self) -> t.Set[str]:

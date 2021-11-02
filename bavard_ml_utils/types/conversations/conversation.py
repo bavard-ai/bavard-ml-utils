@@ -27,15 +27,20 @@ class Conversation(BaseModel):
 
     @property
     def intents_used(self):
-        return set(
+        intents = set(
             turn.userAction.intent
             for turn in self.turns
             if turn.actor == Actor.USER and turn.userAction.intent is not None
         )
+        intents.discard("")
+        intents.discard(None)
+        return intents
 
     @property
     def actions_used(self):
-        return set(turn.agentAction.name for turn in self.turns if turn.actor == Actor.AGENT)
+        actions = set(turn.agentAction.name for turn in self.turns if turn.actor == Actor.AGENT)
+        actions.discard("")
+        return actions
 
     def expand(self) -> t.List["Conversation"]:
         """Turns this conversation into a list of its partial conversations that each end with an agent action."""

@@ -1,0 +1,97 @@
+{
+  "config": {
+    "agentId": "c3e9bba6-c573-48d6-b3aa-bb49644f376b",
+    "name": "toy",
+    "language": "en",
+    "slots": [],
+    "tagTypes": [],
+    "actions": [
+      {
+        "name": "state_mood_good",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "state_mood_bad",
+        "type": "UTTERANCE_ACTION"
+      },
+      {
+        "name": "state_weather",
+        "type": "UTTERANCE_ACTION"
+      }
+    ],
+    "intents": [
+      {
+        "name": "ask_how_doing"
+      },
+      {
+        "name": "ask_weather"
+      }
+    ],
+    "intentExamples": {},
+    "trainingConversations": [
+      {
+        "turns": [
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "How are you?",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "I'm doing good.",
+              "name": "state_mood_good",
+              "options": []
+            }
+          }
+        ]
+      },
+      {
+        "turns": [
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "How are you?",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "I'm doing good.",
+              "name": "state_mood_bad",
+              "options": []
+            }
+          }
+        ]
+      },
+      {
+        "turns": [
+          {
+            "actor": "USER",
+            "userAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "What is the weather?",
+              "tags": []
+            }
+          },
+          {
+            "actor": "AGENT",
+            "agentAction": {
+              "type": "UTTERANCE_ACTION",
+              "utterance": "The weather is sunny, with a high of 73 degrees.",
+              "name": "state_weather",
+              "options": []
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

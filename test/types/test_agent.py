@@ -83,3 +83,10 @@ class TestAgent(TestCase):
         self.assertSetEqual(config.action_names(), reconstructed.action_names())
         for i in range(len(config.trainingConversations)):
             self.assertEqual(config.trainingConversations[i], reconstructed.trainingConversations[i])
+
+        # The conversion process should allow training conversations which have user utterances with no intents
+        config = AgentExport.parse_file("test/data/agents/no-intents-in-convs.json").config
+        convs = config.to_conversation_dataset(expand=False)
+        self.assertEqual(len(config.trainingConversations), len(convs))  # no convs should have been lost
+        for config_conv, dataset_conv in zip(config.trainingConversations, convs):
+            self.assertEqual(config_conv, dataset_conv)

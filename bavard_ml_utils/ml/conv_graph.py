@@ -12,7 +12,7 @@ except ImportError:
 
 from bavard_ml_utils.types.conversations.actions import Actor
 from bavard_ml_utils.types.conversations.conversation import ConversationDataset
-from bavard_ml_utils.types.conversations.dialogue_turns import DialogueTurn
+from bavard_ml_utils.types.conversations.dialogue_turns import AgentDialogueTurn, DialogueTurn, HumanAgentDialogueTurn
 
 
 class DSTuple(t.NamedTuple):
@@ -101,8 +101,8 @@ class ConvGraph:
 
     def balanced_soft_accuracy(self, y_pred: t.List[str], last_turns: t.List[DialogueTurn]) -> float:
         """Same as :meth:`soft_accuracy`, but equally weights the accuracy calculation of each class, or action."""
-        correct = defaultdict(int)
-        out_of = defaultdict(int)
+        correct: t.Dict[str, int] = defaultdict(int)
+        out_of: t.Dict[str, float] = defaultdict(int)
         for pred, last_turn in zip(y_pred, last_turns):
             valid_next_actions = self.get_valid_next_actions(last_turn)
             if pred in valid_next_actions:
@@ -144,6 +144,8 @@ class ConvGraph:
         """
         Encodes a :obj:`~bavard_ml_utils.types.conversations.dialogue_turns.DialogueTurn` into a :class:`DSTuple`.
         """
+        if isinstance(turn, HumanAgentDialogueTurn):
+            raise AssertionError("cannot compute dialogue state for a human agent turn")
         belief_state_keys = list(turn.state.slotValues.keys()) if turn.state else []
-        action = turn.agentAction.name if turn.actor == Actor.AGENT else turn.userAction.intent
+        action = turn.agentAction.name if isinstance(turn, AgentDialogueTurn) else turn.userAction.intent
         return DSTuple(bs=frozenset(belief_state_keys), action=action, actor=turn.actor.value)

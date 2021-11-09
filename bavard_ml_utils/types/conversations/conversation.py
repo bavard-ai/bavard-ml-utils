@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from bavard_ml_utils.ml.dataset import LabeledDataset
 from bavard_ml_utils.types.conversations.actions import Actor, AgentAction
-from bavard_ml_utils.types.conversations.dialogue_turns import DialogueTurn
+from bavard_ml_utils.types.conversations.dialogue_turns import AgentDialogueTurn, DialogueTurn, UserDialogueTurn
 from bavard_ml_utils.types.nlu import NLUExample, NLUExampleDataset
 
 
@@ -18,12 +18,8 @@ class Conversation(BaseModel):
         return sum(1 for turn in self.turns if turn.actor == Actor.AGENT)
 
     @property
-    def is_last_turn_user(self) -> bool:
-        return False if len(self.turns) == 0 else self.turns[-1].actor == Actor.USER
-
-    @property
-    def is_last_turn_agent(self) -> bool:
-        return False if len(self.turns) == 0 else self.turns[-1].actor == Actor.AGENT
+    def last_turn(self) -> t.Optional[DialogueTurn]:
+        return None if len(self.turns) == 0 else self.turns[-1]
 
     @property
     def intents_used(self):
@@ -60,12 +56,9 @@ class Conversation(BaseModel):
         turn of the conversation. If the most recent turn is not
         a user turn or doesn't have an utterance, returns the empty string.
         """
-        if self.is_last_turn_user:
-            last_turn = self.turns[-1]
-            if last_turn.userAction.type == "UTTERANCE_ACTION":
-                if last_turn.userAction.translatedUtterance is not None:
-                    return last_turn.userAction.translatedUtterance
-                return last_turn.userAction.utterance
+        last_turn = self.last_turn
+        if isinstance(last_turn, UserDialogueTurn) and last_turn.userAction.type == "UTTERANCE_ACTION":
+            return last_turn.userAction.translatedUtterance or last_turn.userAction.utterance or ""
         return ""
 
 
@@ -75,9 +68,9 @@ class ConversationDataset(LabeledDataset[Conversation]):
         Returns the name of the final agent action in ``item`` (a :class:`Conversation`), and ensures the last turn
         in the conversation is in fact an agent turn.
         """
-        if not item.is_last_turn_agent:
+        if not isinstance(item.last_turn, AgentDialogueTurn):
             raise AssertionError("conversations in a ConversationDataset must have an agent action as final last turn.")
-        return item.turns[-1].agentAction.name
+        return item.last_turn.agentAction.name
 
     @classmethod
     def from_conversations(cls, convs: t.List[Conversation], expand=True) -> "ConversationDataset":
@@ -95,20 +88,25 @@ class ConversationDataset(LabeledDataset[Conversation]):
                 result.append(conv)
         return cls(result)
 
-    def turns(self, actor: t.Optional[Actor] = None) -> t.Iterable[DialogueTurn]:
-        """Iterates over all turns of all conversations in the dataset, having ``actor``, if supplied."""
-        check_actor = actor is not None
+    def turns(self) -> t.Iterable[DialogueTurn]:
+        """Iterates over all turns of all conversations in the dataset."""
         for conv in self:
             for turn in conv.turns:
-                if check_actor:
-                    if turn.actor == actor:
-                        yield turn
-                else:
-                    yield turn
+                yield turn
+
+    def user_turns(self) -> t.Iterable[UserDialogueTurn]:
+        for turn in self.turns():
+            if isinstance(turn, UserDialogueTurn):
+                yield turn
+
+    def agent_turns(self) -> t.Iterable[AgentDialogueTurn]:
+        for turn in self.turns():
+            if isinstance(turn, AgentDialogueTurn):
+                yield turn
 
     def unique_intents(self) -> t.Set[str]:
         intents = set()
-        for turn in self.turns(Actor.USER):
+        for turn in self.user_turns():
             if turn.userAction.intent is not None:
                 intents.add(turn.userAction.intent)
         return intents
@@ -116,13 +114,13 @@ class ConversationDataset(LabeledDataset[Conversation]):
     def unique_actions(self) -> t.Dict[str, AgentAction]:
         """Returns a mapping of unique action names, each to an example of that action found in the dataset."""
         actions = {}
-        for turn in self.turns(Actor.AGENT):
+        for turn in self.agent_turns():
             actions[turn.agentAction.name] = turn.agentAction
         return actions
 
     def unique_tag_types(self) -> t.Set[str]:
         tag_types = set()
-        for turn in self.turns(Actor.USER):
+        for turn in self.user_turns():
             if turn.userAction.tags is not None:
                 for tag in turn.userAction.tags:
                     tag_types.add(tag.tagType)
@@ -138,7 +136,7 @@ class ConversationDataset(LabeledDataset[Conversation]):
 
     def to_nlu_dataset(self):
         examples = []
-        for turn in self.turns(Actor.USER):
+        for turn in self.user_turns():
             action = turn.userAction
             if action.utterance is not None:
                 if action.ood:

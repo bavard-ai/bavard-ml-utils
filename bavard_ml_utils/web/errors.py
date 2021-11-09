@@ -62,7 +62,7 @@ def report_error(
 
 def make_error_reporting_route_handler_class(
     *,
-    msg_prefix: t.Optional[str] = None,
+    msg_prefix: str = "",
     slack_webhook_url: t.Optional[str] = None,
     google_cloud_project: t.Optional[str] = None,
 ) -> t.Type[APIRoute]:
@@ -95,7 +95,6 @@ def make_error_reporting_route_handler_class(
         If provided, error messages for all intercepted errors will be reported to GCP Error Reporting for the
         ``google_cloud_project`` GCP project name.
     """
-    msg_prefix = "" if msg_prefix is None else msg_prefix
 
     class ErrorReportingRouteHandler(APIRoute):
         def get_route_handler(self) -> t.Callable:

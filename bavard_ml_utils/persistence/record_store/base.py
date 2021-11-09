@@ -34,7 +34,7 @@ class BaseRecordStore(ABC, t.Generic[RecordT]):
         abstract method in order for read only checks to be enforced.
     """
 
-    def __init__(self, record_class: t.Type[Record], read_only: bool):
+    def __init__(self, record_class: t.Type[RecordT], read_only: bool):
         self.record_cls = record_class
         self._read_only = read_only
 

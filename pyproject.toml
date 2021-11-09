@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bavard-ml-utils"
-version = "0.2.5"
+version = "0.2.6"
 description = "Utilities for machine learning, python web services, and cloud infrastructure"
 license = "MIT"
 authors = ["Bavard AI, Inc. <dev@bavard.ai>"]
@@ -32,6 +32,7 @@ myst-parser = "^0.15.2"
 sphinx-rtd-theme = "^1.0.0"
 toml = "^0.10.2"
 pre-commit = "^2.15.0"
+mypy = "^0.910"
 
 [tool.poetry.extras]
 ml = ["numpy", "scikit-learn", "networkx"]
@@ -40,3 +41,12 @@ gcp = ["google-cloud-storage", "google-cloud-pubsub", "google-cloud-error-report
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+line_length = 120
+lines_after_imports = 2
+known_first_party = "bavard_ml_utils,test"
+
+[tool.mypy]
+ignore_missing_imports = true

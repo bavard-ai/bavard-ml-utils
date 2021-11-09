@@ -12,8 +12,8 @@ def endpoint(_func=None, **fastapi_args) -> t.Callable:
     """
 
     def inner(method: t.Callable) -> t.Callable:
-        method.is_endpoint = True
-        method.fastapi_args = fastapi_args
+        method.is_endpoint = True  # type: ignore
+        method.fastapi_args = fastapi_args  # type: ignore
         return method
 
     if _func is None:
@@ -87,11 +87,11 @@ class WebService:
                     "path": "/" + name,
                     "endpoint": method,
                     "methods": ["GET"],
-                    **method.fastapi_args,
+                    **method.fastapi_args,  # type: ignore
                 }
             )
 
-        app.add_api_route("/", self._base_route)
+        app.add_api_route("/", self._base_route)  # type: ignore
         return app
 
     def _get_endpoints(self) -> t.Dict[str, t.Callable]:

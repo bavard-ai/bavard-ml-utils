@@ -25,7 +25,7 @@ class DatasetRecord(BaseDatasetRecord):
 
 
 class ArtifactManager(BaseArtifactManager):
-    def create_artifact_from_dataset(self, dataset: DatasetRecord) -> ArtifactRecord:
+    def create_artifact_from_dataset(self, dataset: BaseDatasetRecord) -> BaseArtifactRecord:
         # Simulate the artifact being a deterministic output of the dataset's digest and
         # the service version.
 

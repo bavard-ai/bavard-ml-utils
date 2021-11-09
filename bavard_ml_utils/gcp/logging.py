@@ -38,11 +38,12 @@ class Severity(Enum):
 
 
 def log(
-    severity: t.Union[Severity, str] = "DEFAULT",
+    severity: t.Union[Severity, str] = Severity.DEFAULT,
     *,
     trace_header: t.Optional[str] = None,
     gcp_project_id: t.Optional[str] = None,
     logger: t.Callable[[str], t.Any] = print,
+    labels: t.Optional[t.Dict[str, str]] = None,
     **fields,
 ):
     """
@@ -52,7 +53,7 @@ def log(
     Parameters
     ----------
     severity : str or Severity, optional
-        The severity of the log entry.
+        The severity of the log entry. Defaults to :attr:`Severity.DEFAULT`, which is no severity.
     trace_header : str, optional
         If this log entry is being logged in the context of an HTTP request and response occuring in GCP Cloud Run, then
         the request will have a ``X-Cloud-Trace-Context`` header. If the value of that header is passed to this function
@@ -64,6 +65,9 @@ def log(
     logger : callable, optional
         The function that will do the logging to the console. Default is the builtin ``print``, which is sufficient for
         GCP to capture the log entry.
+    labels : dict, optional
+        If provided, will be used as official GCP logging labels for this log entry. GCP will index these, so they can
+        be used to improve the performance of log queries.
     """
     if isinstance(severity, str):
         # Validate severity.
@@ -71,11 +75,13 @@ def log(
     if len(fields) == 0:
         # No data was passed in to log, so its a noop.
         return False
-    log_entry = {"severity": severity.value}
+    log_entry: t.Dict[str, t.Union[t.Dict[str, str], str]] = {"severity": severity.value}
     if trace_header and gcp_project_id:
         # Source: https://cloud.google.com/run/docs/logging#writing_structured_logs
         trace = trace_header.split("/")
         log_entry["logging.googleapis.com/trace"] = f"projects/{gcp_project_id}/traces/{trace[0]}"
+    if labels:
+        log_entry["logging.googleapis.com/labels"] = labels
     log_entry.update(fields)
     logger(json.dumps(log_entry))
     return True

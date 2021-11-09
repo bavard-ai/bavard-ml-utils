@@ -1,6 +1,7 @@
 import inspect
 import os
 import shutil
+import typing as t
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
@@ -47,7 +48,7 @@ class TestClass:
         self.public_attr = public_attr
         self._private_attr = "_private_attr"
 
-    def __eq__(self, obj: object) -> bool:
+    def __eq__(self, obj: t.Any) -> bool:
         return (
             type(self) == type(obj)
             and self.class_attr == obj.class_attr
@@ -70,7 +71,7 @@ class TestSklearnModel:
         assert self._fitted
         return self._clf.predict(X)
 
-    def __eq__(self, obj: object) -> bool:
+    def __eq__(self, obj: t.Any) -> bool:
         unfitted_check = type(self) == type(obj) and self.C == obj.C and self._fitted == obj._fitted
         if not self._fitted:
             return unfitted_check
@@ -101,7 +102,7 @@ class TestKerasModel:
         assert self._fitted
         return self._model.predict(X)
 
-    def __eq__(self, obj: object) -> bool:
+    def __eq__(self, obj: t.Any) -> bool:
         unfitted_check = type(self) == type(obj) and self.n_units == obj.n_units and self._fitted == obj._fitted
 
         if not unfitted_check or not self._fitted:

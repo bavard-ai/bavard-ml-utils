@@ -29,7 +29,7 @@ def leave_one_out(items: t.List[_T]) -> t.Iterable[t.Tuple[_T, t.List[_T]]]:
 @requires_extras(ml=_has_ml_deps)
 def make_stratified_folds(
     data: t.Sequence[_T], labels: t.Sequence, nfolds: int, shuffle: bool = True, seed: int = 0
-) -> t.Tuple[t.List[_T]]:
+) -> t.Tuple[t.List[_T], ...]:
     """
     Takes ``data``, a list, and breaks it into ``nfolds`` chunks. Each chunk is stratified
     by `labels`.
@@ -56,7 +56,7 @@ def aggregate_dicts(dicts: t.Sequence[dict], agg: str = "mean") -> dict:
     agg : {'mean', 'stdev', 'sum', 'median', 'min', 'max'}
         Name of the method to use to aggregate the values of `dicts` with.
     """
-    aggs = {
+    aggs: t.Dict[str, t.Callable] = {
         "mean": np.mean,
         "stdev": np.std,
         "sum": np.sum,

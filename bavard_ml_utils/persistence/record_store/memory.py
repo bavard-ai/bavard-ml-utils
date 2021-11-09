@@ -1,6 +1,6 @@
 import typing as t
 
-from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record, RecordT
+from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, RecordT
 
 
 class InMemoryRecordStore(BaseRecordStore[RecordT]):
@@ -9,7 +9,7 @@ class InMemoryRecordStore(BaseRecordStore[RecordT]):
     indexes of non-primary key fields, so `WHERE` clause queries are :math:`\mathcal{O}(n)`.
     """
 
-    def __init__(self, record_class: t.Type[Record], read_only=False):
+    def __init__(self, record_class: t.Type[RecordT], read_only=False):
         super().__init__(record_class, read_only)
         # Records in the db can be resolved via `self._db[id]`.
         self._db: t.Dict[str, RecordT] = {}

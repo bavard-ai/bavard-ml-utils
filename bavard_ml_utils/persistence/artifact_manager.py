@@ -129,7 +129,10 @@ class BaseArtifactManager(ABC):
         """
         dataset = self._datasets.get(agent_id)
         if dataset is None:
-            self._raise_no_dataset(agent_id)
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND,
+                f"no dataset exists for agent id {agent_id}; artifact cannot be retrieved or computed",
+            )
         artifact = self._artifacts.get(BaseArtifactRecord.make_id(self.version, agent_id))
         if artifact is not None and artifact.dataset_digest == dataset.digest:
             return artifact
@@ -160,6 +163,10 @@ class BaseArtifactManager(ABC):
         )
         for digest in datasets_to_index:
             dataset = self._datasets.get(digest2agent[digest])
+            if dataset is None:
+                raise AssertionError(
+                    f"Expected dataset to exist for agent {digest2agent[digest]}. It existed just a little bit ago."
+                )
             logger.info(
                 f"creating artifact for dataset digest={dataset.digest} associated with agent {digest2agent[digest]}"
             )
@@ -170,13 +177,6 @@ class BaseArtifactManager(ABC):
         logger.info("service version sync utility finished successfully.")
         self._remove_old_service_versions()
         return len(datasets_to_index)
-
-    @staticmethod
-    def _raise_no_dataset(agent_id: str):
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            f"no dataset exists for agent id {agent_id}; artifact cannot be retrieved or computed",
-        )
 
     def _remove_old_service_versions(self):
         """

@@ -11,6 +11,7 @@ pre-commit run check-yaml --all-files
 pre-commit run check-json --all-files
 pre-commit run black --all-files
 pre-commit run flake8 --all-files
+pre-commit run mypy --all-files
 
 # Run the unit tests
 

@@ -11,7 +11,7 @@ try:
 except ImportError:
     raise ImportExtraError("gcp", __name__)
 
-from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record, RecordT
+from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, RecordT
 
 
 class FirestoreRecordStore(BaseRecordStore[RecordT]):
@@ -25,7 +25,7 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
     def __init__(
         self,
         collection_name: str,
-        record_class: t.Type[Record],
+        record_class: t.Type[RecordT],
         *,
         read_only=False,
         project: t.Optional[str] = None,

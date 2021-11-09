@@ -44,6 +44,8 @@ class LabeledDataset(t.List[_T], ABC):
     """
 
     def __init__(self, items: t.Optional[t.Iterable[_T]] = None):
+        if items is None:
+            items = []
         super().__init__(items)
 
     @abstractmethod

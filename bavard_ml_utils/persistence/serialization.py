@@ -23,7 +23,7 @@ class TypeSerializer(ABC):
 
     @property
     @abstractmethod
-    def ext(self) -> str:
+    def ext(self) -> t.Optional[str]:
         """
         The filename extension, if the serializer serializes its data
         to a single file. Should be ``None`` otherwise.

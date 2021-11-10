@@ -1,6 +1,6 @@
 import typing as t
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from bavard_ml_utils.types.conversations.actions import Actor, AgentAction, HumanAgentAction, UserAction
 
@@ -16,17 +16,17 @@ class BaseDialogueTurn(BaseModel):
 
 class UserDialogueTurn(BaseDialogueTurn):
     userAction: UserAction
-    actor = Actor.USER
+    actor = Field(Actor.USER, const=True)
 
 
 class AgentDialogueTurn(BaseDialogueTurn):
     agentAction: AgentAction
-    actor = Actor.AGENT
+    actor = Field(Actor.AGENT, const=True)
 
 
 class HumanAgentDialogueTurn(BaseDialogueTurn):
     humanAgentAction: HumanAgentAction
-    actor = Actor.HUMAN_AGENT
+    actor = Field(Actor.HUMAN_AGENT, const=True)
 
 
 DialogueTurn = t.Union[AgentDialogueTurn, HumanAgentDialogueTurn, UserDialogueTurn]

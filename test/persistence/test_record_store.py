@@ -2,9 +2,10 @@ from datetime import datetime, timedelta, timezone
 from unittest import TestCase
 
 from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record
+from bavard_ml_utils.persistence.record_store.dynamodb import DynamoDBRecordStore
 from bavard_ml_utils.persistence.record_store.firestore import FirestoreRecordStore
 from bavard_ml_utils.persistence.record_store.memory import InMemoryRecordStore
-from test.utils import clear_database
+from test.utils import clear_firestore, create_dynamodb_table
 
 
 class Fruit(Record):
@@ -27,12 +28,23 @@ class DatedRecord(Record):
 
 class TestRecordStore(TestCase):
     def setUp(self):
-        clear_database()
+        clear_firestore()
+        # Create the needed DynamoDB table.
+        self.fruits_table = create_dynamodb_table("fruits")
+        self.data_table = create_dynamodb_table("data")
         # Test multiple kinds of record stores.
-        self.databases = [FirestoreRecordStore("fruits", Fruit), InMemoryRecordStore(Fruit)]
+        self.databases = [
+            FirestoreRecordStore("fruits", Fruit),
+            InMemoryRecordStore(Fruit),
+            DynamoDBRecordStore("fruits", Fruit),
+        ]
         self.apple = Fruit(name="apple", color="red", is_tropical=False)
         self.mango = Fruit(name="mango", color="yellow", is_tropical=True)
         self.pear = Fruit(name="pear", color="green", is_tropical=False)
+
+    def tearDown(self) -> None:
+        self.fruits_table.delete()
+        self.data_table.delete()
 
     def test_can_save(self):
         for db in self.databases:
@@ -108,18 +120,19 @@ class TestRecordStore(TestCase):
             read_only_db.delete_all()
 
     def test_query_with_conditions(self):
-        # First, make some data.
-        db = FirestoreRecordStore("data", DatedRecord)
-        now = datetime.now(timezone.utc)
-        for i in range(10):
-            db.save(DatedRecord(id=i, createdAt=now - timedelta(days=i), payload="arbitrary data"))
-        four_days_ago = now - timedelta(days=4)
-        # Perform a conditional search.
-        new_records = list(db.get_all(("createdAt", ">=", four_days_ago)))
-        # Should have retrieved the five new records from the last four days.
-        self.assertEqual(len(new_records), 5)
-        for record in new_records:
-            self.assertGreaterEqual(record.createdAt, four_days_ago)
+        databases = [FirestoreRecordStore("data", DatedRecord), DynamoDBRecordStore("data", DatedRecord)]
+        for db in databases:
+            # First, make some data.
+            now = datetime.now(timezone.utc)
+            for i in range(10):
+                db.save(DatedRecord(id=i, createdAt=now - timedelta(days=i), payload="arbitrary data"))
+            four_days_ago = now - timedelta(days=4)
+            # Perform a conditional search.
+            new_records = list(db.get_all(("createdAt", ">=", four_days_ago)))
+            # Should have retrieved the five new records from the last four days.
+            self.assertEqual(len(new_records), 5)
+            for record in new_records:
+                self.assertGreaterEqual(record.createdAt, four_days_ago)
 
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)

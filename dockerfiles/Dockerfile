@@ -17,7 +17,7 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 # Install dependencies, including dev dependencies and all extras.
-RUN poetry install --extras "ml gcp"
+RUN poetry install --extras "ml gcp aws"
 
 FROM base as test
 # Bring in the dependencies.

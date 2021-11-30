@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bavard-ml-utils"
-version = "0.2.6"
+version = "0.2.7"
 description = "Utilities for machine learning, python web services, and cloud infrastructure"
 license = "MIT"
 authors = ["Bavard AI, Inc. <dev@bavard.ai>"]
@@ -21,6 +21,7 @@ google-cloud-storage = {version = "^1.35.1", optional = true}
 google-cloud-pubsub = {version = "^2.2.0", optional = true}
 google-cloud-error-reporting = {version = "^1.1.1", optional = true}
 google-cloud-firestore = {version = "^2.3.2", optional = true}
+boto3 = {version = "^1.20.16", optional = true}
 
 [tool.poetry.dev-dependencies]
 torch = "^1.9.1"
@@ -37,6 +38,7 @@ mypy = "^0.910"
 [tool.poetry.extras]
 ml = ["numpy", "scikit-learn", "networkx"]
 gcp = ["google-cloud-storage", "google-cloud-pubsub", "google-cloud-error-reporting", "google-cloud-firestore"]
+aws = ["boto3"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

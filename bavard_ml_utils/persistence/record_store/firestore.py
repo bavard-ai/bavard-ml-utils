@@ -1,5 +1,6 @@
 import os
 import typing as t
+from datetime import datetime
 
 from bavard_ml_utils.utils import ImportExtraError
 
@@ -43,7 +44,9 @@ class FirestoreRecordStore(BaseRecordStore[RecordT]):
 
     def save(self, record: RecordT):
         self.assert_can_edit()
-        self.collection.document(record.get_id()).set(record.dict())
+        # Don't convert `datetime` objects to strings when encoding, because firestore knows how to natively store them
+        # as timestamp values.
+        self.collection.document(record.get_id()).set(record.dict(custom_encoder={datetime: lambda date: date}))
 
     def get(self, id_: str) -> t.Optional[RecordT]:
         doc = self.collection.document(id_).get()

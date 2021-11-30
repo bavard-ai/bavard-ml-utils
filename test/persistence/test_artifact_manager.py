@@ -12,7 +12,7 @@ from bavard_ml_utils.persistence.artifact_manager import (
     ServiceVersionMetadata,
 )
 from bavard_ml_utils.persistence.record_store.firestore import FirestoreRecordStore
-from test.utils import clear_database
+from test.utils import clear_firestore
 
 
 class ArtifactRecord(BaseArtifactRecord):
@@ -44,7 +44,7 @@ class ArtifactManager(BaseArtifactManager):
 
 class TestArtifactManager(TestCase):
     def setUp(self):
-        clear_database()
+        clear_firestore()
         self.artifacts: FirestoreRecordStore[ArtifactRecord] = FirestoreRecordStore[ArtifactRecord](
             "artifacts", ArtifactRecord
         )

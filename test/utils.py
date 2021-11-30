@@ -4,7 +4,9 @@ import shutil
 import typing as t
 from abc import ABC, abstractmethod
 
+import boto3
 import requests
+from botocore.config import Config
 from pydantic import BaseModel
 
 from test.config import FIRESTORE_EMULATOR_HOST
@@ -75,8 +77,22 @@ class DirSpec(BaseModel, FileSystemObjectSpec):
         return spec
 
 
-def clear_database():
+def clear_firestore():
     # Clear the test database.
     # Source: https://firebase.google.com/docs/emulator-suite/connect_firestore#clear_your_database_between_tests
     res = requests.delete(f"http://{FIRESTORE_EMULATOR_HOST}/emulator/v1/projects/test/databases/(default)/documents")
     res.raise_for_status()
+
+
+def create_dynamodb_table(table_name: str, pk_field="id"):
+    dynamodb = boto3.resource(
+        "dynamodb", endpoint_url=os.getenv("AWS_ENDPOINT"), config=Config(region_name=os.getenv("AWS_REGION"))
+    )
+    table = dynamodb.create_table(
+        TableName=table_name,
+        KeySchema=[{"AttributeName": pk_field, "KeyType": "HASH"}],
+        AttributeDefinitions=[{"AttributeName": pk_field, "AttributeType": "S"}],
+        ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
+    )
+    table.meta.client.get_waiter("table_exists").wait(TableName="fruits")
+    return table

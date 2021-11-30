@@ -8,7 +8,6 @@ installed, which can be installed in this way:
 """
 import inspect
 import typing as t
-from datetime import datetime
 from io import BytesIO
 
 from fastapi.encoders import jsonable_encoder
@@ -82,11 +81,9 @@ class DataModel(BaseModel):
     def dict(self, custom_encoder: t.Optional[t.Dict[t.Any, t.Callable[[t.Any], t.Any]]] = None, **kwargs):
         """
         Creates a dictionary representation of the model, encoding all values to basic Python data types, for example,
-        enum values become strings, and numpy arrays become data strings. By default, :class:``datetime.datetime``
-        objects are kept as is, but this behavior can be changed by adding a custom parser for the
-        :class:``datetime.datetime`` type in the :param:``custom_encoder`` parameter.
+        enum values become strings, and numpy arrays become data strings.
         """
-        _custom_encoder = {np.ndarray: lambda arr: encode_numpy(arr, mode="w"), datetime: lambda date: date}
+        _custom_encoder = {np.ndarray: lambda arr: encode_numpy(arr, mode="w")}
         if custom_encoder is not None:
             # Accept user overrides and customization.
             _custom_encoder.update(custom_encoder)

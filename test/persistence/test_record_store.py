@@ -12,6 +12,7 @@ class Fruit(Record):
     name: str
     color: str
     is_tropical: bool
+    price: float
 
     def get_id(self) -> str:
         return self.name
@@ -38,9 +39,9 @@ class TestRecordStore(TestCase):
             InMemoryRecordStore(Fruit),
             DynamoDBRecordStore("fruits", Fruit),
         ]
-        self.apple = Fruit(name="apple", color="red", is_tropical=False)
-        self.mango = Fruit(name="mango", color="yellow", is_tropical=True)
-        self.pear = Fruit(name="pear", color="green", is_tropical=False)
+        self.apple = Fruit(name="apple", color="red", is_tropical=False, price=0.5)
+        self.mango = Fruit(name="mango", color="yellow", is_tropical=True, price=1)
+        self.pear = Fruit(name="pear", color="green", is_tropical=False, price=0.75)
 
     def tearDown(self) -> None:
         self.fruits_table.delete()

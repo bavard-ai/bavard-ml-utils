@@ -1,6 +1,7 @@
 import operator
 import os
 import typing as t
+from decimal import Decimal
 
 from bavard_ml_utils.utils import ImportExtraError
 
@@ -12,6 +13,23 @@ except ImportError:
     raise ImportExtraError("aws", __name__)
 
 from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, RecordT
+
+
+def remap(o: object, apply: t.Callable):
+    if isinstance(o, dict):
+        return {k: remap(v, apply) for k, v in o.items()}
+    elif isinstance(o, (list, tuple, set)):
+        return type(o)(remap(elem, apply) for elem in o)
+    elif isinstance(o, (str, int, float, type(None))):
+        return apply(o)
+    else:
+        raise AssertionError(f"remap encountered unsupported type {type(o)}")
+
+
+def float_to_decimal(a):
+    if isinstance(a, float):
+        return Decimal(a)
+    return a
 
 
 class DynamoDBRecordStore(BaseRecordStore[RecordT]):
@@ -33,7 +51,9 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
 
     def save(self, record: RecordT):
         self.assert_can_edit()
-        self._table.put_item(Item={**record.dict(), self._pk: record.get_id()})
+        item_dict = record.dict()
+        item_dict = remap(item_dict, float_to_decimal)
+        self._table.put_item(Item={**item_dict, self._pk: record.get_id()})
 
     def get(self, id_: str) -> t.Optional[RecordT]:
         res = self._table.get_item(Key={self._pk: id_})

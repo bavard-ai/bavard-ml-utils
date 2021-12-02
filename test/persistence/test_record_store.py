@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta, timezone
 from unittest import TestCase
 
@@ -40,7 +41,7 @@ class TestRecordStore(TestCase):
             DynamoDBRecordStore("fruits", Fruit),
         ]
         self.apple = Fruit(name="apple", color="red", is_tropical=False, price=0.5)
-        self.mango = Fruit(name="mango", color="yellow", is_tropical=True, price=1)
+        self.mango = Fruit(name="mango", color="yellow", is_tropical=True, price=math.pi)
         self.pear = Fruit(name="pear", color="green", is_tropical=False, price=0.75)
 
     def tearDown(self) -> None:

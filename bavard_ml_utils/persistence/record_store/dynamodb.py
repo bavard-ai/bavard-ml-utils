@@ -1,7 +1,7 @@
 import operator
 import os
 import typing as t
-from decimal import Decimal
+from decimal import Context
 
 from bavard_ml_utils.utils import ImportExtraError
 
@@ -26,12 +26,6 @@ def remap(o: object, apply: t.Callable):
         raise AssertionError(f"remap encountered unsupported type {type(o)}")
 
 
-def float_to_decimal(a):
-    if isinstance(a, float):
-        return Decimal(a)
-    return a
-
-
 class DynamoDBRecordStore(BaseRecordStore[RecordT]):
     """
     A DynamoDB DAO for Pydantic data models. In addition to its parent class's `WHERE equals` behavior, this class
@@ -48,11 +42,12 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             "dynamodb", endpoint_url=os.getenv("AWS_ENDPOINT"), config=Config(region_name=os.getenv("AWS_REGION"))
         ).Table(table_name)
         self._pk = primary_key_field_name
+        self._decimal_ctx = Context()
 
     def save(self, record: RecordT):
         self.assert_can_edit()
         item_dict = record.dict()
-        item_dict = remap(item_dict, float_to_decimal)
+        item_dict = remap(item_dict, self._float_to_decimal)
         self._table.put_item(Item={**item_dict, self._pk: record.get_id()})
 
     def get(self, id_: str) -> t.Optional[RecordT]:
@@ -113,3 +108,14 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             done = start_key is None
             for item in res.get("Items", []):
                 yield self.record_cls.parse_obj(item)
+
+    def _float_to_decimal(self, a):
+        """
+        Convert ``a`` into a :class:`decimal.Decimal` object, if its of type :class:`float`. DynamoDB does not support
+        float types; only Decimal.
+        """
+        if isinstance(a, float):
+            # A local `decimal.Context` is needed because DynamoDB's default context will throw an error if any rounding
+            # occurs.
+            return self._decimal_ctx.create_decimal_from_float(a)
+        return a

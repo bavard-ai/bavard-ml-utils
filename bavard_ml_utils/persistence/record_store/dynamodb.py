@@ -42,7 +42,7 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             "dynamodb", endpoint_url=os.getenv("AWS_ENDPOINT"), config=Config(region_name=os.getenv("AWS_REGION"))
         ).Table(table_name)
         self._pk = primary_key_field_name
-        self._decimal_ctx = Context()
+        self._decimal_ctx = Context(prec=38)  # dynamodb has a maximum precision of 38 digits for decimal numbers
 
     def save(self, record: RecordT):
         self.assert_can_edit()

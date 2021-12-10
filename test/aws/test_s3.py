@@ -25,14 +25,14 @@ class TestS3Client(TestCase):
     def tearDownClass(cls):
         cls.test_data_spec.remove()
 
-    def tes_can_upload_and_download_blob(self):
+    def tes_can_upload_and_download_object(self):
         test_file = self.test_data_spec.children[0]
-        # Can upload blob.
+        # Can upload object.
         obj = self.s3.resource.Object(self.test_bucket_name, test_file.path)
         obj.upload_file(test_file.path)
-        # Can download blob; contents are correct.
+        # Can download object; contents are correct.
         self.assertEqual(test_file.content, obj.get()["Body"].read().decode("utf-8"))
-        # Can delete blob.
+        # Can delete object.
         obj.delete()
 
     def test_can_upload_and_download_directory(self):

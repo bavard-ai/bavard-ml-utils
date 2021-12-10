@@ -51,7 +51,7 @@ class GCSClient(Client):
 
     def upload_dir(self, source_path: str, target_uri: str):
         """
-        Recursively uploads all files in the directory at `source_path`
+        Recursively uploads all files in the directory at ``source_path``
         to the GCS directory at ``target_uri`` (`Source <https://stackoverflow.com/questions/48514933/how-to-copy-a-dire
         ctory-to-google-cloud-storage-using-google-cloud-python-api>`_).
         """

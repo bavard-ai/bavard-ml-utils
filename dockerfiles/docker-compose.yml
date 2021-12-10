@@ -24,7 +24,7 @@ services:
   localstack:
     image: localstack/localstack:latest
     environment:
-      SERVICES: dynamodb
+      SERVICES: dynamodb,s3
       AWS_DEFAULT_REGION: us-west-2
 
   test:

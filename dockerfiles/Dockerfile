@@ -20,12 +20,14 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install --extras "ml gcp aws"
 
 FROM base as test
+RUN apt-get update && apt-get install -y netcat
 # Bring in the dependencies.
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 WORKDIR /app
 COPY ./bavard_ml_utils ./bavard_ml_utils
 COPY ./test ./test
-CMD ["python", "-m", "unittest", "--verbose"]
+COPY ./scripts/wait-then-run-tests.sh ./start.sh
+CMD ["./start.sh"]
 
 FROM base as docs
 RUN apt-get update \

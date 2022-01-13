@@ -94,7 +94,7 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         self.assert_can_edit()
         num_deleted = 0
         # for record in self.get_all(*conditions, **where_equals):
-        for record in self._scan():
+        for record in self._scan(*conditions, **where_equals):
             self.delete(record.get_id())
             num_deleted += 1
         return num_deleted
@@ -115,18 +115,18 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             for item in res.get("Items", []):
                 yield self.record_cls.parse_obj(item)
 
-    def _set_conditions(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) ->dict:
+    def _set_conditions(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> dict:
         filters_list = []
         for attr, op, value in conditions:
-            filters_list.append(self._choose_operator(attr, op, value))
+            filters_list.append(self.choose_operator(attr, op, value))
         for attr, value in where_equals.items():
             filters_list.append(Attr(attr).eq(value))
         res = reduce(lambda x, y: x & y, filters_list)
-        kwargs = {'FilterExpression': res}
+        kwargs = {"FilterExpression": res}
         return kwargs
 
     @staticmethod
-    def _choose_operator(attr, op, value):
+    def choose_operator(attr, op, value):
         if op == "<=":
             return Attr(attr).lte(value)
         if op == "<":

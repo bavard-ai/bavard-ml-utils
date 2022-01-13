@@ -2,12 +2,14 @@ import operator
 import os
 import typing as t
 from decimal import Context
+from functools import reduce
 
 from bavard_ml_utils.utils import ImportExtraError
 
 
 try:
     import boto3
+    from boto3.dynamodb.conditions import Attr
     from botocore.config import Config
 except ImportError:
     raise ImportExtraError("aws", __name__)
@@ -91,23 +93,50 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         # TODO: This is an incredibly slow way of doing this. Use indexes and a batch delete instead.
         self.assert_can_edit()
         num_deleted = 0
-        for record in self.get_all(*conditions, **where_equals):
+        # for record in self.get_all(*conditions, **where_equals):
+        for record in self._scan():
             self.delete(record.get_id())
             num_deleted += 1
         return num_deleted
 
-    def _scan(self) -> t.Iterable[RecordT]:
+    def _scan(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> t.Iterable[RecordT]:
         """Paginates over all records in the table, yielding them in an iterator."""
         done, start_key = False, None
+        filter_expression = self._set_conditions(*conditions, **where_equals)
+        if filter_expression is None:
+            filter_expression = {}
         while not done:
             if start_key:
-                res = self._table.scan(ExclusiveStartKey=start_key)
+                res = self._table.scan(ExclusiveStartKey=start_key, **filter_expression)
             else:
-                res = self._table.scan()
+                res = self._table.scan(**filter_expression)
             start_key = res.get("LastEvaluatedKey")
             done = start_key is None
             for item in res.get("Items", []):
                 yield self.record_cls.parse_obj(item)
+
+    def _set_conditions(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) ->dict:
+        filters_list = []
+        for attr, op, value in conditions:
+            filters_list.append(self._choose_operator(attr, op, value))
+        for attr, value in where_equals.items():
+            filters_list.append(Attr(attr).eq(value))
+        res = reduce(lambda x, y: x & y, filters_list)
+        kwargs = {'FilterExpression': res}
+        return kwargs
+
+    @staticmethod
+    def _choose_operator(attr, op, value):
+        if op == "<=":
+            return Attr(attr).lte(value)
+        if op == "<":
+            return Attr(attr).lt(value)
+        if op == ">=":
+            return Attr(attr).gte(value)
+        if op == ">":
+            return Attr(attr).gt(value)
+        if op == "==":
+            return Attr(attr).eq(value)
 
     def _float_to_decimal(self, a):
         """

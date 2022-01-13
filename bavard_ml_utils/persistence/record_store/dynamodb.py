@@ -121,6 +121,8 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             filters_list.append(self.choose_operator(attr, op, value))
         for attr, value in where_equals.items():
             filters_list.append(Attr(attr).eq(value))
+        if len(filters_list) == 0:
+            return {}
         res = reduce(lambda x, y: x & y, filters_list)
         kwargs = {"FilterExpression": res}
         return kwargs

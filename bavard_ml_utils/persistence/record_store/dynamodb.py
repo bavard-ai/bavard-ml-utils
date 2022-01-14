@@ -93,7 +93,6 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         # TODO: This is an incredibly slow way of doing this. Use indexes and a batch delete instead.
         self.assert_can_edit()
         num_deleted = 0
-        # for record in self.get_all(*conditions, **where_equals):
         for record in self._scan(*conditions, **where_equals):
             self.delete(record.get_id())
             num_deleted += 1

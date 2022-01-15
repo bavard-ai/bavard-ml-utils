@@ -66,24 +66,6 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         self._table.delete_item(Key={self._pk: id_})
         return True
 
-    def get_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> t.Iterable[RecordT]:
-        """
-        Retreives all records which satisfy the optional ``*conditions`` and ``**where_equals`` equality conditions.
-        **Note**: the current implementation for this method is very slow, using the DynamoDB scan method under the
-        hood.
-        """
-        # TODO: This is an incredibly slow way of doing this. Use secondary indexes and a DynamoDB Query instead.
-        for record in self._scan():
-            matches = True
-            for attr, op, value in conditions:
-                if not self._operators[op](getattr(record, attr), value):
-                    matches = False
-            for attr, value in where_equals.items():
-                if getattr(record, attr) != value:
-                    matches = False
-            if matches:
-                yield record
-
     def delete_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> int:
         """
         Deletes all records which satisfy the optional ``*conditions`` and ``*where_equals`` conditions. Returns the
@@ -93,13 +75,15 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         # TODO: This is an incredibly slow way of doing this. Use indexes and a batch delete instead.
         self.assert_can_edit()
         num_deleted = 0
-        for record in self._scan(*conditions, **where_equals):
+        for record in self.get_all(*conditions, **where_equals):
             self.delete(record.get_id())
             num_deleted += 1
         return num_deleted
 
-    def _scan(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> t.Iterable[RecordT]:
-        """Paginates over all records in the table, yielding them in an iterator."""
+    def get_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> t.Iterable[RecordT]:
+        """Paginates over all records in the table, yielding them in an iterator.
+        Retrieves all records which satisfy the optional ``*conditions`` and ``**where_equals`` equality conditions.
+        """
         done, start_key = False, None
         filter_expression = self._set_conditions(*conditions, **where_equals)
         if filter_expression is None:
@@ -128,11 +112,14 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
 
     @staticmethod
     def choose_operator(attr, op, value):
+        if attr == "createdAt":
+            value = str(value)
         if op == "<=":
             return Attr(attr).lte(value)
         if op == "<":
             return Attr(attr).lt(value)
         if op == ">=":
+            value = str(value)
             return Attr(attr).gte(value)
         if op == ">":
             return Attr(attr).gt(value)

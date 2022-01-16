@@ -91,7 +91,7 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             filter_expression = {}
         while not done:
             if start_key:
-                res = self._table.scan(ExclusiveStartKey=start_key, **filter_expression)
+                res = self._table.query(ExclusiveStartKey=start_key, **filter_expression)
             else:
                 res = self._table.scan(**filter_expression)
             start_key = res.get("LastEvaluatedKey")

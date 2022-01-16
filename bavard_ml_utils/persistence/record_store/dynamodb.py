@@ -1,6 +1,7 @@
 import operator
 import os
 import typing as t
+from datetime import datetime
 from decimal import Context
 from functools import reduce
 
@@ -112,7 +113,7 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
 
     @staticmethod
     def choose_operator(attr, op, value):
-        if attr == "createdAt":
+        if isinstance(value, datetime):
             value = str(value)
         if op == "<=":
             return Attr(attr).lte(value)

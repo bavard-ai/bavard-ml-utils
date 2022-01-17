@@ -101,10 +101,10 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
 
     def _set_conditions(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> dict:
         filters_list = []
-        for attr, op, value in conditions:
-            filters_list.append(self.choose_operator(attr, op, value))
         for attr, value in where_equals.items():
             filters_list.append(Attr(attr).eq(value))
+        for attr, op, value in conditions:
+            filters_list.append(self.choose_operator(attr, op, value))
         if len(filters_list) == 0:
             return {}
         res = reduce(lambda x, y: x & y, filters_list)

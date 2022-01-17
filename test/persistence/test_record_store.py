@@ -136,6 +136,17 @@ class TestRecordStore(TestCase):
             for record in new_records:
                 self.assertGreaterEqual(record.createdAt, four_days_ago)
 
+    def test_query_with_equality_conditions(self):
+        database = DynamoDBRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        database.save(DatedRecord(id=0, createdAt=now, payload="arbitrary data"))
+        # Perform a conditional search.
+        new_records = list(database.get_all(("createdAt", "==", now)))
+        # Should have retrieved the five new records from the last four days.
+        self.assertEqual(len(new_records), 1)
+        for record in new_records:
+            self.assertEqual(record.createdAt, now)
+
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)
         db.save(self.mango)

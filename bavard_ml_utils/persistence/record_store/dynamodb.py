@@ -114,7 +114,7 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
     @staticmethod
     def choose_operator(attr, op, value):
         if isinstance(value, datetime):
-            value = str(value)
+            value = value.isoformat()
         if op == "<=":
             return Attr(attr).lte(value)
         if op == "<":

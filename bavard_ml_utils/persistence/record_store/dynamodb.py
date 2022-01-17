@@ -114,6 +114,10 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
     @staticmethod
     def choose_operator(attr, op, value):
         if isinstance(value, datetime):
+            """
+            attributed with the type of datetime is recorded as isoformat,
+            so the value being used for conditional search should be isoformat as well
+            """
             value = value.isoformat()
         if op == "<=":
             return Attr(attr).lte(value)

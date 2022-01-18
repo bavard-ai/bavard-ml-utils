@@ -142,10 +142,21 @@ class TestRecordStore(TestCase):
         database.save(DatedRecord(id=0, createdAt=now, payload="arbitrary data"))
         # Perform a conditional search.
         new_records = list(database.get_all(("createdAt", "==", now)))
-        # Should have retrieved the five new records from the last four days.
+        # Should have retrieved one record.
         self.assertEqual(len(new_records), 1)
         for record in new_records:
             self.assertEqual(record.createdAt, now)
+
+    def test_query_with_condition_on_primary_key(self):
+        database = DynamoDBRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        database.save(DatedRecord(id=0, createdAt=now, payload="arbitrary data"))
+        # Perform a conditional search on primary key.
+        new_records = list(database.get_all(("id", "==", 0)))
+        # Should have retrieved one record.
+        self.assertEqual(len(new_records), 1)
+        for record in new_records:
+            self.assertEqual(record.get_id(), "0")
 
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)

@@ -10,7 +10,7 @@ from bavard_ml_utils.utils import ImportExtraError
 
 try:
     import boto3
-    from boto3.dynamodb.conditions import Attr
+    from boto3.dynamodb.conditions import Attr, Key
     from botocore.config import Config
 except ImportError:
     raise ImportExtraError("aws", __name__)
@@ -85,31 +85,66 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         """Paginates over all records in the table, yielding them in an iterator.
         Retrieves all records which satisfy the optional ``*conditions`` and ``**where_equals`` equality conditions.
         """
-        done, start_key = False, None
-        filter_expression = self._set_conditions(*conditions, **where_equals)
-        if filter_expression is None:
-            filter_expression = {}
+        done, start_key, use_query = False, None, False
+        conditions_expression = self._set_conditions(*conditions, **where_equals)
+        if conditions_expression is None:
+            conditions_expression = {}
+        if "KeyConditionExpression" in conditions_expression.keys():
+            use_query = True
         while not done:
             if start_key:
-                res = self._table.query(ExclusiveStartKey=start_key, **filter_expression)
+                if use_query:
+                    res = self._table.query(ExclusiveStartKey=start_key, **conditions_expression)
+                else:
+                    res = self._table.scan(ExclusiveStartKey=start_key, **conditions_expression)
             else:
-                res = self._table.scan(**filter_expression)
+                if use_query:
+                    res = self._table.query(**conditions_expression)
+                else:
+                    res = self._table.scan(**conditions_expression)
             start_key = res.get("LastEvaluatedKey")
             done = start_key is None
             for item in res.get("Items", []):
                 yield self.record_cls.parse_obj(item)
 
     def _set_conditions(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> dict:
-        filters_list = []
+        """
+        FilterExpression specifies a condition that returns only items that satisfy the condition.
+        All other items are discarded. However, the filter is applied only after the entire table has been scanned.
+
+        KeyConditionExpression specifies a condition for partition key or sort key.
+        it requires an equality check on a partition key value, and optional other operators check on sort key
+        Using KeyConditionExpression, Query performs a direct lookup to a selected partition based on
+        primary or secondary partition/hash
+
+        scan only accepts FilterExpression argument, where as query accpets both KeyConditionExpression,
+        and FilterExpression.
+        Important: To use query, we must provide KeyConditionExpression --> so if KeyConditionExpression
+        is not provided, we need to use scan, otherwise we use query.
+        """
+
+        filters_list, key_flag = [], False
         for attr, value in where_equals.items():
-            filters_list.append(Attr(attr).eq(value))
+            if attr == self._pk and key_flag is False:
+                key_flag = True
+                key_condition = Key(attr).eq(str(value))
+            else:
+                filters_list.append(Attr(attr).eq(value))
         for attr, op, value in conditions:
-            filters_list.append(self.choose_operator(attr, op, value))
-        if len(filters_list) == 0:
+            if attr == self._pk and op == "==" and key_flag is False:
+                key_flag = True
+                key_condition = Key(attr).eq(str(value))
+            else:
+                filters_list.append(self.choose_operator(attr, op, value))
+        if len(filters_list) != 0:
+            res = reduce(lambda x, y: x & y, filters_list)
+        if len(filters_list) == 0 and key_flag is False:
             return {}
-        res = reduce(lambda x, y: x & y, filters_list)
-        kwargs = {"FilterExpression": res}
-        return kwargs
+        if key_flag is False:
+            return {"FilterExpression": res}
+        if len(filters_list) == 0:
+            return {"KeyConditionExpression": key_condition}
+        return {"KeyConditionExpression": key_condition, "FilterExpression": res}
 
     @staticmethod
     def choose_operator(attr, op, value):

@@ -122,6 +122,7 @@ class TestRecordStore(TestCase):
             read_only_db.delete_all()
 
     def test_query_with_conditions(self):
+        # test 1:
         databases = [FirestoreRecordStore("data", DatedRecord), DynamoDBRecordStore("data", DatedRecord)]
         for db in databases:
             # First, make some data.
@@ -136,7 +137,7 @@ class TestRecordStore(TestCase):
             for record in new_records:
                 self.assertGreaterEqual(record.createdAt, four_days_ago)
 
-    def test_query_with_equality_conditions(self):
+        # test2: equality condition test
         database = DynamoDBRecordStore("data", DatedRecord)
         now = datetime.now(timezone.utc)
         database.save(DatedRecord(id=0, createdAt=now, payload="arbitrary data"))
@@ -147,16 +148,78 @@ class TestRecordStore(TestCase):
         for record in new_records:
             self.assertEqual(record.createdAt, now)
 
-    def test_query_with_condition_on_primary_key(self):
+        # test3: another equality condition test
+        database = DynamoDBRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i%2}"))
+        # Perform a conditional search.
+        new_records = list(database.get_all(("payload", "==", "arbitrary data1")))
+        # Should have retrieved the 5 new records with the payload of arbitrary data1.
+        for record in new_records:
+            self.assertEqual(record.payload, "arbitrary data1")
+
+        # test4: condition for primary key
         database = DynamoDBRecordStore("data", DatedRecord)
         now = datetime.now(timezone.utc)
         database.save(DatedRecord(id=0, createdAt=now, payload="arbitrary data"))
         # Perform a conditional search on primary key.
         new_records = list(database.get_all(("id", "==", 0)))
-        # Should have retrieved one record.
+        # Should have retrieved one record with id of 0.
         self.assertEqual(len(new_records), 1)
         for record in new_records:
             self.assertEqual(record.get_id(), "0")
+
+        # test5: single condition for multiple attributes
+        database = DynamoDBRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i%2}"))
+        four_days_ago = now - timedelta(days=4)
+        # Perform a conditional search.
+        new_records = list(database.get_all(("createdAt", ">=", four_days_ago), ("payload", "==", "arbitrary data1")))
+        # Should have retrieved the 3 new records from the last four days arbitrary data1.
+        self.assertEqual(len(new_records), 2)
+        for record in new_records:
+            self.assertGreaterEqual(record.createdAt, four_days_ago)
+            self.assertEqual(record.payload, "arbitrary data1")
+
+        # test6: multiple conditions for one attribute
+        database = DynamoDBRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i, createdAt=now - timedelta(days=i), payload="arbitrary data"))
+        four_days_ago = now - timedelta(days=4)
+        two_days_ago = now - timedelta(days=2)
+        # Perform a conditional search.
+        new_records = list(database.get_all(("createdAt", "<=", two_days_ago), ("createdAt", ">=", four_days_ago)))
+        # Should have retrieved the 3 new records between last four ago and two days ago.
+        self.assertEqual(len(new_records), 3)
+        for record in new_records:
+            self.assertGreaterEqual(record.createdAt, four_days_ago)
+            self.assertLessEqual(record.createdAt, two_days_ago)
+
+        # test7: multiple conditions for one attribute, and one condition for another attribute
+        database = DynamoDBRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i%2}"))
+        four_days_ago = now - timedelta(days=4)
+        two_days_ago = now - timedelta(days=2)
+        # Perform a conditional search.
+        new_records = list(
+            database.get_all(
+                ("createdAt", "<=", two_days_ago),
+                ("createdAt", ">=", four_days_ago),
+                ("payload", "==", "arbitrary data1"),
+            )
+        )
+        # Should have retrieved one record between last four ago and two days ago arbitrary data1.
+        self.assertEqual(len(new_records), 1)
+        for record in new_records:
+            self.assertGreaterEqual(record.createdAt, four_days_ago)
+            self.assertLessEqual(record.createdAt, two_days_ago)
+            self.assertEqual(record.payload, "arbitrary data1")
 
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)

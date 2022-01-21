@@ -84,15 +84,36 @@ def clear_firestore():
     res.raise_for_status()
 
 
-def create_dynamodb_table(table_name: str, pk_field="id"):
+def create_dynamodb_table(table_name: str, *, pk_field="id", sort_key_field=None, sort_key_type=None):
     dynamodb = boto3.resource(
         "dynamodb", endpoint_url=os.getenv("AWS_ENDPOINT"), config=Config(region_name=os.getenv("AWS_REGION"))
     )
-    table = dynamodb.create_table(
-        TableName=table_name,
-        KeySchema=[{"AttributeName": pk_field, "KeyType": "HASH"}],
-        AttributeDefinitions=[{"AttributeName": pk_field, "AttributeType": "S"}],
-        ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
-    )
-    table.meta.client.get_waiter("table_exists").wait(TableName="fruits")
-    return table
+    # Source:
+    valid_ddb_data_types = ["S", "N", "B", "BOOL"]
+    if sort_key_field is None:
+        table = dynamodb.create_table(
+            TableName=table_name,
+            KeySchema=[{"AttributeName": pk_field, "KeyType": "HASH"}],
+            AttributeDefinitions=[{"AttributeName": pk_field, "AttributeType": "S"}],
+            ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
+        )
+        table.meta.client.get_waiter("table_exists").wait(TableName="fruits")
+        return table
+    if sort_key_field is not None:
+        if sort_key_type is None or sort_key_type not in valid_ddb_data_types:
+            raise Exception("sort key data type is either not provided or it is a wrong type")
+        else:
+            table = dynamodb.create_table(
+                TableName=table_name,
+                KeySchema=[
+                    {"AttributeName": pk_field, "KeyType": "HASH"},
+                    {"AttributeName": sort_key_field, "KeyType": "RANGE"},
+                ],
+                AttributeDefinitions=[
+                    {"AttributeName": pk_field, "AttributeType": "S"},
+                    {"AttributeName": sort_key_field, "AttributeType": sort_key_type},
+                ],
+                ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
+            )
+            table.meta.client.get_waiter("table_exists").wait(TableName="fruits")
+            return table

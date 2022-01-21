@@ -39,12 +39,21 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
 
     _operators = {"<=": operator.le, ">=": operator.ge, "<": operator.lt, ">": operator.gt, "==": operator.eq}
 
-    def __init__(self, table_name: str, record_class: t.Type[RecordT], *, read_only=False, primary_key_field_name="id"):
+    def __init__(
+        self,
+        table_name: str,
+        record_class: t.Type[RecordT],
+        *,
+        read_only=False,
+        primary_key_field_name="id",
+        sort_key_field_name=False,
+    ):
         super().__init__(record_class=record_class, read_only=read_only)
         self._table = boto3.resource(
             "dynamodb", endpoint_url=os.getenv("AWS_ENDPOINT"), config=Config(region_name=os.getenv("AWS_REGION"))
         ).Table(table_name)
         self._pk = primary_key_field_name
+        self._ck = sort_key_field_name
         self._decimal_ctx = Context(prec=38)  # dynamodb has a maximum precision of 38 digits for decimal numbers
 
     def save(self, record: RecordT):
@@ -117,7 +126,7 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         Using KeyConditionExpression, Query performs a direct lookup to a selected partition based on
         primary or secondary partition/hash
 
-        scan only accepts FilterExpression argument, where as query accpets both KeyConditionExpression,
+        scan only accepts FilterExpression argument, where as query accepts both KeyConditionExpression,
         and FilterExpression.
         Important: To use query, we must provide KeyConditionExpression --> so if KeyConditionExpression
         is not provided, we need to use scan, otherwise we use query.

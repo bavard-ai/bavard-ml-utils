@@ -34,6 +34,9 @@ class TestRecordStore(TestCase):
         # Create the needed DynamoDB table.
         self.fruits_table = create_dynamodb_table("fruits")
         self.data_table = create_dynamodb_table("data")
+        self.data_table_composite_key = create_dynamodb_table(
+            "data_composite_key", sort_key_field="createdAt", sort_key_type="S"
+        )
         # Test multiple kinds of record stores.
         self.databases = [
             FirestoreRecordStore("fruits", Fruit),
@@ -47,6 +50,7 @@ class TestRecordStore(TestCase):
     def tearDown(self) -> None:
         self.fruits_table.delete()
         self.data_table.delete()
+        self.data_table_composite_key.delete()
 
     def test_can_save(self):
         for db in self.databases:
@@ -220,6 +224,54 @@ class TestRecordStore(TestCase):
             self.assertGreaterEqual(record.createdAt, four_days_ago)
             self.assertLessEqual(record.createdAt, two_days_ago)
             self.assertEqual(record.payload, "arbitrary data1")
+
+        # test8: final test, condition only for primary key, and there is not sort key define in the table
+        database = DynamoDBRecordStore("data", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i % 2, createdAt=now - timedelta(days=i), payload="arbitrary data"))
+        new_records = list(database.get_all(("id", "==", 0)))
+        # Should have retrieved only one records with id of 0 (the very last one, items with the same primary key
+        # will be overridden since there is not sort key define). if there is a sort key defined, it will be
+        # tested with `test_query_compose_key_with_conditions`
+        self.assertEqual(len(new_records), 1)
+        for record in new_records:
+            self.assertEqual(record.get_id(), "0")
+
+    def test_query_compose_key_with_conditions(self):
+        # test1: condition only for primary key
+        database = DynamoDBRecordStore("data_composite_key", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i % 2, createdAt=now - timedelta(days=i), payload="arbitrary data"))
+        new_records = list(database.get_all(("id", "==", 0)))
+        # Should have retrieved five records with id of 0.
+        self.assertEqual(len(new_records), 5)
+        for record in new_records:
+            self.assertEqual(record.get_id(), "0")
+
+        # test2: again, condition only for primary key
+        database = DynamoDBRecordStore("data_composite_key", DatedRecord)
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i % 3, createdAt=now - timedelta(days=i), payload="arbitrary data"))
+        new_records = list(database.get_all(("id", "==", 2)))
+        # Should have retrieved five records with id of 0.
+        self.assertEqual(len(new_records), 3)
+        for record in new_records:
+            self.assertEqual(record.get_id(), "2")
+
+        # test3: again, condition for both primary key and sort key
+        # database = DynamoDBRecordStore("data_composite_key", DatedRecord)
+        # now = datetime.now(timezone.utc)
+        # four_days_ago = now - timedelta(days=4)
+        # for i in range(10):
+        #     database.save(DatedRecord(id=i % 3, createdAt=now - timedelta(days=i), payload="arbitrary data"))
+        # new_records = list(database.get_all(("id", "==", 2)))
+        # # Should have retrieved five records with id of 0.
+        # self.assertEqual(len(new_records), 3)
+        # for record in new_records:
+        #     self.assertEqual(record.get_id(), "2")
 
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)

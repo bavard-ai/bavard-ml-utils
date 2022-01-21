@@ -97,10 +97,9 @@ def create_dynamodb_table(table_name: str, *, pk_field="id", sort_key_field=None
             AttributeDefinitions=[{"AttributeName": pk_field, "AttributeType": "S"}],
             ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
         )
-        table.meta.client.get_waiter("table_exists").wait(TableName="fruits")
-        return table
     if sort_key_field is not None:
         if sort_key_type is None or sort_key_type not in valid_ddb_data_types:
+            # Source: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.DataTypes.html
             raise Exception("sort key data type is either not provided or it is a wrong type")
         else:
             table = dynamodb.create_table(
@@ -115,5 +114,5 @@ def create_dynamodb_table(table_name: str, *, pk_field="id", sort_key_field=None
                 ],
                 ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
             )
-            table.meta.client.get_waiter("table_exists").wait(TableName="fruits")
-            return table
+    table.meta.client.get_waiter("table_exists").wait(TableName=table_name)
+    return table

@@ -10,7 +10,7 @@ from bavard_ml_utils.utils import ImportExtraError
 
 try:
     import boto3
-    from boto3.dynamodb.conditions import Attr, Key
+    from boto3.dynamodb.conditions import Key
     from botocore.config import Config
 except ImportError:
     raise ImportExtraError("aws", __name__)
@@ -138,7 +138,30 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
                     key_flag = True
                     key_condition = Key(attr).eq(str(value))
                 else:
-                    filters_list.append(Attr(attr).eq(value))
+                    filters_list.append(Key(attr).eq(value))
+            for attr, op, value in conditions:
+                if attr == self._pk and op == "==" and key_flag is False:
+                    key_flag = True
+                    key_condition = Key(attr).eq(str(value))
+                else:
+                    filters_list.append(self.choose_operator(attr, op, value))
+            if len(filters_list) != 0:
+                res = reduce(lambda x, y: x & y, filters_list)
+            if len(filters_list) == 0 and key_flag is False:
+                return {}
+            if key_flag is False:
+                return {"FilterExpression": res}
+            if len(filters_list) == 0:
+                return {"KeyConditionExpression": key_condition}
+            return {"KeyConditionExpression": key_condition, "FilterExpression": res}
+        else:
+            filters_list, key_flag = [], False
+            for attr, value in where_equals.items():
+                if attr == self._pk and key_flag is False:
+                    key_flag = True
+                    key_condition = Key(attr).eq(str(value))
+                else:
+                    filters_list.append(Key(attr).eq(value))
             for attr, op, value in conditions:
                 if attr == self._pk and op == "==" and key_flag is False:
                     key_flag = True
@@ -165,16 +188,16 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             """
             value = value.isoformat()
         if op == "<=":
-            return Attr(attr).lte(value)
+            return Key(attr).lte(value)
         if op == "<":
-            return Attr(attr).lt(value)
+            return Key(attr).lt(value)
         if op == ">=":
             value = str(value)
-            return Attr(attr).gte(value)
+            return Key(attr).gte(value)
         if op == ">":
-            return Attr(attr).gt(value)
+            return Key(attr).gt(value)
         if op == "==":
-            return Attr(attr).eq(value)
+            return Key(attr).eq(value)
 
     def _float_to_decimal(self, a):
         """

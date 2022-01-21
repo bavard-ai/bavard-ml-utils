@@ -46,14 +46,14 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         *,
         read_only=False,
         primary_key_field_name="id",
-        sort_key_field_name=False,
+        sort_key_field_name=None,
     ):
         super().__init__(record_class=record_class, read_only=read_only)
         self._table = boto3.resource(
             "dynamodb", endpoint_url=os.getenv("AWS_ENDPOINT"), config=Config(region_name=os.getenv("AWS_REGION"))
         ).Table(table_name)
         self._pk = primary_key_field_name
-        self._ck = sort_key_field_name
+        self._sk = sort_key_field_name
         self._decimal_ctx = Context(prec=38)  # dynamodb has a maximum precision of 38 digits for decimal numbers
 
     def save(self, record: RecordT):
@@ -131,29 +131,30 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         Important: To use query, we must provide KeyConditionExpression --> so if KeyConditionExpression
         is not provided, we need to use scan, otherwise we use query.
         """
-
-        filters_list, key_flag = [], False
-        for attr, value in where_equals.items():
-            if attr == self._pk and key_flag is False:
-                key_flag = True
-                key_condition = Key(attr).eq(str(value))
-            else:
-                filters_list.append(Attr(attr).eq(value))
-        for attr, op, value in conditions:
-            if attr == self._pk and op == "==" and key_flag is False:
-                key_flag = True
-                key_condition = Key(attr).eq(str(value))
-            else:
-                filters_list.append(self.choose_operator(attr, op, value))
-        if len(filters_list) != 0:
-            res = reduce(lambda x, y: x & y, filters_list)
-        if len(filters_list) == 0 and key_flag is False:
-            return {}
-        if key_flag is False:
-            return {"FilterExpression": res}
-        if len(filters_list) == 0:
-            return {"KeyConditionExpression": key_condition}
-        return {"KeyConditionExpression": key_condition, "FilterExpression": res}
+        if self._sk is None:
+            filters_list, key_flag = [], False
+            for attr, value in where_equals.items():
+                if attr == self._pk and key_flag is False:
+                    key_flag = True
+                    key_condition = Key(attr).eq(str(value))
+                else:
+                    filters_list.append(Attr(attr).eq(value))
+            for attr, op, value in conditions:
+                if attr == self._pk and op == "==" and key_flag is False:
+                    key_flag = True
+                    key_condition = Key(attr).eq(str(value))
+                else:
+                    filters_list.append(self.choose_operator(attr, op, value))
+            if len(filters_list) != 0:
+                res = reduce(lambda x, y: x & y, filters_list)
+            if len(filters_list) == 0 and key_flag is False:
+                return {}
+            if key_flag is False:
+                return {"FilterExpression": res}
+            if len(filters_list) == 0:
+                return {"KeyConditionExpression": key_condition}
+            return {"KeyConditionExpression": key_condition, "FilterExpression": res}
+        return {}
 
     @staticmethod
     def choose_operator(attr, op, value):

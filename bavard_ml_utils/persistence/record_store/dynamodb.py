@@ -159,48 +159,49 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
                 return {"KeyConditionExpression": p_key_condition, "FilterExpression": res}
 
         else:
-            filters_list, p_key_flag, sort_key_flag = [], False, False
+            filters_list, p_key_flag, sort_key_list = [], False, []
             for attr, value in where_equals.items():
                 if attr == self._pk and p_key_flag is False:
                     p_key_flag = True
                     p_key_condition = Key(attr).eq(str(value))
-                elif attr == self._sk and sort_key_flag is False:
-                    sort_key_flag = True
-                    sort_key_condition = Key(attr).eq(value)
+                elif attr == self._sk:
+                    sort_key_list.append(Key(attr).eq(value))
                 else:
                     filters_list.append(Key(attr).eq(value))
             for attr, op, value in conditions:
                 if attr == self._pk and op == "==" and p_key_flag is False:
                     p_key_flag = True
                     p_key_condition = Key(attr).eq(str(value))
-                elif attr == self._sk and sort_key_flag is False:
-                    sort_key_flag = True
-                    sort_key_condition = self.choose_operator(attr, op, value)
+                elif attr == self._sk:
+                    sort_key_list.append(self.choose_operator(attr, op, value))
                 else:
                     filters_list.append(self.choose_operator(attr, op, value))
 
-            if len(filters_list) == 0 and p_key_flag is False and sort_key_flag is False:
+            if len(filters_list) == 0 and p_key_flag is False and len(sort_key_list) == 0:
                 return {}
-            if len(filters_list) == 0 and p_key_flag and sort_key_flag is False:
+            if len(filters_list) == 0 and p_key_flag and len(sort_key_list) == 0:
                 return {"KeyConditionExpression": p_key_condition}
-            if len(filters_list) == 0 and p_key_flag and sort_key_flag:
-                key_res = reduce(lambda x, y: x & y, [p_key_condition, sort_key_condition])
+            if len(filters_list) == 0 and p_key_flag and len(sort_key_list) != 0:
+                sort_key_list.append(p_key_condition)
+                key_res = reduce(lambda x, y: x & y, sort_key_list)
                 return {"KeyConditionExpression": key_res}
-            if len(filters_list) == 0 and p_key_flag is False and sort_key_flag:
-                return {"FilterExpression": sort_key_condition}
+            if len(filters_list) == 0 and p_key_flag is False and len(sort_key_list) != 0:
+                res = reduce(lambda x, y: x & y, sort_key_list)
+                return {"FilterExpression": res}
 
-            if len(filters_list) != 0 and p_key_flag is False and sort_key_flag is False:
+            if len(filters_list) != 0 and p_key_flag is False and len(sort_key_list) == 0:
                 res = reduce(lambda x, y: x & y, filters_list)
                 return {"FilterExpression": res}
-            if len(filters_list) != 0 and p_key_flag and sort_key_flag is False:
+            if len(filters_list) != 0 and p_key_flag and len(sort_key_list) == 0:
                 res = reduce(lambda x, y: x & y, filters_list)
                 return {"KeyConditionExpression": p_key_condition, "FilterExpression": res}
-            if len(filters_list) != 0 and p_key_flag and sort_key_flag:
-                key_res = reduce(lambda x, y: x & y, [p_key_condition, sort_key_condition])
+            if len(filters_list) != 0 and p_key_flag and len(sort_key_list) != 0:
+                sort_key_list.append(p_key_condition)
+                key_res = reduce(lambda x, y: x & y, sort_key_list)
                 res = reduce(lambda x, y: x & y, filters_list)
                 return {"KeyConditionExpression": key_res, "FilterExpression": res}
-            if len(filters_list) != 0 and p_key_flag is False and sort_key_flag:
-                filters_list.append(sort_key_condition)
+            if len(filters_list) != 0 and p_key_flag is False and len(sort_key_list) != 0:
+                filters_list.extend(sort_key_list)
                 res = reduce(lambda x, y: x & y, filters_list)
                 return {"FilterExpression": res}
         return {}

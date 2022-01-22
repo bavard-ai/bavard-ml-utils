@@ -262,16 +262,6 @@ class TestRecordStore(TestCase):
             self.assertEqual(record.get_id(), "2")
 
         # test3: again, condition for both primary key and sort key
-        # database = DynamoDBRecordStore("data_composite_key", DatedRecord)
-        # now = datetime.now(timezone.utc)
-        # four_days_ago = now - timedelta(days=4)
-        # for i in range(10):
-        #     database.save(DatedRecord(id=i % 3, createdAt=now - timedelta(days=i), payload="arbitrary data"))
-        # new_records = list(database.get_all(("id", "==", 2)))
-        # # Should have retrieved five records with id of 0.
-        # self.assertEqual(len(new_records), 3)
-        # for record in new_records:
-        #     self.assertEqual(record.get_id(), "2")
 
     def _create_some_records(self, db: BaseRecordStore):
         db.save(self.apple)

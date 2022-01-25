@@ -16,6 +16,11 @@ class Record(DataModel, ABC):
         """Returns the primary key this record should be saved under."""
         pass
 
+    @abstractmethod
+    def get_sort_key(self):
+        """In the case of composite key, it returns the primary key this record should be saved under."""
+        pass
+
 
 RecordT = t.TypeVar("RecordT", bound=Record)  # used to help static type checking tools
 

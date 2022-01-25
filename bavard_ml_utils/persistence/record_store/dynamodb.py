@@ -62,19 +62,30 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         item_dict = remap(item_dict, self._float_to_decimal)
         self._table.put_item(Item={**item_dict, self._pk: record.get_id()})
 
-    def get(self, id_: str) -> t.Optional[RecordT]:
-        res = self._table.get_item(Key={self._pk: id_})
+    def get(self, id_: str, sk_=None) -> t.Optional[RecordT]:
+        if self._sk is None:
+            res = self._table.get_item(Key={self._pk: id_})
+        else:
+            res = self._table.get_item(Key={self._pk: id_, self._sk: sk_})
         if "Item" not in res:
             return None
         return self.record_cls.parse_obj(res["Item"])
 
-    def delete(self, id_: str) -> bool:
-        self.assert_can_edit()
-        if self.get(id_) is None:
-            # No record exists for the given id.
-            return False
-        self._table.delete_item(Key={self._pk: id_})
-        return True
+    def delete(self, id_: str, sk_=None) -> bool:
+        if self._sk is None:
+            self.assert_can_edit()
+            if self.get(id_) is None:
+                # No record exists for the given id.
+                return False
+            self._table.delete_item(Key={self._pk: id_})
+            return True
+        else:
+            self.assert_can_edit()
+            if self.get(id_, sk_) is None:
+                # No record exists for the given composite key.
+                return False
+            self._table.delete_item(Key={self._pk: id_, self._sk: sk_})
+            return True
 
     def delete_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> int:
         """
@@ -85,9 +96,14 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         # TODO: This is an incredibly slow way of doing this. Use indexes and a batch delete instead.
         self.assert_can_edit()
         num_deleted = 0
-        for record in self.get_all(*conditions, **where_equals):
-            self.delete(record.get_id())
-            num_deleted += 1
+        if self._sk is None:
+            for record in self.get_all(*conditions, **where_equals):
+                self.delete(record.get_id())
+                num_deleted += 1
+        else:
+            for record in self.get_all(*conditions, **where_equals):
+                self.delete(record.get_id(), record.get_sort_key())
+                num_deleted += 1
         return num_deleted
 
     def get_all(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> t.Iterable[RecordT]:

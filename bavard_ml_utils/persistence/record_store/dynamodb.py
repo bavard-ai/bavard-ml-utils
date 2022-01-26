@@ -158,7 +158,7 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
                     p_key_flag = True
                     p_key_condition = Key(attr).eq(str(value))
                 else:
-                    filters_list.append(Key(attr).eq(value))
+                    filters_list.append(Key(attr).eq(self.use_correct_type(value)))
             for attr, op, value in conditions:
                 if attr == self._pk and op == "==" and p_key_flag is False:
                     p_key_flag = True
@@ -185,9 +185,9 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
                     p_key_flag = True
                     p_key_condition = Key(attr).eq(str(value))
                 elif attr == self._sk:
-                    sort_key_list.append(Key(attr).eq(value))
+                    sort_key_list.append(Key(attr).eq(self.use_correct_type(value)))
                 else:
-                    filters_list.append(Key(attr).eq(value))
+                    filters_list.append(Key(attr).eq(self.use_correct_type(value)))
             for attr, op, value in conditions:
                 if attr == self._pk and op == "==" and p_key_flag is False:
                     p_key_flag = True
@@ -196,6 +196,14 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
                     sort_key_list.append(self.choose_operator(attr, op, value))
                 else:
                     filters_list.append(self.choose_operator(attr, op, value))
+
+            # important check
+            if p_key_flag and len(sort_key_list) >= 3:
+                raise Exception("keyconditionexpressions must only contain one condition per key")
+            if p_key_flag and len(sort_key_list) == 2:
+                # it converts (a <= x <= b) into Key(x).between(a, b),
+                # pay attention that keyconditionexpressions must only contain one condition per key
+                sort_key_list = self.combine_multiple_condition_sort_key(*conditions, **where_equals)
 
             if len(filters_list) == 0 and p_key_flag is False and len(sort_key_list) == 0:
                 return {}
@@ -227,30 +235,52 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         return {}
 
     def choose_operator(self, attr, op, value):
+        value = self.use_correct_type(value)
+        if op == "<=":
+            return Key(attr).lte(value)
+        if op == "<":
+            return Key(attr).lt(value)
+        if op == ">=":
+            return Key(attr).gte(value)
+        if op == ">":
+            return Key(attr).gt(value)
+        if op == "==":
+            return Key(attr).eq(value)
+
+    def combine_multiple_condition_sort_key(self, *conditions: t.Tuple[str, str, t.Any], **where_equals) -> list:
+        lte_flag, gte_flag, sort_key_list, dict_value = False, False, [], {}
+        for attr, value in where_equals.items():
+            if attr == self._sk:
+                sort_key_list.append(Key(attr).eq(self.use_correct_type(value)))
+                return sort_key_list
+        for attr, op, value in conditions:
+            if attr == self._sk and op == "==":
+                sort_key_list.append(Key(attr).eq(self.use_correct_type(value)))
+                return sort_key_list
+            if attr == self._sk and op == "<=":
+                lte_flag = True
+                dict_value["lte"] = self.use_correct_type(value)
+            if attr == self._sk and op == ">=":
+                gte_flag = True
+                dict_value["gte"] = self.use_correct_type(value)
+        if lte_flag and gte_flag:
+            sort_key_list.append(Key(self._sk).between(dict_value["gte"], dict_value["lte"]))
+            return sort_key_list
+        return []
+
+    def use_correct_type(self, value):
         if isinstance(value, datetime):
             """
             attributed with the type of datetime is recorded as isoformat,
             so the value being used for conditional search should be isoformat as well
             """
             value = value.isoformat()
-
-        if isinstance(value, float):
+        elif isinstance(value, float):
             """
             DynamodB doesn't support float type. It must be converted to decimal
             """
             value = self._float_to_decimal(value)
-
-        if op == "<=":
-            return Key(attr).lte(value)
-        if op == "<":
-            return Key(attr).lt(value)
-        if op == ">=":
-            value = str(value)
-            return Key(attr).gte(value)
-        if op == ">":
-            return Key(attr).gt(value)
-        if op == "==":
-            return Key(attr).eq(value)
+        return value
 
     def _float_to_decimal(self, a):
         """

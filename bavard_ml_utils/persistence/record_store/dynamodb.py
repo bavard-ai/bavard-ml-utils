@@ -66,6 +66,8 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
         if self._sk is None:
             res = self._table.get_item(Key={self._pk: id_})
         else:
+            if isinstance(sk_, float):
+                sk_ = self._float_to_decimal(sk_)
             res = self._table.get_item(Key={self._pk: id_, self._sk: sk_})
         if "Item" not in res:
             return None
@@ -80,6 +82,8 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
             self._table.delete_item(Key={self._pk: id_})
             return True
         else:
+            if isinstance(sk_, float):
+                sk_ = self._float_to_decimal(sk_)
             self.assert_can_edit()
             if self.get(id_, sk_) is None:
                 # No record exists for the given composite key.
@@ -222,14 +226,20 @@ class DynamoDBRecordStore(BaseRecordStore[RecordT]):
                 return {"FilterExpression": res}
         return {}
 
-    @staticmethod
-    def choose_operator(attr, op, value):
+    def choose_operator(self, attr, op, value):
         if isinstance(value, datetime):
             """
             attributed with the type of datetime is recorded as isoformat,
             so the value being used for conditional search should be isoformat as well
             """
             value = value.isoformat()
+
+        if isinstance(value, float):
+            """
+            DynamodB doesn't support float type. It must be converted to decimal
+            """
+            value = self._float_to_decimal(value)
+
         if op == "<=":
             return Key(attr).lte(value)
         if op == "<":

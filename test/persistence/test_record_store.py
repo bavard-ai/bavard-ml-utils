@@ -1,5 +1,6 @@
 import math
 from datetime import datetime, timedelta, timezone
+from decimal import Context
 from unittest import TestCase
 
 from bavard_ml_utils.persistence.record_store.base import BaseRecordStore, Record
@@ -19,7 +20,7 @@ class Fruit(Record):
         return self.name
 
     def get_sort_key(self):
-        return self.price
+        return Context(prec=38).create_decimal_from_float(self.price)
 
 
 class DatedRecord(Record):
@@ -92,6 +93,7 @@ class TestRecordStore(TestCase):
         database = DynamoDBRecordStore("fruits_composite_key", Fruit, sort_key_field_name="price")
         self._create_some_records_compose_key(database)
         self.assertEqual(len(list(database.get_all())), 9)
+        database.delete_all()
 
     def test_can_delete_all(self):
         for db in self.databases:
@@ -107,6 +109,20 @@ class TestRecordStore(TestCase):
             num_deleted = db.delete_all()
             self.assertEqual(num_deleted, 1)
             self.assertEqual(len(list(db.get_all())), 0)  # should be none left
+
+        # test for the table with composite key
+        database = DynamoDBRecordStore("fruits_composite_key", Fruit, sort_key_field_name="price")
+        self._create_some_records_compose_key(database)
+        self.assertEqual(len(list(database.get_all())), 9)
+        apple2 = database.get("apple", 1.5)
+        self.assertIsNotNone(apple2)  # should exist in the database
+        apple3 = database.get("apple", 0.5)
+        self.assertIsNotNone(apple3)  # should exist in the database
+        database.delete("apple", 1.5)
+        apple4 = database.get("apple", 1.5)
+        self.assertIsNone(apple4)  # should *not* exist in the db
+        database.delete_all()
+        self.assertEqual(len(list(database.get_all())), 0)
 
     def test_read_only_firestore(self):
         db = FirestoreRecordStore("fruits", Fruit)

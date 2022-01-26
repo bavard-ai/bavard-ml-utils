@@ -121,6 +121,7 @@ class TestRecordStore(TestCase):
         database.delete("apple", 1.5)
         apple4 = database.get("apple", 1.5)
         self.assertIsNone(apple4)  # should *not* exist in the db
+        self.assertEqual(len(list(database.get_all())), 8)
         database.delete_all()
         self.assertEqual(len(list(database.get_all())), 0)
 

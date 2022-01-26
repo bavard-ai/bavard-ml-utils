@@ -335,7 +335,7 @@ class TestRecordStore(TestCase):
             self.assertLessEqual(record.createdAt, two_days_ago)
         database.delete_all()
 
-        # test6: multiple condition for sort key and one condition on another attribute
+        # test6: multiple conditions for sort key and one condition on another attribute
         database = DynamoDBRecordStore("data_composite_key", DatedRecord, sort_key_field_name="createdAt")
         now = datetime.now(timezone.utc)
         for i in range(10):
@@ -357,24 +357,7 @@ class TestRecordStore(TestCase):
             self.assertEqual(record.payload, "arbitrary data1")
         database.delete_all()
 
-        # test7: condition for primary key and  multiple condition for sort key
-        now = datetime.now(timezone.utc)
-        for i in range(10):
-            database.save(DatedRecord(id=i % 2, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i%2}"))
-        four_days_ago = now - timedelta(days=4)
-        two_days_ago = now - timedelta(days=2)
-        new_records = list(
-            database.get_all(("createdAt", ">=", four_days_ago), ("id", "==", 1), ("createdAt", "<=", two_days_ago))
-        )
-        # Should have retrieved one records with id of 1 between four days ago and two days ago.
-        self.assertEqual(len(new_records), 1)
-        for record in new_records:
-            self.assertEqual(record.get_id(), "1")
-            self.assertGreaterEqual(record.createdAt, four_days_ago)
-            self.assertLessEqual(record.createdAt, two_days_ago)
-        database.delete_all()
-
-        # test8: condition for primary key, sort key, and another attribute
+        # test7: single condition for primary key, sort key, and another attribute
         now = datetime.now(timezone.utc)
         for i in range(10):
             database.save(DatedRecord(id=i % 2, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i % 2}"))
@@ -387,6 +370,70 @@ class TestRecordStore(TestCase):
         for record in new_records:
             self.assertEqual(record.get_id(), "0")
             self.assertGreaterEqual(record.createdAt, four_days_ago)
+            self.assertEqual(record.payload, "arbitrary data0")
+        database.delete_all()
+
+        # test8: single condition for primary key and multiple conditions for sort key
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i % 2, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i%2}"))
+        four_days_ago = now - timedelta(days=4)
+        two_days_ago = now - timedelta(days=2)
+        new_records = list(
+            database.get_all(("createdAt", ">=", four_days_ago), ("id", "==", 1), ("createdAt", "<=", two_days_ago))
+        )
+        # Should have retrieved one record with id of 1 between four days ago and two days ago.
+        self.assertEqual(len(new_records), 1)
+        for record in new_records:
+            self.assertEqual(record.get_id(), "1")
+            self.assertGreaterEqual(record.createdAt, four_days_ago)
+            self.assertLessEqual(record.createdAt, two_days_ago)
+        database.delete_all()
+
+        # test9: single condition for primary key, multiple conditions for sort key, condition for another attribute
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i % 2, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i%2}"))
+        four_days_ago = now - timedelta(days=4)
+        two_days_ago = now - timedelta(days=2)
+        new_records = list(
+            database.get_all(
+                ("createdAt", ">=", four_days_ago),
+                ("id", "==", 0),
+                ("createdAt", "<=", two_days_ago),
+                ("payload", "==", "arbitrary data0"),
+            )
+        )
+        # Should have retrieved two records with id of 0 between four days ago and two days ago
+        # with the payload of arbitrary data0.
+        self.assertEqual(len(new_records), 2)
+        for record in new_records:
+            self.assertEqual(record.get_id(), "0")
+            self.assertGreaterEqual(record.createdAt, four_days_ago)
+            self.assertLessEqual(record.createdAt, two_days_ago)
+            self.assertEqual(record.payload, "arbitrary data0")
+        database.delete_all()
+
+        # test10: Final test, if prime key condition exists and there are multiple conditions for sort key in which one
+        # of them is equality
+        now = datetime.now(timezone.utc)
+        for i in range(10):
+            database.save(DatedRecord(id=i % 2, createdAt=now - timedelta(days=i), payload=f"arbitrary data{i%2}"))
+        nine_days_ago = now - timedelta(days=9)
+        two_days_ago = now - timedelta(days=2)
+        new_records = list(
+            database.get_all(
+                ("createdAt", ">=", nine_days_ago),
+                ("id", "==", 0),
+                ("createdAt", "==", two_days_ago),
+                ("payload", "==", "arbitrary data0"),
+            )
+        )
+        # Should have retrieved one records which was created two days ago
+        self.assertEqual(len(new_records), 1)
+        for record in new_records:
+            self.assertEqual(record.get_id(), "0")
+            self.assertEqual(record.createdAt, two_days_ago)
             self.assertEqual(record.payload, "arbitrary data0")
         database.delete_all()
 

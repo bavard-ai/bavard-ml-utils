@@ -17,6 +17,9 @@ class ServiceVersionMetadata(Record):
     def get_id(self) -> str:
         return self.name
 
+    def get_sort_key(self):
+        return self.synced_at
+
 
 class BaseDatasetRecord(Record):
     """
@@ -46,6 +49,9 @@ class BaseDatasetRecord(Record):
     def get_id(self) -> str:
         return self.agent_id
 
+    def get_sort_key(self):
+        return self.updated_at
+
 
 class BaseArtifactRecord(Record):
     """
@@ -64,6 +70,9 @@ class BaseArtifactRecord(Record):
 
     def get_id(self) -> str:
         return self.make_id(self.service_version, self.agent_id)
+
+    def get_sort_key(self):
+        return None
 
     @staticmethod
     def make_id(service_version: str, agent_id: str):
